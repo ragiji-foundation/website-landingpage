@@ -1,0 +1,24 @@
+.container {
+  padding: 40px 0;
+}
+
+.testimonialCard {
+  height: 100%;
+  transition: transform 0.2s ease;
+}
+
+.testimonialCard:hover {
+  transform: translateY(-5px);
+}
+
+.cardHeader {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.testimonialContent {
+  padding: 0 20px 20px;
+  line-height: 1.6;
+}

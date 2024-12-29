@@ -1,0 +1,32 @@
+.wrapper {
+  background-color: #f8f9fa;
+  padding: 4rem 0;
+  width: 100%;
+}
+
+.container {
+  padding: 0 1rem;
+}
+
+.grid {
+  margin-top: 2rem;
+}
+
+.initiativeCard {
+  background: white;
+  transition: transform 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.initiativeCard:hover {
+  transform: translateY(-5px);
+}
+
+.icon {
+  font-size: 2.5rem;
+}
+
+.title {
+  font-size: 2rem;
+  color: #1a1b1e;
+}

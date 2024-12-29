@@ -44,7 +44,7 @@ export function ArticlesCardsGrid() {
   ));
 
   return (
-    <Container py="xl">
+    <Container py="xl" size="xl">
       <SimpleGrid cols={{ base: 1, sm: 2 }}>{cards}</SimpleGrid>
     </Container>
   );

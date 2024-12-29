@@ -2,7 +2,8 @@
 import React from 'react';
 import { IconBrandInstagram, IconBrandTwitter, IconBrandYoutube } from '@tabler/icons-react';
 import { ActionIcon, Container, Group, Text } from '@mantine/core';
-import { MantineLogo } from '@mantinex/mantine-logo';
+import Image from 'next/image';
+import Link from 'next/link';
 import classes from './FooterLinks.module.css';
 
 const data = [
@@ -11,7 +12,7 @@ const data = [
     links: [
       { label: 'The Need', link: '/the-need' },
       { label: 'Our Story', link: '/our-story' },
-      { label: 'our Initiatives', link: '/our-initiatives' },
+      { label: 'Our Initiatives', link: '/our-initiatives' },
       { label: 'Success Stories', link: '/success-stories' },
     ],
   },
@@ -22,7 +23,6 @@ const data = [
       { label: 'Blogs', link: '/blog' },
       { label: 'Electronic Media', link: '/electronic-media' },
       { label: 'Awards', link: '/awards' },
- 
     ],
   },
   {
@@ -44,7 +44,6 @@ export function FooterLinks() {
         className={classes.link}
         component="a"
         href={link.link}
-        onClick={(event) => event.preventDefault()}
       >
         {link.label}
       </Text>
@@ -62,29 +61,34 @@ export function FooterLinks() {
     <footer className={classes.footer}>
       <Container className={classes.inner}>
         <div className={classes.logo}>
-          <MantineLogo size={30} />
-          <Text size="xs" c="dimmed" className={classes.description}>
-            Build fully functional accessible web applications faster than ever
+          <Link href="/">
+            <Image
+              src="/logo1.png"
+              alt="Ragi Ji Foundation"
+              width={180}
+              height={80}
+              style={{ objectFit: 'contain' }}
+            />
+          </Link>
+          <Text size="sm" c="dimmed" className={classes.description}>
+            Live For Others
           </Text>
         </div>
         <div className={classes.groups}>{groups}</div>
       </Container>
       <Container className={classes.afterFooter}>
         <Text c="dimmed" size="sm">
-          © 2024 Ragiji Foundation . All rights reserved.
+          © 2024 Ragiji Foundation. All rights reserved.
         </Text>
 
         <Group gap={0} className={classes.social} justify="flex-end" wrap="nowrap">
-          <ActionIcon size="lg" color="gray" variant="subtle">
-      
+          <ActionIcon size="lg" color="gray" variant="subtle" component="a" href="#">
             <IconBrandTwitter size={18} stroke={1.5} />
           </ActionIcon>
-          <ActionIcon size="lg" color="gray" variant="subtle">
-    
+          <ActionIcon size="lg" color="gray" variant="subtle" component="a" href="#">
             <IconBrandYoutube size={18} stroke={1.5} />
           </ActionIcon>
-          <ActionIcon size="lg" color="gray" variant="subtle">
-         
+          <ActionIcon size="lg" color="gray" variant="subtle" component="a" href="#">
             <IconBrandInstagram size={18} stroke={1.5} />
           </ActionIcon>
         </Group>

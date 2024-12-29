@@ -1,7 +1,8 @@
 
 .app-container {
-  display: flex; /* Or any other layout you prefer */
-  flex-direction: column; /* Stack components vertically */
-  min-height: 100vh; /* Ensure the container fills the viewport height */
-  padding: 2rem;    /* Add some padding */
+  display: flex; 
+  flex-direction: column; 
+  min-height: 100vh; 
+  padding: 1rem;    
 }
+
