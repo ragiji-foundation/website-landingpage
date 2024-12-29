@@ -1,7 +1,5 @@
 'use client';
-import { IconBrandInstagram, IconBrandFacebook, IconBrandYoutube } from '@tabler/icons-react';
 import {
-  ActionIcon,
   Button,
   Group,
   SimpleGrid,
@@ -14,8 +12,6 @@ import { ContactIconsList } from './ContactIcons';
 import classes from './ContactUs.module.css';
 import { useState } from 'react';
 import axios from 'axios';
-
-const social = [IconBrandFacebook, IconBrandYoutube, IconBrandInstagram];
 
 export function ContactUs() {
   const [formData, setFormData] = useState({
@@ -37,20 +33,20 @@ export function ContactUs() {
     setSubmitStatus({ type: null, message: '' });
 
     try {
-      const { data } = await axios.post('/api/contact', formData);
-
+      await axios.post('/api/contact', formData);
+      
       setSubmitStatus({
         type: 'success',
         message: 'Thank you for your message. We will get back to you soon!'
       });
       // Clear form after successful submission
       setFormData({ email: '', name: '', subject: '', message: '' });
-
+      
     } catch (error) {
       console.error('Error:', error);
       setSubmitStatus({
         type: 'error',
-        message: axios.isAxiosError(error)
+        message: axios.isAxiosError(error) 
           ? error.response?.data?.message || 'Failed to send message. Please try again.'
           : 'An error occurred. Please try again later.'
       });
