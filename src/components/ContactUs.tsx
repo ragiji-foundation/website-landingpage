@@ -36,23 +36,31 @@ export function ContactUs() {
     setSubmitStatus({ type: null, message: '' });
 
     try {
-      const response = await axios.post('/api/contact', formData);
-
+      const response = await axios.post('/api/contact', formData, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
       setSubmitStatus({
         type: 'success',
         message: response.data.message || 'Thank you for your message. We will get back to you soon!'
       });
       setFormData({ email: '', name: '', subject: '', message: '' });
-
+      
     } catch (error) {
       console.error('Form submission error:', error);
-
+      
       let errorMessage = 'An error occurred. Please try again later.';
-
+      
       if (axios.isAxiosError(error)) {
-        errorMessage = error.response?.data?.message ||
-          'Failed to send message. Please try again.';
-
+        errorMessage = error.response?.data?.message || 
+                    'Failed to send message. Please try again.';
+        
+        if (error.response?.status === 405) {
+          errorMessage = 'Form submission method not allowed. Please try again later.';
+        }
+        
         // Log detailed error in development
         if (process.env.NODE_ENV === 'development') {
           console.log('Detailed error:', {
