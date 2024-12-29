@@ -1,7 +1,6 @@
 'use client';
-import { IconBrandInstagram, IconBrandFacebook, IconBrandYoutube } from '@tabler/icons-react';
+// import { IconBrandInstagram, IconBrandFacebook, IconBrandYoutube } from '@tabler/icons-react';
 import {
-  ActionIcon,
   Button,
   Group,
   SimpleGrid,
@@ -15,7 +14,7 @@ import classes from './ContactUs.module.css';
 import { useState } from 'react';
 import axios from 'axios';
 
-const social = [IconBrandFacebook, IconBrandYoutube, IconBrandInstagram];
+// const social = [IconBrandFacebook, IconBrandYoutube, IconBrandInstagram];
 
 export function ContactUs() {
   const [formData, setFormData] = useState({
