@@ -6,7 +6,7 @@ export function TopHeader() {
   return (
     <div className={classes.topHeader}>
       <Container size="xl">
-        <Group justify="space-between" h={40}>
+        <Group justify="space-between" h={40} visibleFrom="md">
           <Group gap="xl">
             <Text size="sm" fw={500}>Live For Others</Text>
             <Text size="sm" fw={700} c="var(--mantine-color-orange-filled)">

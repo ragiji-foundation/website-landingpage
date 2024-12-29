@@ -13,16 +13,11 @@ import {
 import { ContactIconsList } from './ContactIcons';
 import classes from './ContactUs.module.css';
 import { useState } from 'react';
+import axios from 'axios';
 
 const social = [IconBrandFacebook, IconBrandYoutube, IconBrandInstagram];
 
 export function ContactUs() {
-  const icons = social.map((Icon, index) => (
-    <ActionIcon key={index} size={28} className={classes.social} variant="transparent">
-      <Icon size={22} stroke={1.5} />
-    </ActionIcon>
-  ));
-
   const [formData, setFormData] = useState({
     email: '',
     name: '',
@@ -30,26 +25,37 @@ export function ContactUs() {
     message: ''
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<{
+    type: 'success' | 'error' | null;
+    message: string;
+  }>({ type: null, message: '' });
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+    setIsSubmitting(true);
+    setSubmitStatus({ type: null, message: '' });
 
-      if (response.ok) {
-        alert('Message sent successfully!');
-        setFormData({ email: '', name: '', subject: '', message: '' });
-      } else {
-        alert('Failed to send message. Please try again.');
-      }
+    try {
+      const { data } = await axios.post('/api/contact', formData);
+
+      setSubmitStatus({
+        type: 'success',
+        message: 'Thank you for your message. We will get back to you soon!'
+      });
+      // Clear form after successful submission
+      setFormData({ email: '', name: '', subject: '', message: '' });
+
     } catch (error) {
       console.error('Error:', error);
-      alert('An error occurred. Please try again.');
+      setSubmitStatus({
+        type: 'error',
+        message: axios.isAxiosError(error)
+          ? error.response?.data?.message || 'Failed to send message. Please try again.'
+          : 'An error occurred. Please try again later.'
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -85,8 +91,6 @@ export function ContactUs() {
               },
             ]}
           />
-
-          <Group mt="xl">{icons}</Group>
         </div>
 
         <div className={classes.form}>
@@ -98,22 +102,27 @@ export function ContactUs() {
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               classNames={{ input: classes.input, label: classes.inputLabel }}
+              disabled={isSubmitting}
             />
             <TextInput
               label="Name"
               placeholder="Your Name"
               mt="md"
+              required
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               classNames={{ input: classes.input, label: classes.inputLabel }}
+              disabled={isSubmitting}
             />
             <TextInput
               label="Subject"
               placeholder="Subject"
               mt="md"
+              required
               value={formData.subject}
               onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
               classNames={{ input: classes.input, label: classes.inputLabel }}
+              disabled={isSubmitting}
             />
             <Textarea
               required
@@ -124,10 +133,27 @@ export function ContactUs() {
               value={formData.message}
               onChange={(e) => setFormData({ ...formData, message: e.target.value })}
               classNames={{ input: classes.input, label: classes.inputLabel }}
+              disabled={isSubmitting}
             />
 
+            {submitStatus.type && (
+              <Text
+                mt="sm"
+                c={submitStatus.type === 'success' ? 'green' : 'red'}
+                size="sm"
+              >
+                {submitStatus.message}
+              </Text>
+            )}
+
             <Group justify="flex-end" mt="md">
-              <Button type="submit" className={classes.control}>Send message</Button>
+              <Button
+                type="submit"
+                className={classes.control}
+                loading={isSubmitting}
+              >
+                {isSubmitting ? 'Sending...' : 'Send message'}
+              </Button>
             </Group>
           </form>
         </div>

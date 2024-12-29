@@ -8,30 +8,47 @@ import classes from './FooterLinks.module.css';
 
 const data = [
   {
-    title: 'About',
+    title: 'About Us',
     links: [
       { label: 'The Need', link: '/the-need' },
       { label: 'Our Story', link: '/our-story' },
       { label: 'Our Initiatives', link: '/our-initiatives' },
       { label: 'Success Stories', link: '/success-stories' },
+      { label: 'Our Team', link: '/team' },
+      { label: 'Annual Reports', link: '/reports' },
     ],
   },
   {
-    title: 'Media',
+    title: 'Our Initiatives',
+    links: [
+      { label: 'Education', link: '/education' },
+      { label: 'Healthcare', link: '/healthcare' },
+      { label: 'Rural Development', link: '/rural-development' },
+      { label: 'Women Empowerment', link: '/women-empowerment' },
+      { label: 'Skill Development', link: '/skill-development' },
+      { label: 'Donate Now', link: '/donate' },
+    ],
+  },
+  {
+    title: 'Media Center',
     links: [
       { label: 'News Coverage', link: '/news-coverage' },
+      { label: 'Press Releases', link: '/press' },
+      { label: 'Photo Gallery', link: '/gallery' },
+      { label: 'Videos', link: '/videos' },
       { label: 'Blogs', link: '/blog' },
-      { label: 'Electronic Media', link: '/electronic-media' },
       { label: 'Awards', link: '/awards' },
     ],
   },
   {
-    title: 'Community',
+    title: 'Get In Touch',
     links: [
-      { label: 'Facebook', link: '#' },
-      { label: 'Follow us on X', link: '#' },
-      { label: 'Instagram', link: '#' },
       { label: 'Contact Us', link: '/contact-us' },
+      { label: '+91 8827968035', link: 'tel:+918827968035' },
+      { label: 'admin@ragijifoundation.com', link: 'mailto:admin@ragijifoundation.com' },
+      { label: 'www.ragijifoundation.com', link: 'https://www.ragijifoundation.com' },
+      { label: 'Volunteer', link: '/volunteer' },
+      { label: 'Careers', link: '/careers' },
     ],
   },
 ];
@@ -59,38 +76,56 @@ export function FooterLinks() {
 
   return (
     <footer className={classes.footer}>
-      <Container className={classes.inner}>
+      <Container size="xl" className={classes.inner}>
         <div className={classes.logo}>
           <Link href="/">
             <Image
               src="/logo1.png"
               alt="Ragi Ji Foundation"
-              width={180}
-              height={80}
+              width={200}
+              height={90}
               style={{ objectFit: 'contain' }}
             />
           </Link>
-          <Text size="sm" c="dimmed" className={classes.description}>
+          <Text size="lg" fw={500} className={classes.description}>
             Live For Others
+          </Text>
+          <Text size="sm" c="dimmed" mt="md" className={classes.address}>
+            RAMGIRIJI MAHARAJ SHIKSHA EVAM SAMAJ SEVA SAMITI
+            <br />
+            House No-12 Gram Mahapura Post Kothd,
+            <br />
+            Kothada B.O Kothada, DHAR 454449
+            <br />
+            Madhya Pradesh, India
           </Text>
         </div>
         <div className={classes.groups}>{groups}</div>
       </Container>
-      <Container className={classes.afterFooter}>
-        <Text c="dimmed" size="sm">
-          © 2024 Ragiji Foundation. All rights reserved.
-        </Text>
+      <Container size="xl" className={classes.afterFooter}>
+        <Group justify="space-between" className={classes.afterFooterGroup}>
+          <div>
+            <Text c="dimmed" size="sm" className={classes.registration}>
+              Registration Numbers:
+              <br />
+              03/28/04/24586/22 • AAKART183J24BP02 • AAKART183J24BP01
+            </Text>
+            <Text c="dimmed" size="sm" mt="xs">
+              © 2024 Ragi Ji Foundation. All rights reserved.
+            </Text>
+          </div>
 
-        <Group gap={0} className={classes.social} justify="flex-end" wrap="nowrap">
-          <ActionIcon size="lg" color="gray" variant="subtle" component="a" href="#">
-            <IconBrandTwitter size={18} stroke={1.5} />
-          </ActionIcon>
-          <ActionIcon size="lg" color="gray" variant="subtle" component="a" href="#">
-            <IconBrandYoutube size={18} stroke={1.5} />
-          </ActionIcon>
-          <ActionIcon size="lg" color="gray" variant="subtle" component="a" href="#">
-            <IconBrandInstagram size={18} stroke={1.5} />
-          </ActionIcon>
+          <Group gap="xl" className={classes.social} justify="flex-end" wrap="nowrap">
+            <ActionIcon size="xl" color="orange" variant="subtle" component="a" href="#">
+              <IconBrandTwitter size={22} stroke={1.5} />
+            </ActionIcon>
+            <ActionIcon size="xl" color="orange" variant="subtle" component="a" href="#">
+              <IconBrandYoutube size={22} stroke={1.5} />
+            </ActionIcon>
+            <ActionIcon size="xl" color="orange" variant="subtle" component="a" href="#">
+              <IconBrandInstagram size={22} stroke={1.5} />
+            </ActionIcon>
+          </Group>
         </Group>
       </Container>
     </footer>

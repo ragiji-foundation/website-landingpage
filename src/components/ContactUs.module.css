@@ -60,5 +60,16 @@
 }
 
 .control {
-  background-color: var(--mantine-color-blue-6);
+  background-color: var(--mantine-color-orange-6);
+  transition: background-color 0.2s ease;
+}
+
+.control:hover {
+  background-color: var(--mantine-color-orange-7);
+}
+
+/* Optional: Style for the status message */
+.statusMessage {
+  margin-top: var(--mantine-spacing-sm);
+  font-size: var(--mantine-font-size-sm);
 }

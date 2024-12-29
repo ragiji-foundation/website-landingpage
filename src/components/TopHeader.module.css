@@ -2,3 +2,10 @@
   background-color: var(--mantine-color-gray-0);
   border-bottom: 1px solid var(--mantine-color-gray-2);
 }
+
+/* Hide TopHeader on mobile and tablet */
+@media (max-width: 768px) {
+  .topHeader {
+    display: none;
+  }
+}
