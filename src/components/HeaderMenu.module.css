@@ -16,16 +16,39 @@
 }
 
 .links {
-  @media (max-width: $mantine-breakpoint-sm) {
-    display: none;
+  display: none;
+
+  @media (min-width: $mantine-breakpoint-md) {
+    display: flex;
   }
 }
 
 .search {
   width: 200px;
+  display: none;
 
-  @media (max-width: $mantine-breakpoint-xs) {
-    width: 100%;
+  @media (min-width: $mantine-breakpoint-md) {
+    display: block;
+  }
+}
+
+.desktopGroup {
+  display: none;
+
+  @media (min-width: $mantine-breakpoint-md) {
+    display: flex;
+    align-items: center;
+    gap: var(--mantine-spacing-xs);
+  }
+}
+
+.mobileGroup {
+  display: flex;
+  align-items: center;
+  gap: var(--mantine-spacing-sm);
+
+  @media (min-width: $mantine-breakpoint-md) {
+    display: none;
   }
 }
 
@@ -57,5 +80,15 @@
 
   @mixin hover {
     background-color: var(--mantine-color-gray-0);
+  }
+}
+
+.mobileSearch {
+  display: block;
+  width: 100%;
+  margin: var(--mantine-spacing-md);
+
+  @media (min-width: $mantine-breakpoint-md) {
+    display: none;
   }
 }

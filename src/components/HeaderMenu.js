@@ -96,33 +96,22 @@ export function HeaderMenu() {
   return (
     <header className={classes.header}>
       <div className={classes.inner}>
-        <Group>
-          <Burger 
-            opened={opened} 
-            onClick={() => { 
-              toggle(); 
-              open(); 
-            }} 
-            size="sm" 
-            hiddenFrom="md"
+        <Link href="/">
+          <Image 
+            src="/logo1.png" 
+            alt="Ragi Ji Foundation" 
+            width={180}
+            height={80}
+            style={{ objectFit: 'contain' }}
           />
-          <Link href="/">
-            <Image 
-              src="/logo1.png" 
-              alt="Ragi Ji Foundation" 
-              width={180}
-              height={80}
-              style={{ objectFit: 'contain' }}
-            />
-          </Link>
-        </Group>
+        </Link>
 
         <Group ml={50} gap={5} className={classes.links} visibleFrom="md">
           {navItems}
         </Group>
 
-        <Group gap="xs">
-          <Menu position="bottom-end" trigger="hover" visibleFrom="xs">
+        <div className={classes.desktopGroup}>
+          <Menu position="bottom-end" trigger="hover">
             <Menu.Target>
               <Button variant="subtle" size="sm">
                 {languages.find(lang => lang.code === language)?.label}
@@ -170,10 +159,17 @@ export function HeaderMenu() {
               }
             }}
             loading={isSearching ? "true" : undefined}
-            mb="sm"
             size="sm"
           />
-        </Group>
+        </div>
+
+        <div className={classes.mobileGroup}>
+          <Burger 
+            opened={opened} 
+            onClick={toggle}
+            size="sm"
+          />
+        </div>
       </div>
 
       <Drawer
@@ -188,7 +184,7 @@ export function HeaderMenu() {
       >
         <ScrollArea h="calc(100vh - 60px)" mx="-md">
           <Autocomplete
-            className={classes.search}
+            className={classes.mobileSearch}
             placeholder={t('search.placeholder')}
             leftSection={<IconSearch size={16} stroke={1.5} />}
             data={searchResults.map(result => ({
@@ -206,12 +202,11 @@ export function HeaderMenu() {
               const result = searchResults.find(r => r.title === option);
               if (result?.url) {
                 window.location.href = result.url;
+                close();
               }
             }}
             loading={isSearching ? "true" : undefined}
             size="sm"
-            mx="md"
-            mb="md"
           />
 
           <Divider my="sm" />

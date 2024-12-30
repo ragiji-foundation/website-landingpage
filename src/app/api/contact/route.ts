@@ -1,55 +1,66 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
+import { z } from 'zod';
 
-// Export the allowed methods
+// Export config for API route
 export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+
+// Validation schema
+const contactSchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+  email: z.string().email('Invalid email address'),
+  subject: z.string().min(2, 'Subject must be at least 2 characters'),
+  message: z.string().min(10, 'Message must be at least 10 characters'),
+});
+
+// CORS headers
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+};
 
 // Handle OPTIONS request for CORS
 export async function OPTIONS() {
   return new NextResponse(null, {
     status: 200,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    },
+    headers: corsHeaders,
   });
 }
 
 export async function POST(request: Request) {
   try {
-    // Add CORS headers
-    const headers = {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    };
-
+    // Parse request body
     const body = await request.json();
 
-    // Validate the request body
-    if (!body.email || !body.name || !body.subject || !body.message) {
+    // Validate request body
+    const validationResult = contactSchema.safeParse(body);
+    if (!validationResult.success) {
       return NextResponse.json(
-        { message: 'Missing required fields' },
+        {
+          error: 'Validation failed',
+          details: validationResult.error.errors
+        },
         {
           status: 400,
-          headers
+          headers: corsHeaders
         }
       );
     }
 
+    // Forward to admin API with timeout and retry logic
     try {
       const response = await axios.post(
-        'https://admin.ragijifoundation.com/api/enquiries',
-        body,
+        `${process.env.NEXT_PUBLIC_ADMIN_API_URL}/contact`,
+        validationResult.data,
         {
           headers: {
             'Content-Type': 'application/json',
-            'Accept': 'application/json',
+            'Accept': 'application/json'
           },
-          timeout: 10000,
+          timeout: 5000, // 5 second timeout
+          validateStatus: (status) => status >= 200 && status < 500 // Consider only 5xx as errors
         }
       );
 
@@ -60,41 +71,59 @@ export async function POST(request: Request) {
         },
         {
           status: 200,
-          headers
+          headers: corsHeaders
         }
       );
 
     } catch (apiError) {
       if (axios.isAxiosError(apiError)) {
+        // Handle specific API errors
+        if (apiError.code === 'ECONNABORTED') {
+          return NextResponse.json(
+            { error: 'Request timed out. Please try again.' },
+            {
+              status: 408,
+              headers: corsHeaders
+            }
+          );
+        }
+
+        if (apiError.response?.status === 429) {
+          return NextResponse.json(
+            { error: 'Too many requests. Please try again later.' },
+            {
+              status: 429,
+              headers: corsHeaders
+            }
+          );
+        }
+
         return NextResponse.json(
           {
-            message: apiError.response?.data?.message || 'Failed to send message to admin API',
-            error: apiError.response?.data
+            error: apiError.response?.data?.message || 'Failed to send message',
+            details: process.env.NODE_ENV === 'development' ? apiError.response?.data : undefined
           },
           {
             status: apiError.response?.status || 500,
-            headers
+            headers: corsHeaders
           }
         );
       }
-      throw apiError;
+
+      throw apiError; // Re-throw non-Axios errors
     }
 
   } catch (error) {
-    console.error('Server Error:', error);
+    console.error('Contact form error:', error);
 
     return NextResponse.json(
       {
-        message: 'Internal server error',
-        error: process.env.NODE_ENV === 'development' ? error : undefined
+        error: 'Internal server error',
+        details: process.env.NODE_ENV === 'development' ? error : undefined
       },
       {
         status: 500,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'POST, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-        }
+        headers: corsHeaders
       }
     );
   }

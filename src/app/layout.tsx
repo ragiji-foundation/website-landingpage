@@ -6,6 +6,7 @@ import { FooterLinks } from "@/components/FooterLinks";
 import { SearchProvider } from '@/context/SearchContext';
 import { LanguageProvider } from '@/context/LanguageContext';
 import { TopHeader } from '@/components/TopHeader';
+import { Notifications } from '@mantine/notifications';
 
 export const metadata = {
   title: 'RAGI JI FOUNDATION',
@@ -26,6 +27,7 @@ export default function RootLayout({
         <LanguageProvider>
           <SearchProvider>
             <MantineProvider>
+            <Notifications />
               <main>
               <TopHeader />
                 <HeaderMenu />
