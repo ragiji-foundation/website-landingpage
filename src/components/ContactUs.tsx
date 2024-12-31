@@ -36,7 +36,7 @@ export function ContactUs() {
     setSubmitStatus({ type: null, message: '' });
 
     try {
-      const response = await axios.post('/api/contact', formData, {
+      const response = await axios.post('https://admin.ragijifoundation.com/api/contact', formData, {
         headers: {
           'Content-Type': 'application/json',
         },
