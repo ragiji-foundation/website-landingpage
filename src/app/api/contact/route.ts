@@ -1,9 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
-// Remove edge runtime config
-export const dynamic = 'force-dynamic';
-
 // Validation schema
 const contactSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -19,14 +16,37 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 };
 
-export async function OPTIONS() {
+// Handle preflight requests
+export async function OPTIONS(request: Request) {
   return new NextResponse(null, {
     status: 200,
-    headers: corsHeaders,
+    headers: {
+      ...corsHeaders,
+      'Access-Control-Max-Age': '86400',
+    },
   });
 }
 
+// Handle POST requests
 export async function POST(request: Request) {
+  // Handle preflight
+  if (request.method === 'OPTIONS') {
+    return new NextResponse(null, {
+      status: 200,
+      headers: corsHeaders,
+    });
+  }
+
+  if (request.method !== 'POST') {
+    return new NextResponse(JSON.stringify({ error: 'Method not allowed' }), {
+      status: 405,
+      headers: {
+        'Content-Type': 'application/json',
+        ...corsHeaders,
+      },
+    });
+  }
+
   try {
     const body = await request.json();
 
@@ -105,13 +125,11 @@ export async function POST(request: Request) {
           }
         );
       }
-
       throw error;
     }
 
   } catch (error) {
     console.error('Contact form error:', error);
-
     return NextResponse.json(
       {
         error: 'Internal server error',
