@@ -11,8 +11,8 @@ const contactSchema = z.object({
 
 // CORS headers
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Origin': 'https://www.ragijifoundation.com',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 };
 
@@ -29,8 +29,11 @@ export async function OPTIONS() {
 
 // Handle POST requests
 export async function POST(request: Request) {
-  console.log('Request method:', request.method);
-  console.log('Request headers:', Object.fromEntries(request.headers));
+  console.log('Incoming request:', {
+    method: request.method,
+    url: request.url,
+    headers: Object.fromEntries(request.headers)
+  });
 
   // Add environment variable checking
   if (!process.env.NEXT_PUBLIC_ADMIN_API_URL) {
@@ -49,14 +52,19 @@ export async function POST(request: Request) {
     });
   }
 
+  // Ensure it's a POST request
   if (request.method !== 'POST') {
-    return new NextResponse(JSON.stringify({ error: 'Method not allowed' }), {
-      status: 405,
-      headers: {
-        'Content-Type': 'application/json',
-        ...corsHeaders,
-      },
-    });
+    console.error(`Method ${request.method} not allowed`);
+    return NextResponse.json(
+      { error: 'Method not allowed' },
+      {
+        status: 405,
+        headers: {
+          ...corsHeaders,
+          'Allow': 'POST, OPTIONS'
+        }
+      }
+    );
   }
 
   try {
