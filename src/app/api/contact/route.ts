@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
-// Export config for API route
-export const runtime = 'edge';
+// Remove edge runtime config
 export const dynamic = 'force-dynamic';
 
 // Validation schema
@@ -29,10 +28,8 @@ export async function OPTIONS() {
 
 export async function POST(request: Request) {
   try {
-    // Parse request body
     const body = await request.json();
 
-    // Validate request body
     const validationResult = contactSchema.safeParse(body);
     if (!validationResult.success) {
       return NextResponse.json(
@@ -47,10 +44,9 @@ export async function POST(request: Request) {
       );
     }
 
-    // Forward to admin API
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/contact`, {
         method: 'POST',
