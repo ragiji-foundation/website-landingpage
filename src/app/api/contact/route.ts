@@ -3,24 +3,35 @@ import { NextResponse } from 'next/server';
 export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': 'https://www.ragijifoundation.com',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-};
+function getCorsHeaders(origin: string) {
+  const allowedOrigins = [
+    'https://www.ragijifoundation.com',
+    'http://localhost:3000',
+    'http://localhost:3001'
+  ];
 
-export async function OPTIONS() {
+  return {
+    'Access-Control-Allow-Origin': allowedOrigins.includes(origin) ? origin : allowedOrigins[0],
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Credentials': 'true',
+  };
+}
+
+export async function OPTIONS(request: Request) {
+  const origin = request.headers.get('origin') || '';
   return new NextResponse(null, {
     status: 200,
-    headers: corsHeaders,
+    headers: getCorsHeaders(origin),
   });
 }
 
 export async function POST(request: Request) {
   try {
-    // Log the request details
+    const origin = request.headers.get('origin') || '';
     console.log('POST handler executing', {
       method: request.method,
+      origin: origin,
       headers: Object.fromEntries(request.headers)
     });
 
@@ -29,21 +40,35 @@ export async function POST(request: Request) {
       throw new Error('Missing NEXT_PUBLIC_ADMIN_API_URL environment variable');
     }
 
-    // Parse the request body
+    // Parse and validate the request body
     const body = await request.json();
+    console.log('Received form data:', body);
 
-    // Your existing validation and processing code...
+    // Validate required fields
+    if (!body.email || !body.name || !body.subject || !body.message) {
+      return NextResponse.json(
+        { error: 'Missing required fields' },
+        {
+          status: 400,
+          headers: getCorsHeaders(origin)
+        }
+      );
+    }
+
+    // Process the form data here...
+    // Add your email sending logic or other processing
 
     return NextResponse.json(
-      { message: 'Success' },
+      { message: 'Message sent successfully!' },
       {
         status: 200,
-        headers: corsHeaders
+        headers: getCorsHeaders(origin)
       }
     );
 
   } catch (error) {
     console.error('API Error:', error);
+    const origin = request.headers.get('origin') || '';
 
     return NextResponse.json(
       {
@@ -52,7 +77,7 @@ export async function POST(request: Request) {
       },
       {
         status: 500,
-        headers: corsHeaders
+        headers: getCorsHeaders(origin)
       }
     );
   }
