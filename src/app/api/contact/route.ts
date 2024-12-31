@@ -29,6 +29,18 @@ export async function OPTIONS() {
 
 // Handle POST requests
 export async function POST(request: Request) {
+  console.log('Request method:', request.method);
+  console.log('Request headers:', Object.fromEntries(request.headers));
+
+  // Add environment variable checking
+  if (!process.env.NEXT_PUBLIC_ADMIN_API_URL) {
+    console.error('Missing NEXT_PUBLIC_ADMIN_API_URL environment variable');
+    return NextResponse.json(
+      { error: 'Server configuration error' },
+      { status: 500, headers: corsHeaders }
+    );
+  }
+
   // Handle preflight
   if (request.method === 'OPTIONS') {
     return new NextResponse(null, {
