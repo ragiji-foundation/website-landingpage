@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import axios from 'axios';
 import { z } from 'zod';
 
 // Export config for API route
@@ -21,7 +20,6 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 };
 
-// Handle OPTIONS request for CORS
 export async function OPTIONS() {
   return new NextResponse(null, {
     status: 200,
@@ -49,46 +47,25 @@ export async function POST(request: Request) {
       );
     }
 
-    // Forward to admin API with timeout and retry logic
+    // Forward to admin API
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_ADMIN_API_URL}/contact`,
-        validationResult.data,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
-          timeout: 5000, // 5 second timeout
-          validateStatus: (status) => status >= 200 && status < 500 // Consider only 5xx as errors
-        }
-      );
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
 
-      return NextResponse.json(
-        {
-          message: 'Message sent successfully',
-          data: response.data
+      const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/contact`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
-        {
-          status: 200,
-          headers: corsHeaders
-        }
-      );
+        body: JSON.stringify(validationResult.data),
+        signal: controller.signal
+      });
 
-    } catch (apiError) {
-      if (axios.isAxiosError(apiError)) {
-        // Handle specific API errors
-        if (apiError.code === 'ECONNABORTED') {
-          return NextResponse.json(
-            { error: 'Request timed out. Please try again.' },
-            {
-              status: 408,
-              headers: corsHeaders
-            }
-          );
-        }
+      clearTimeout(timeoutId);
 
-        if (apiError.response?.status === 429) {
+      if (!response.ok) {
+        if (response.status === 429) {
           return NextResponse.json(
             { error: 'Too many requests. Please try again later.' },
             {
@@ -98,19 +75,42 @@ export async function POST(request: Request) {
           );
         }
 
+        const errorData = await response.json().catch(() => ({}));
         return NextResponse.json(
           {
-            error: apiError.response?.data?.message || 'Failed to send message',
-            details: process.env.NODE_ENV === 'development' ? apiError.response?.data : undefined
+            error: errorData.message || 'Failed to send message',
+            details: process.env.NODE_ENV === 'development' ? errorData : undefined
           },
           {
-            status: apiError.response?.status || 500,
+            status: response.status,
             headers: corsHeaders
           }
         );
       }
 
-      throw apiError; // Re-throw non-Axios errors
+      const data = await response.json();
+      return NextResponse.json(
+        {
+          message: 'Message sent successfully',
+          data
+        },
+        {
+          status: 200,
+          headers: corsHeaders
+        }
+      );
+    } catch (error: unknown) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        return NextResponse.json(
+          { error: 'Request timed out. Please try again.' },
+          {
+            status: 408,
+            headers: corsHeaders
+          }
+        );
+      }
+
+      throw error;
     }
 
   } catch (error) {
@@ -119,7 +119,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         error: 'Internal server error',
-        details: process.env.NODE_ENV === 'development' ? error : undefined
+        details: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined
       },
       {
         status: 500,
