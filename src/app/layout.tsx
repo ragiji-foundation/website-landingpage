@@ -7,6 +7,8 @@ import { SearchProvider } from '@/context/SearchContext';
 import { LanguageProvider } from '@/context/LanguageContext';
 import { TopHeader } from '@/components/TopHeader';
 import { Notifications } from '@mantine/notifications';
+import { CookieProvider } from '@/context/CookieContext';
+import { CookieBanner } from '@/components/CookieBanner';
 
 export const metadata = {
   title: 'RAGI JI FOUNDATION',
@@ -24,19 +26,20 @@ export default function RootLayout({
         <ColorSchemeScript />
       </head>
       <body>
-        <LanguageProvider>
-          <SearchProvider>
-            <MantineProvider>
-            <Notifications />
-              <main>
-              <TopHeader />
+        <CookieProvider>
+          <LanguageProvider>
+            <SearchProvider>
+              <MantineProvider>
+                <Notifications />
+                <TopHeader />
                 <HeaderMenu />
                 {children}
                 <FooterLinks />
-              </main>
-            </MantineProvider>
-          </SearchProvider>
-        </LanguageProvider>
+                <CookieBanner />
+              </MantineProvider>
+            </SearchProvider>
+          </LanguageProvider>
+        </CookieProvider>
       </body>
     </html>
   );

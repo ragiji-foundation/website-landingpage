@@ -1,0 +1,29 @@
+.container {
+  padding: var(--mantine-spacing-xl) var(--mantine-spacing-md);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.title {
+  margin-bottom: var(--mantine-spacing-xl);
+  font-weight: 900;
+  font-size: rem(34px);
+  font-family: var(--mantine-font-family);
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    font-size: rem(28px);
+  }
+}
+
+.section {
+  margin-bottom: var(--mantine-spacing-xl);
+}
+
+.section:last-child {
+  margin-bottom: 0;
+}
+
+.list {
+  padding-left: var(--mantine-spacing-md);
+  line-height: 1.6;
+}

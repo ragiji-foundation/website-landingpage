@@ -1,0 +1,33 @@
+.banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  background-color: var(--mantine-color-body);
+  border-top: 1px solid var(--mantine-color-gray-3);
+}
+
+.content {
+  padding: var(--mantine-spacing-md);
+  max-width: var(--mantine-breakpoint-lg);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mantine-spacing-md);
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+.link {
+  color: var(--mantine-color-blue-6);
+  text-decoration: underline;
+
+  &:hover {
+    text-decoration: none;
+  }
+}
