@@ -9,6 +9,7 @@ import { TopHeader } from '@/components/TopHeader';
 import { Notifications } from '@mantine/notifications';
 import { CookieProvider } from '@/context/CookieContext';
 import { CookieBanner } from '@/components/CookieBanner';
+import { GoogleAnalytics } from '@/components/GoogleAnalytics';
 
 export const metadata = {
   title: 'RAGI JI FOUNDATION',
@@ -30,6 +31,7 @@ export default function RootLayout({
           <LanguageProvider>
             <SearchProvider>
               <MantineProvider>
+                <GoogleAnalytics />
                 <Notifications />
                 <TopHeader />
                 <HeaderMenu />
