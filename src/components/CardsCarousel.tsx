@@ -1,25 +1,32 @@
 "use client";
 import '@mantine/carousel/styles.css';
 import { Carousel } from '@mantine/carousel';
-import { Button, Paper, Title, Center, Stack } from '@mantine/core';
+import { Button, Paper, Title, Center, Stack, Loader, Text } from '@mantine/core';
 import { useEffect, useState } from 'react';
 
 import classes from './CardsCarousel.module.css';
 
 interface CardProps {
-  image: string;
+  imageUrl: string;
   title: string;
-  href: string;
+  link: string;
 }
 
-function Card({ image, title, href }: CardProps) {
+interface CarouselItem {
+  id: number;
+  title: string;
+  imageUrl: string;
+  link: string;
+}
+
+function Card({ imageUrl, title, link }: Omit<CarouselItem, 'id'>) {
   return (
     <Paper
       shadow="md"
       p="xl"
-      radius="md"
+      radius="vs"
       style={{
-        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.7)), url(${image})`,
+        backgroundImage: `linear-gradient(169deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.8)), url(${imageUrl})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         height: '90vh',
@@ -29,69 +36,103 @@ function Card({ image, title, href }: CardProps) {
       }}
       className={classes.card}
       component="a"
-      href={href}
+      href={link}
     >
       <Center>
-        <Stack align="center" gap="md">
-          <Title order={2} className={classes.title} ta="center">
-            {title}
-          </Title>
-          <Button
-            variant="gradient"
-            gradient={{ from: 'blue', to: 'cyan' }}
-            size="lg"
-            className={classes.button}
-          >
-            Read More
-          </Button>
-        </Stack>
+        <div style={{ marginTop: '40vh' }}>
+          <Stack align="center" gap="xl">
+            <Title order={2} className={classes.title} ta="center">
+              {title}
+            </Title>
+          </Stack>
+        </div>
       </Center>
     </Paper>
   );
 }
 
-const data = [
-  {
-    image:
-      'https://images.unsplash.com/photo-1508193638397-1c4234db14d8?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80',
-    title: 'Best forests to visit in North America',
-    href: '#',
-  },
-  {
-    image:
-      'https://images.unsplash.com/photo-1559494007-9f5847c49d94?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80',
-    title: 'Hawaii beaches review: better than you think',
-    href: '#',
-  },
-  {
-    image:
-      'https://images.unsplash.com/photo-1608481337062-4093bf3ed404?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80',
-    title: 'Mountains at night: 12 best locations to enjoy the view',
-    href: '#',
-  },
-  {
-    image:
-      'https://images.unsplash.com/photo-1507272931001-fc06c17e4f43?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80',
-    title: 'Aurora in Norway: when to visit for best experience',
-    href: '#',
-  },
-];
-
 export function CardsCarousel() {
   const [active, setActive] = useState(0);
+  const [data, setData] = useState<CarouselItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Auto-slide effect
   useEffect(() => {
-    const interval = setInterval(() => {
-      setActive((current) => (current + 1) % data.length);
-    }, 5000); // Change slide every 5 seconds
+    const fetchCarouselItems = async () => {
+      try {
+        setError(null);
+        const response = await fetch('/api/carousel', {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+          },
+        });
 
-    return () => clearInterval(interval);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const items = await response.json();
+        if (!Array.isArray(items)) {
+          throw new Error('Invalid data format received');
+        }
+
+        setData(items);
+      } catch (error) {
+        console.error('Error fetching carousel items:', error);
+        setError(error instanceof Error ? error.message : 'Failed to load carousel items');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCarouselItems();
   }, []);
 
+  useEffect(() => {
+    if (data.length === 0) return;
+
+    const interval = setInterval(() => {
+      setActive((current) => (current + 1) % data.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [data.length]);
+
+  if (loading) {
+    return (
+      <Center style={{ height: '90vh' }}>
+        <Loader size="xl" />
+      </Center>
+    );
+  }
+
+  if (error) {
+    return (
+      <Center style={{ height: '90vh' }}>
+        <Stack align="center" gap="md">
+          <Text color="red" size="xl" fw={700}>Error</Text>
+          <Text>{error}</Text>
+        </Stack>
+      </Center>
+    );
+  }
+
+  if (data.length === 0) {
+    return (
+      <Center style={{ height: '90vh' }}>
+        <Title order={2}>No gallery items found</Title>
+      </Center>
+    );
+  }
+
   const slides = data.map((item) => (
-    <Carousel.Slide key={item.title}>
-      <Card {...item} />
+    <Carousel.Slide key={item.id}>
+      <Card
+        imageUrl={item.imageUrl}
+        title={item.title}
+        link={item.link}
+      />
     </Carousel.Slide>
   ));
 
@@ -111,12 +152,34 @@ export function CardsCarousel() {
         root: {
           height: '90vh',
         },
+        controls: {
+          transition: 'opacity 0.3s ease',
+          opacity: 0.5,
+          '&:hover': {
+            opacity: 1,
+          },
+        },
+        control: {
+          background: 'rgba(255, 255, 255, 0.1)',
+          backdropFilter: 'blur(10px)',
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          color: 'white',
+          '&:hover': {
+            background: 'rgba(255, 255, 255, 0.2)',
+          },
+        },
+        indicators: {
+          bottom: 40,
+          gap: '0.5rem',
+        },
         indicator: {
           width: 12,
           height: 4,
-          transition: 'width 550ms ease',
-          '&[dataActive="true"]': {
+          transition: 'width 250ms ease, background-color 250ms ease',
+          backgroundColor: 'rgba(255, 255, 255, 0.3)',
+          '&[data-active]': {
             width: 40,
+            backgroundColor: 'rgba(255, 255, 255, 0.9)',
           },
         },
       }}
