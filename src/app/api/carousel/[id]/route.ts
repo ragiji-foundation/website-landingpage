@@ -3,10 +3,11 @@ import axios from 'axios';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   context: any
 ) {
   try {
-    const { id } = await params;
+    const { id } = await context;
 
     const response = await axios.get(
       `${process.env.NEXT_PUBLIC_ADMIN_API_URL}/carousel/${id}`,
@@ -19,27 +20,34 @@ export async function GET(
 
     return NextResponse.json(response.data);
 
-  } catch (error) {
-    console.error('Carousel item fetch error:', error);
-    if (axios.isAxiosError(error)) {
-      if (error.response?.status === 404) {
+  } catch (err) {
+    console.error('Carousel item fetch error:', err);
+    if (axios.isAxiosError(err)) {
+      if (err.response?.status === 404) {
         return NextResponse.json(
           { error: 'Carousel item not found' },
           { status: 404 }
         );
       }
-      // ...existing error handling...
+      return NextResponse.json(
+        { error: err.response?.data?.message || 'Failed to fetch carousel item' },
+        { status: err.response?.status || 500 }
+      );
     }
-    // ...existing error handling...
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    context: any
 ) {
   try {
-    const { id } = await params;
+    const { id } = await context;
 
     await axios.delete(
       `${process.env.NEXT_PUBLIC_ADMIN_API_URL}/carousel/${id}`,
@@ -55,7 +63,23 @@ export async function DELETE(
       message: 'Carousel item deleted successfully'
     });
 
-  } catch (error) {
-    // ...existing error handling...
+  } catch (err) {
+    console.error('Carousel item deletion error:', err);
+    if (axios.isAxiosError(err)) {
+      if (err.response?.status === 404) {
+        return NextResponse.json(
+          { error: 'Carousel item not found' },
+          { status: 404 }
+        );
+      }
+      return NextResponse.json(
+        { error: err.response?.data?.message || 'Failed to delete carousel item' },
+        { status: err.response?.status || 500 }
+      );
+    }
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }

@@ -1,4 +1,5 @@
 import '@mantine/core/styles.css';
+import '@/styles/globals.css';
 
 import { ColorSchemeScript, MantineProvider } from '@mantine/core';
 import { HeaderMenu } from "@/components/HeaderMenu";

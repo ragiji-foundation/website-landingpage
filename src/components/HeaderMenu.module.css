@@ -16,18 +16,18 @@
 }
 
 .links {
-  display: none;
-
-  @media (min-width: $mantine-breakpoint-md) {
+  @media (min-width: var(--mantine-breakpoint-md)) {
     display: flex;
+    gap: var(--mantine-spacing-xs);
   }
 }
 
 .search {
-  width: 200px;
+  width: 250px;
   display: none;
 
-  @media (min-width: $mantine-breakpoint-md) {
+  @media (min-width: 992px) {
+    /* md breakpoint */
     display: block;
   }
 }
@@ -35,10 +35,11 @@
 .desktopGroup {
   display: none;
 
-  @media (min-width: $mantine-breakpoint-md) {
+  @media (min-width: 992px) {
+    /* md breakpoint */
     display: flex;
     align-items: center;
-    gap: var(--mantine-spacing-xs);
+    gap: var(--mantine-spacing-md);
   }
 }
 
@@ -47,48 +48,50 @@
   align-items: center;
   gap: var(--mantine-spacing-sm);
 
-  @media (min-width: $mantine-breakpoint-md) {
+  @media (min-width: 992px) {
+    /* md breakpoint */
     display: none;
   }
 }
 
 .link {
-  display: block;
-  line-height: 1;
-  padding: 8px 12px;
-  border-radius: var(--mantine-radius-sm);
+  display: flex;
+  align-items: center;
   text-decoration: none;
-  color: var(--mantine-color-gray-7);
   font-size: var(--mantine-font-size-sm);
+  color: var(--mantine-color-gray-7);
+  padding: var(--mantine-spacing-xs) var(--mantine-spacing-sm);
   font-weight: 500;
+  border-radius: var(--mantine-radius-sm);
 
-  @mixin hover {
-    background-color: var(--mantine-color-gray-0);
+  &:hover {
+    background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6));
   }
 }
 
 .dropdownLink {
-  display: block;
-  line-height: 1;
-  padding: 8px 12px;
-  border-radius: var(--mantine-radius-sm);
   text-decoration: none;
-  color: var(--mantine-color-gray-7);
   font-size: var(--mantine-font-size-sm);
+  color: var(--mantine-color-gray-7);
+  padding: var(--mantine-spacing-xs) var(--mantine-spacing-sm);
   font-weight: 500;
+  display: block;
   width: 100%;
 
-  @mixin hover {
-    background-color: var(--mantine-color-gray-0);
+  &:hover {
+    background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6));
   }
 }
 
 .mobileSearch {
   display: block;
-  width: 100%;
-  margin: var(--mantine-spacing-md);
+  width: calc(100% - 2rem);
+  margin: 1rem;
 
-  @media (min-width: $mantine-breakpoint-md) {
+  @media (min-width: 992px) {
+    /* md breakpoint */
     display: none;
   }
 }
+
+/* Remove the problematic drawer styles */

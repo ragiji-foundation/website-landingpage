@@ -81,7 +81,17 @@ export async function POST(request: Request) {
       { status: 201 }
     );
 
-  } catch (error) {
-    // ...existing error handling...
+  } catch (err) {
+    console.error('Carousel creation error:', err);
+    if (axios.isAxiosError(err)) {
+      return NextResponse.json(
+        { error: err.response?.data?.message || 'Failed to create carousel item' },
+        { status: err.response?.status || 500 }
+      );
+    }
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }

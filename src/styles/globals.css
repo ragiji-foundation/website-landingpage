@@ -1,0 +1,13 @@
+.mantine-Drawer-content {
+  min-width: 280px !important;
+  width: 30vw !important;
+}
+
+.mantine-Drawer-header {
+  background-color: var(--mantine-color-body);
+  border-bottom: 1px solid var(--mantine-color-gray-2);
+}
+
+.mantine-Drawer-overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+}

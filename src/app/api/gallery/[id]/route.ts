@@ -3,10 +3,11 @@ import axios from 'axios';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    context: any
 ) {
   try {
-    const { id } = await params;
+    const { id } = await context;
 
     const response = await axios.get(
       `${process.env.NEXT_PUBLIC_ADMIN_API_URL}/gallery/${id}`,
@@ -42,10 +43,11 @@ export async function GET(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    context: any
 ) {
   try {
-    const { id } = await params;
+    const { id } = await context;
 
     await axios.delete(
       `${process.env.NEXT_PUBLIC_ADMIN_API_URL}/gallery/${id}`,

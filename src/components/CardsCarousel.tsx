@@ -1,16 +1,10 @@
 "use client";
 import '@mantine/carousel/styles.css';
 import { Carousel } from '@mantine/carousel';
-import { Button, Paper, Title, Center, Stack, Loader, Text } from '@mantine/core';
+import { Paper, Title, Center, Stack, Loader, Text } from '@mantine/core';
 import { useEffect, useState } from 'react';
 
 import classes from './CardsCarousel.module.css';
-
-interface CardProps {
-  imageUrl: string;
-  title: string;
-  link: string;
-}
 
 interface CarouselItem {
   id: number;

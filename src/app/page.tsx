@@ -3,7 +3,7 @@ import React from 'react';
 import { CardsCarousel } from '@/components/CardsCarousel';
 import { Foundation } from '@/components/Foundation';
 
-import { ArticlesCardsGrid } from '@/components/ArticlesCardsGrid';
+
 import { SuccessStoriesContainer } from '@/components/SuccessStories';
 
 import Gallery from '@/components/Gallery';
@@ -21,7 +21,6 @@ function App() {
         <Foundation />
         <Initiatives />
         <Gallery />
-        <ArticlesCardsGrid />
         <Testimonials />
         <SuccessStoriesContainer />
       </div>

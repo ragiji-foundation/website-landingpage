@@ -176,7 +176,7 @@ export function HeaderMenu() {
         opened={opened}
         onClose={close}
         position="left"
-        size="100%"
+        size="30vw"
         padding="md"
         title="Navigation"
         hiddenFrom="md"
