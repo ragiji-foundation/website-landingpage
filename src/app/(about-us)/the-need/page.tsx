@@ -1,17 +1,61 @@
-import { HeroContentLeft } from '@/components/HeroContentLeft'
 import React from 'react'
+import { Banner } from '@/components/Banner'
+import { Box } from '@mantine/core'
+import FeaturesSection from '@/components/landing/features-section'
 
-
+const featureData = {
+  heading: "Experience Innovation",
+  content: [
+    {
+      title: "Get your superpower",
+      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
+      mediaItem: {
+        type: "video" as const,
+        url: "https://www.youtube.com/embed/your-video-id",
+        thumbnail: "/video-thumbnail.jpg"
+      }
+    },
+    {
+      title: "Superfast 5G",
+      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
+      mediaItem: {
+        type: "image" as const,
+        url: "https://placehold.co/600x400/000000/FFF"
+      }
+    },
+    {
+      title: "New year, new design",
+      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
+      mediaItem: {
+        type: "image" as const,
+        url: "https://placehold.co/600x400/000000/FFF"
+      }
+    }
+  ],
+  ctaButton: {
+    text: "Get Started",
+    url: "/signup"
+  }
+};
 
 export default function TheNeedPage() {
   return (
-    <HeroContentLeft
-      title="The Need"
-      description="We provide the best solutions for your business needs. Explore our services and get started today."
-
-      backgroundImage="https://example.com/path/to/your/image.jpg"
-      defaultBackgroundImage="https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80"
-    />
-
+    <main>
+      <Banner
+        type="about"
+        title="The Need"
+        description="Understanding the challenges and opportunities in rural education and development"
+        backgroundImage="/banners/the-need-banner.jpg"
+        breadcrumbs={[
+          { label: 'Home', link: '/' },
+          { label: 'About', link: '/about' },
+          { label: 'The Need' }
+        ]}
+        tags={['Education', 'Development', 'Rural', 'Impact']}
+      />
+      <Box bg="var(--mantine-color-gray-0)" py="xl">
+        <FeaturesSection {...featureData} />
+      </Box>
+    </main>
   )
 }

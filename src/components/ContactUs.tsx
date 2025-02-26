@@ -7,6 +7,7 @@ import {
   Textarea,
   TextInput,
   Title,
+  Paper
 } from '@mantine/core';
 import { ContactIconsList } from './ContactIcons';
 import classes from './ContactUs.module.css';
@@ -86,7 +87,7 @@ export function ContactUs() {
           />
         </div>
 
-        <div className={classes.form}>
+        <Paper shadow="md" radius="lg" p="xl" className={classes.form}>
           <form onSubmit={handleSubmit}>
             <TextInput
               label="Email"
@@ -149,7 +150,7 @@ export function ContactUs() {
               </Button>
             </Group>
           </form>
-        </div>
+        </Paper>
       </SimpleGrid>
     </div>
   );

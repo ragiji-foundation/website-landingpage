@@ -1,0 +1,45 @@
+.initiativeCard {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.initiativeCard:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--mantine-shadow-lg);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.initiativeCard {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.initiativeCard:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.initiativeCard:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.initiativeCard:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.initiativeCard:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+.initiativeCard:nth-child(5) {
+  animation-delay: 0.5s;
+}

@@ -1,16 +1,27 @@
+'use client';
 import React from 'react'
-import { HeroContentLeft } from '../../../components/HeroContentLeft'
-
+import { Banner } from '@/components/Banner'
+import OurInitiatives from '@/components/landing/our-initiatives'
+import { Box } from '@mantine/core'
 
 export default function OurInitiativesPage() {
   return (
-    <HeroContentLeft
-      title="Our Initiatives"
-      description="We provide the best solutions for your business needs. Explore our services and get started today."
-
-      backgroundImage="https://example.com/path/to/your/image.jpg"
-      defaultBackgroundImage="https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80"
-    />
-
+    <main>
+      <Banner
+        type="initiatives"
+        title="Our Initiatives"
+        description="Making a difference through sustainable development and community empowerment programs"
+        backgroundImage="/banners/initiatives-banner.jpg"
+        breadcrumbs={[
+          { label: 'Home', link: '/' },
+          { label: 'Our Initiatives' }
+        ]}
+        tags={['Education', 'Healthcare', 'Empowerment', 'Development']}
+      />
+      <Box py="xl">
+        <OurInitiatives />
+      </Box>
+    </main>
   )
 }
+

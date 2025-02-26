@@ -1,0 +1,74 @@
+.scrollContainer {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 1rem 0;
+}
+
+.scrollContainer::-webkit-scrollbar {
+  display: none;
+}
+
+.card {
+  min-width: 300px;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  scroll-snap-align: start;
+}
+
+@media (min-width: 768px) {
+  .card {
+    min-width: 400px;
+  }
+}
+
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+.imageContainer {
+  position: relative;
+  overflow: hidden;
+}
+
+.image {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.card:hover .image {
+  transform: scale(1.05);
+}
+
+.card:hover .overlay {
+  opacity: 1;
+}
+
+.scrollButton {
+  transition: opacity 0.3s ease;
+}
+
+.scrollButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

@@ -1,0 +1,11 @@
+.careerCard {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.careerCard:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--mantine-shadow-md);
+}
