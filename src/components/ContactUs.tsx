@@ -54,8 +54,8 @@ export function ContactUs() {
   };
 
   return (
-    <div className={classes.wrapper}>
-      <SimpleGrid cols={{ base: 1, sm: 2 }} spacing={50}>
+    <div className={classes.wrapper} style={{ padding: 0 }}>  {/* Remove default padding for modal */}
+      <SimpleGrid cols={{ base: 1 }} spacing={50}>  {/* Change to single column for modal */}
         <div>
           <Title className={classes.title}>Contact us</Title>
           <Text className={classes.description} mt="sm" mb={30}>
