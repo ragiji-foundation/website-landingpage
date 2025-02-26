@@ -41,6 +41,7 @@ const links = [
     label: 'MEDIA',
     links: [
       { link: '/news-coverage', label: 'NEWS COVERAGE' },
+      { label: 'Gallery', link: '/gallery' },
       { link: '/blog', label: 'BLOGS' },
       { link: '/electronic-media', label: 'ELECTRONIC MEDIA' },
     ],
