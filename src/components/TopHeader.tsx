@@ -2,7 +2,7 @@
 import { Container, Group, Button, Text, ActionIcon, Modal } from '@mantine/core';
 import { IconMail, IconPhone } from '@tabler/icons-react';
 import { useState } from 'react';
-import { ContactUs } from './ContactUs';
+import { JoinUsModal } from './JoinUsModal';
 import classes from './TopHeader.module.css';
 
 export function TopHeader() {
@@ -51,11 +51,14 @@ export function TopHeader() {
       <Modal
         opened={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title="Join Our Team"
-        size="lg"
+        size="md"
         centered
+        overlayProps={{
+          blur: 3,
+          opacity: 0.55,
+        }}
       >
-        <ContactUs />
+        <JoinUsModal onClose={() => setIsModalOpen(false)} />
       </Modal>
     </>
   );
