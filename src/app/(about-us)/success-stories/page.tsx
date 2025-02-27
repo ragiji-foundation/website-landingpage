@@ -162,7 +162,7 @@ export default function SuccessStoriesPage() {
   return (
     <main>
       <Banner
-        type="success-stories"
+        type="successstories"
         title="Success Stories"
         description="Transforming lives through education, empowerment, and opportunity"
         backgroundImage="/banners/success-stories-banner.jpg"
