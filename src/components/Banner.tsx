@@ -7,7 +7,7 @@ interface BreadcrumbItem {
 }
 
 interface BannerProps {
-  type: 'blog' | 'about' | 'initiatives' | 'success-stories' | 'home';
+  type: 'blog' | 'about' | 'initiatives' | 'successstories' | 'home'| 'media' | 'electronicmedia' | 'gallery' | 'newscoverage' | 'ourstory'| 'need' | 'centers' | 'contactus' | 'careers' | 'awards';
   title: string;
   description?: string;
   buttonText?: string;
@@ -26,8 +26,18 @@ const defaultBackgrounds = {
   blog: '/banners/blog-banner.jpg',
   about: '/banners/about-banner.jpg',
   initiatives: '/banners/initiatives-banner.jpg',
-  'success-stories': '/banners/success-stories-banner.jpg',
+  successstories: '/banners/success-stories-banner.jpg',
   home: '/banners/home-banner.jpg',
+  media: '/banners/media-banner.jpg',
+  electronicmedia: '/banners/electronic-media-banner.jpg',
+  gallery: '/banners/gallery-banner.jpg',
+  newscoverage: '/banners/news-coverage-banner.jpg',
+  ourstory: '/banners/our-story-banner.jpg',
+  need: '/banners/the-need-banner.jpg',
+  centers: '/banners/our-centers-banner.jpg',
+  contactus: '/banners/contact-us-banner.jpg',
+  careers: '/banners/careers-banner.jpg',
+  awards: '/banners/awards-banner.jpg',
 };
 
 export function Banner({

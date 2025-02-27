@@ -1,11 +1,75 @@
 .topHeader {
-  background-color: var(--mantine-color-gray-0);
+  background-color: rgba(255, 255, 255, 0.95);
   border-bottom: 1px solid var(--mantine-color-gray-2);
+  padding: 8px 0;
 }
 
-/* Hide TopHeader on mobile and tablet */
+.wrapper {
+  min-height: 40px;
+}
+
+/* ...existing styles... */
+
+.rightSection {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+/* Mobile styles */
 @media (max-width: 768px) {
-  .topHeader {
+  .wrapper {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+  }
+
+  .slogan {
     display: none;
+  }
+
+  .rightSection {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .contactText {
+    font-size: 12px;
+  }
+
+  .joinButton {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+}
+
+/* Desktop styles */
+@media (min-width: 769px) {
+  .slogan {
+    display: block;
+  }
+
+  .orgName:after {
+    content: " FOUNDATION";
+  }
+
+  .wrapper {
+    padding: 8px 0;
+  }
+
+  .rightSection {
+    gap: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .contactText {
+    display: none;
+  }
+
+  .contactItem {
+    margin-right: 0;
   }
 }

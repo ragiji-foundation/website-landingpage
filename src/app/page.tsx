@@ -169,8 +169,10 @@ const featureData: {
 function App() {
 
   return (
-    <div className="app-container">
-      <CardsCarousel />
+   
+
+<main>
+<CardsCarousel />
       <FeaturesSection {...featureData} />
 
       <Initiatives />
@@ -181,8 +183,10 @@ function App() {
       <Testimonials />
       <SuccessStoriesSection />
 
+</main>
+ 
 
-    </div>
+   
   );
 }
 

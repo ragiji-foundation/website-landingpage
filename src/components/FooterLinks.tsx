@@ -14,8 +14,7 @@ const data = [
       { label: 'Our Story', link: '/our-story' },
       { label: 'Our Initiatives', link: '/our-initiatives' },
       { label: 'Success Stories', link: '/success-stories' },
-      { label: 'Our Team', link: '/team' },
-      { label: 'Annual Reports', link: '/reports' },
+
     ],
   },
   {
@@ -26,16 +25,15 @@ const data = [
       { label: 'Rural Development', link: '/rural-development' },
       { label: 'Women Empowerment', link: '/women-empowerment' },
       { label: 'Skill Development', link: '/skill-development' },
-      { label: 'Donate Now', link: '/donate' },
+
     ],
   },
   {
     title: 'Media Center',
     links: [
       { label: 'News Coverage', link: '/news-coverage' },
-      { label: 'Press Releases', link: '/press' },
+      { label: 'Electronic Media', link: '/electronic-media' },
       { label: 'Photo Gallery', link: '/gallery' },
-      { label: 'Videos', link: '/videos' },
       { label: 'Blogs', link: '/blog' },
       { label: 'Awards', link: '/awards' },
     ],
@@ -47,7 +45,6 @@ const data = [
       { label: '+91 8827968035', link: 'tel:+918827968035' },
       { label: 'admin@ragijifoundation.com', link: 'mailto:admin@ragijifoundation.com' },
       { label: 'www.ragijifoundation.com', link: 'https://www.ragijifoundation.com' },
-      { label: 'Volunteer', link: '/volunteer' },
       { label: 'Careers', link: '/careers' },
     ],
   },
@@ -76,6 +73,7 @@ export function FooterLinks() {
 
   return (
     <footer className={classes.footer}>
+      
       <Container size="xl" className={classes.inner}>
         <div className={classes.logo}>
           <Link href="/">

@@ -74,7 +74,10 @@
 }
 
 .modalContent {
-  position: relative;
+  content-visibility: hidden;
+  position: fixed;
+  z-index: -1;
+  opacity: 0;
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
@@ -82,6 +85,13 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
+}
+
+.modalContent[data-opened="true"] {
+  content-visibility: visible;
+  position: fixed;
+  z-index: 200;
+  opacity: 1;
 }
 
 .modalInner {
@@ -227,4 +237,12 @@
 .readMore:hover {
   opacity: 1;
   transform: translateX(4px);
+}
+
+/* Hide modal content when not active */
+.mantine-Modal-root:not([data-opened="true"]) {
+  content-visibility: hidden;
+  position: absolute;
+  z-index: -1;
+  opacity: 0;
 }

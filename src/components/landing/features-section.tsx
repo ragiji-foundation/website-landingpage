@@ -190,11 +190,7 @@ function MediaContentPair({ item, onMediaClick }: { item: ContentItem, onMediaCl
   );
 }
 
-export default function FeaturesSection({
-  heading = defaultProps.heading,
-  content = defaultProps.content,
-  ctaButton = defaultProps.ctaButton
-}: FeaturesSectionProps) {
+export default function FeaturesSection({ heading, content, ctaButton }: FeaturesSectionProps) {
   const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
   const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery('(max-width: 768px)');
@@ -267,23 +263,15 @@ export default function FeaturesSection({
       <Modal
         opened={!!selectedMedia}
         onClose={handleModalClose}
-        size={isMobile ? "100%" : "90%"}
+        size="90%"
         padding={0}
         className={styles.modalContent}
+        classNames={{
+          content: styles.modalContent,
+          inner: styles.modalInner
+        }}
         centered
         withCloseButton={false}
-        styles={{
-          body: {
-            padding: 0,
-          },
-          inner: {
-            padding: '20px',
-          },
-          content: {
-            background: 'transparent',
-            boxShadow: 'none',
-          }
-        }}
       >
         <div className={styles.modalInner}>
           {loading && (

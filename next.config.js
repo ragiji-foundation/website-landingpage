@@ -2,10 +2,17 @@
 const nextConfig = {
   images: {
     domains: [
-      'via.placeholder.com',
-      'placeholderimage.com',
-      // Add other image domains you're using
+      'placehold.co',
+      'img.youtube.com',
+      'ragijifoundation.com',
+      'admin.ragijifoundation.com'
     ],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**.amazonaws.com'
+      }
+    ]
   },
   async headers() {
     return [
@@ -23,4 +30,4 @@ const nextConfig = {
   }
 }
 
-module.exports = nextConfig 
+module.exports = nextConfig

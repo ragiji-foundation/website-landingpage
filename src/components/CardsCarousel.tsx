@@ -23,7 +23,7 @@ function Card({ imageUrl, title, link }: Omit<CarouselItem, 'id'>) {
         backgroundImage: `linear-gradient(169deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.8)), url(${imageUrl})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        height: '90vh',
+        height: 'var(--carousel-height)',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
@@ -33,7 +33,7 @@ function Card({ imageUrl, title, link }: Omit<CarouselItem, 'id'>) {
       href={link}
     >
       <Center>
-        <div style={{ marginTop: '40vh' }}>
+        <div className={classes.cardContent}>
           <Stack align="center" gap="xl">
             <Title order={2} className={classes.title} ta="center">
               {title}
@@ -142,24 +142,26 @@ export function CardsCarousel() {
       initialSlide={active}
       onSlideChange={setActive}
       controlSize={44}
+      classNames={classes}
+      className={classes.carousel}
       styles={{
         root: {
-          height: '90vh',
+          height: 'var(--carousel-height)',
         },
         controls: {
           transition: 'opacity 0.3s ease',
-          opacity: 0.5,
+          opacity: 0,
           '&:hover': {
-            opacity: 1,
+            opacity: 0.1,
           },
         },
         control: {
           background: 'rgba(255, 255, 255, 0.1)',
           backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(255, 255, 255, 0.2)',
+          border: '1px solid rgba(255, 255, 255, 0)',
           color: 'white',
           '&:hover': {
-            background: 'rgba(255, 255, 255, 0.2)',
+            background: 'rgba(255, 255, 255, 0)',
           },
         },
         indicators: {
@@ -170,8 +172,8 @@ export function CardsCarousel() {
           width: 12,
           height: 4,
           transition: 'width 250ms ease, background-color 250ms ease',
-          backgroundColor: 'rgba(255, 255, 255, 0.3)',
-          '&[data-active]': {
+          backgroundColor: 'rgba(255, 255, 255, 0)',
+          '&[dataActive]': { // Changed from data-active to dataActive
             width: 40,
             backgroundColor: 'rgba(255, 255, 255, 0.9)',
           },
