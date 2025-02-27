@@ -38,18 +38,40 @@ export function JoinUsModal({ onClose }: { onClose: () => void }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-
+    setStatus({ type: null, message: '' });
+  
     try {
-      await axios.post('https://admin.ragijifoundation.com/api/join-us', formData);
-      setStatus({
-        type: 'success',
-        message: 'Thank you for your interest! We will contact you shortly.',
-      });
-      setTimeout(onClose, 2000); // Close modal after success
+      const response = await axios.post('https://admin.ragijifoundation.com/api/join-us', formData);
+  
+      if (response.status === 201) { // Check for successful response
+        setStatus({
+          type: 'success',
+          message: 'Thank you for your interest! We will contact you shortly.',
+        });
+  
+        // Clear form after success
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          role: '',
+          message: '',
+        });
+  
+        setTimeout(onClose, 2000); // Close modal after success
+      } else {
+        throw new Error('Unexpected response from server');
+      }
     } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Form submission error:", error.response?.data || error.message);
+      } else {
+        console.error("Form submission error:", error);
+      }
+  
       setStatus({
         type: 'error',
-        message: 'Failed to submit. Please try again.',
+        message: axios.isAxiosError(error) && error.response?.data?.error ? error.response.data.error : 'Failed to submit. Please try again.',
       });
     } finally {
       setIsSubmitting(false);
