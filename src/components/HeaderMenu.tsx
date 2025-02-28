@@ -1,8 +1,7 @@
 'use client';
-import React from 'react';
-import { IconChevronDown, IconSearch } from '@tabler/icons-react';
+import React, { useState } from 'react';
+import { IconChevronDown } from '@tabler/icons-react';
 import {
-  Autocomplete,
   Burger,
   Group,
   Menu,
@@ -14,13 +13,16 @@ import {
   Divider,
   ScrollArea,
   NavLink,
+  Modal,
+  ActionIcon,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import Image from 'next/image';
+import Link from 'next/link';
 import classes from './HeaderMenu.module.css';
 import { useLanguage } from '@/context/LanguageContext';
-import { useSearch } from '@/context/SearchContext';
-import Link from 'next/link';
+import SearchQuery from './SearchQuery';
+import { IconSearch } from '@tabler/icons-react';
 
 const links = [
   { link: '/', label: 'HOME' },
@@ -41,7 +43,7 @@ const links = [
     label: 'MEDIA',
     links: [
       { link: '/news-coverage', label: 'NEWS COVERAGE' },
-      {  link: '/gallery',label: 'GALLERY' },
+      { link: '/gallery', label: 'GALLERY' },
       { link: '/blog', label: 'BLOGS' },
       { link: '/electronic-media', label: 'ELECTRONIC MEDIA' },
     ],
@@ -50,15 +52,17 @@ const links = [
   { link: '/contact-us', label: 'CONTACT US' },
 ];
 
-const languages = [
+type LanguageCode = 'en' | 'hi';
+
+const languages: { code: LanguageCode; label: string }[] = [
   { code: 'en', label: 'English' },
   { code: 'hi', label: 'हिंदी' },
 ];
 
 export function HeaderMenu() {
   const [opened, { toggle, close }] = useDisclosure(false);
+  const [searchOpened, setSearchOpened] = useState(false);
   const { language, setLanguage, t } = useLanguage();
-  const { searchContent, searchResults, isSearching } = useSearch();
 
   const navItems = links.map((link, index) => {
     if (link.links) {
@@ -69,7 +73,7 @@ export function HeaderMenu() {
           </a>
         </Menu.Item>
       ));
-  
+
       return (
         <Menu key={index} trigger="hover" transitionProps={{ exitDuration: 0 }} withinPortal>
           <Menu.Target>
@@ -84,28 +88,32 @@ export function HeaderMenu() {
         </Menu>
       );
     }
-  
+
     return (
       <a key={index} href={link.link} className={classes.link}>
         {link.label}
       </a>
     );
   });
-  
-  
 
   return (
     <header className={classes.header}>
       <div className={classes.inner}>
         <Link href="/">
-          <Image 
-            src="/logo1.png" 
-            alt="Ragi Ji Foundation" 
+          <Image
+            src="/logo1.png"
+            alt="Ragi Ji Foundation"
             width={180}
             height={80}
             style={{ objectFit: 'contain' }}
           />
         </Link>
+
+        <div className={classes.searchContainer}>
+          <SearchQuery
+            placeholder={t('search.placeholder')}
+          />
+        </div>
 
         <Group ml={50} gap={5} className={classes.links} visibleFrom="md">
           {navItems}
@@ -127,7 +135,7 @@ export function HeaderMenu() {
                     setLanguage(lang.code);
                     window.location.reload();
                   }}
-                  style={{ 
+                  style={{
                     fontWeight: language === lang.code ? 'bold' : 'normal',
                     backgroundColor: language === lang.code ? '#f0f0f0' : 'transparent'
                   }}
@@ -137,40 +145,14 @@ export function HeaderMenu() {
               ))}
             </Menu.Dropdown>
           </Menu>
-
-          <Autocomplete
-            className={classes.search}
-            placeholder={t('search.placeholder')}
-            leftSection={<IconSearch size={16} stroke={1.5} />}
-            data={searchResults.map(result => ({
-              value: result.title,
-              label: result.title,
-              group: result.type,
-              url: result.url,
-            }))}
-            onChange={(value) => {
-              if (value.length > 2) {
-                searchContent(value);
-              }
-            }}
-            onOptionSubmit={(option) => {
-              const result = searchResults.find(r => r.title === option);
-              if (result?.url) {
-                window.location.href = result.url;
-              }
-            }}
-            loading={isSearching ? "true" : undefined}
-            size="sm"
-          />
         </div>
 
-        <div className={classes.mobileGroup}>
-          <Burger 
-            opened={opened} 
-            onClick={toggle}
-            size="sm"
-          />
-        </div>
+        <Burger
+          opened={opened}
+          onClick={toggle}
+          size="sm"
+          className={classes.mobileGroup}
+        />
       </div>
 
       <Drawer
@@ -184,31 +166,12 @@ export function HeaderMenu() {
         zIndex={1000}
       >
         <ScrollArea h="calc(100vh - 60px)" mx="-md">
-          <Autocomplete
-            className={classes.mobileSearch}
-            placeholder={t('search.placeholder')}
-            leftSection={<IconSearch size={16} stroke={1.5} />}
-            data={searchResults.map(result => ({
-              value: result.title,
-              label: result.title,
-              group: result.type,
-              url: result.url,
-            }))}
-            onChange={(value) => {
-              if (value.length > 2) {
-                searchContent(value);
-              }
-            }}
-            onOptionSubmit={(option) => {
-              const result = searchResults.find(r => r.title === option);
-              if (result?.url) {
-                window.location.href = result.url;
-                close();
-              }
-            }}
-            loading={isSearching ? "true" : undefined}
-            size="sm"
-          />
+          <div className={classes.mobileSearch}>
+            <SearchQuery
+              placeholder={t('search.placeholder')}
+              onClose={close}
+            />
+          </div>
 
           <Divider my="sm" />
 
