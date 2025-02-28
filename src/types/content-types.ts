@@ -27,3 +27,5 @@ export interface ContentItem {
   description: string | RichTextDocument;
   mediaItem: MediaItem;
 }
+
+export type { Initiative } from './initiative';

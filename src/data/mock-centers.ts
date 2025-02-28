@@ -1,4 +1,6 @@
-export const mockCenters = [
+import { Center } from '@/types/center';
+
+export const mockCenters: Center[] = [
   {
     id: 1,
     name: "UPAY Learning Center - Delhi",

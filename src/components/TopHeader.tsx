@@ -14,7 +14,7 @@ export function TopHeader() {
   ];
 
   return (
-    <div className={classes.topHeader}>
+    <div className={classes.header}>
       <Container size="xl" px="xs">
         <Group
           justify="space-between"
@@ -75,7 +75,10 @@ export function TopHeader() {
           opacity: 0.55,
         }}
       >
-        <JoinUsModal onClose={() => setIsModalOpen(false)} />
+        <JoinUsModal
+          opened={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+        />
       </Modal>
     </div>
   );

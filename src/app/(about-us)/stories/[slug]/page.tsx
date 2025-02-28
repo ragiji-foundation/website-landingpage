@@ -1,45 +1,104 @@
-"use client"
+'use client';
+import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
+import { Container, Title, Text, Image, Badge, Group, Stack, Skeleton } from '@mantine/core';
+import { Banner } from '@/components/Banner';
+import { RichTextContent } from '@/components/RichTextContent';
+import { useSuccessStoriesStore } from '@/store/useSuccessStoriesStore';
+import classes from './story.module.css';
 
-import { Container, Title, Text, Image, Stack, Button, Group } from '@mantine/core';
-import { useParams, useRouter } from 'next/navigation';
-import { IconArrowLeft } from '@tabler/icons-react';
+interface PageParams {
+  params: {
+    slug: string;
+  };
+}
 
 export default function StoryDetailPage() {
-  const router = useRouter();
   const params = useParams();
-  const { slug } = params;
+  const slug = params?.slug as string;
+  const { stories, loading, error, fetchStories } = useSuccessStoriesStore();
+  const [story, setStory] = useState(stories.find(s => s.id === slug));
 
-  // In a real app, fetch story details based on slug
-  // For now, we'll use mock data
-  const storyDetails = {
-    title: "Story Title",
-    content: "Full story content...",
-    image: "/path/to/image.jpg",
-  };
+  useEffect(() => {
+    if (!story) {
+      fetchStories();
+    }
+  }, [fetchStories, story]);
+
+  useEffect(() => {
+    setStory(stories.find(s => s.id === slug));
+  }, [stories, slug]);
+
+  if (loading || !story) {
+    return (
+      <main>
+        <Banner
+          type="about"
+          title="Success Story"
+          backgroundImage="/banners/success-stories-banner.jpg"
+          breadcrumbs={[
+            { label: 'Home', link: '/' },
+            { label: 'Success Stories', link: '/success-stories' },
+            { label: 'Story Details' }
+          ]}
+        />
+        <Container size="md" py="xl">
+          <Stack>
+            <Skeleton height={300} radius="md" mb="xl" />
+            <Skeleton height={40} width="70%" mb="md" />
+            <Group mb="xl">
+              <Skeleton height={24} width={120} />
+              <Skeleton height={24} width={100} />
+            </Group>
+            {[...Array(5)].map((_, i) => (
+              <Skeleton key={i} height={16} width={`${Math.random() * 30 + 70}%`} mb="sm" />
+            ))}
+          </Stack>
+        </Container>
+      </main>
+    );
+  }
 
   return (
-    <Container size="lg" py="xl">
-      <Button
-        variant="subtle"
-        leftSection={<IconArrowLeft size={16} />}
-        onClick={() => router.back()}
-        mb="xl"
-      >
-        Back to Stories
-      </Button>
+    <main>
+      <Banner
+        type="about"
+        title={story.title}
+        backgroundImage={story.imageUrl || '/banners/success-stories-banner.jpg'}
+        breadcrumbs={[
+          { label: 'Home', link: '/' },
+          { label: 'Success Stories', link: '/success-stories' },
+          { label: story.title }
+        ]}
+      />
 
-      <Stack gap="xl">
-        <Title order={1}>{storyDetails.title}</Title>
+      <Container size="md" py="xl">
+        {story.imageUrl && (
+          <Image
+            src={story.imageUrl}
+            alt={story.title}
+            radius="md"
+            className={classes.mainImage}
+          />
+        )}
 
-        <Image
-          src={storyDetails.image}
-          alt={storyDetails.title}
-          height={400}
-          radius="md"
-        />
+        <Title order={1} mt="xl" mb="md">
+          {story.title}
+        </Title>
 
-        <Text>{storyDetails.content}</Text>
-      </Stack>
-    </Container>
+        <Group mb="xl">
+          <Text fw={500}>{story.personName}</Text>
+          <Text c="dimmed">•</Text>
+          <Text c="dimmed">{story.location}</Text>
+          {story.featured && (
+            <Badge color="blue" variant="light">Featured</Badge>
+          )}
+        </Group>
+
+        <div className={classes.content}>
+          <RichTextContent content={story.content} />
+        </div>
+      </Container>
+    </main>
   );
 }

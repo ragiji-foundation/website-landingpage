@@ -1,4 +1,8 @@
+'use client';
+import { useEffect } from 'react';
 import { Button, Container, Overlay, Text, Title, Group, Badge } from '@mantine/core';
+import { useBannerStore } from '@/store/useBannerStore';
+import { BannerType } from '@/types/banner';
 import classes from './Banner.module.css';
 
 interface BreadcrumbItem {
@@ -7,8 +11,8 @@ interface BreadcrumbItem {
 }
 
 interface BannerProps {
-  type: 'blog' | 'about' | 'initiatives' | 'successstories' | 'home'| 'media' | 'electronicmedia' | 'gallery' | 'newscoverage' | 'ourstory'| 'need' | 'centers' | 'contactus' | 'careers' | 'awards';
-  title: string;
+  type: BannerType;
+  title?: string;
   description?: string;
   buttonText?: string;
   buttonLink?: string;
@@ -22,42 +26,24 @@ interface BannerProps {
   };
 }
 
-const defaultBackgrounds = {
-  blog: '/banners/blog-banner.jpg',
-  about: '/banners/about-banner.jpg',
-  initiatives: '/banners/initiatives-banner.jpg',
-  successstories: '/banners/success-stories-banner.jpg',
-  home: '/banners/home-banner.jpg',
-  media: '/banners/media-banner.jpg',
-  electronicmedia: '/banners/electronic-media-banner.jpg',
-  gallery: '/banners/gallery-banner.jpg',
-  newscoverage: '/banners/news-coverage-banner.jpg',
-  ourstory: '/banners/our-story-banner.jpg',
-  need: '/banners/the-need-banner.jpg',
-  centers: '/banners/our-centers-banner.jpg',
-  contactus: '/banners/contact-us-banner.jpg',
-  careers: '/banners/careers-banner.jpg',
-  awards: '/banners/awards-banner.jpg',
-};
+export function Banner({ type, ...props }: BannerProps) {
+  const { getBannerByType, fetchBanners, loading } = useBannerStore();
 
-export function Banner({
-  type,
-  title,
-  description,
-  buttonText,
-  buttonLink,
-  backgroundImage,
-  breadcrumbs,
-  tags,
-  meta,
-}: BannerProps) {
-  const background = backgroundImage || defaultBackgrounds[type];
+  useEffect(() => {
+    fetchBanners();
+  }, [fetchBanners]);
+
+  const bannerData = getBannerByType(type);
+
+  const title = props.title || bannerData?.title;
+  const description = props.description || bannerData?.description;
+  const backgroundImage = props.backgroundImage || bannerData?.backgroundImage;
 
   const renderBreadcrumbs = () => {
-    if (!breadcrumbs?.length) return null;
+    if (!props.breadcrumbs?.length) return null;
     return (
       <Group mb="lg" className={classes.breadcrumbs}>
-        {breadcrumbs.map((item, index) => (
+        {props.breadcrumbs.map((item, index) => (
           <div key={index} className={classes.breadcrumbItem}>
             {item.link ? (
               <a href={item.link}>{item.label}</a>
@@ -71,25 +57,25 @@ export function Banner({
   };
 
   const renderMeta = () => {
-    if (!meta) return null;
+    if (!props.meta) return null;
     return (
       <Group className={classes.meta} mb="lg">
-        {meta.date && <Text c="dimmed">{meta.date}</Text>}
-        {meta.author && (
+        {props.meta.date && <Text c="dimmed">{props.meta.date}</Text>}
+        {props.meta.author && (
           <Text c="dimmed" className={classes.author}>
-            By {meta.author}
+            By {props.meta.author}
           </Text>
         )}
-        {meta.readTime && <Badge variant="light">{meta.readTime}</Badge>}
+        {props.meta.readTime && <Badge variant="light">{props.meta.readTime}</Badge>}
       </Group>
     );
   };
 
   const renderTags = () => {
-    if (!tags?.length) return null;
+    if (!props.tags?.length) return null;
     return (
       <Group gap="xs" mb="md">
-        {tags.map((tag) => (
+        {props.tags.map((tag) => (
           <Badge key={tag} variant="light">
             {tag}
           </Badge>
@@ -101,7 +87,7 @@ export function Banner({
   return (
     <div
       className={`${classes.banner} ${classes[type]}`}
-      style={{ backgroundImage: `url(${background})` }}
+      style={{ backgroundImage: `url(${backgroundImage})` }}
     >
       <Overlay
         gradient="linear-gradient(180deg, rgba(0, 0, 0, 0.25) 0%, rgba(0, 0, 0, .65) 40%)"
@@ -118,16 +104,16 @@ export function Banner({
             {description}
           </Text>
         )}
-        {buttonText && (
+        {props.buttonText && (
           <Button
             variant="gradient"
             size="xl"
             radius="xl"
             className={classes.control}
             component="a"
-            href={buttonLink}
+            href={props.buttonLink}
           >
-            {buttonText}
+            {props.buttonText}
           </Button>
         )}
       </Container>

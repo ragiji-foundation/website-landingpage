@@ -3,11 +3,11 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-size: 2.5rem;
-  margin-bottom: 2rem;
+  margin-bottom: var(--mantine-spacing-xl);
 }
 
 .card {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 200ms ease;
   cursor: pointer;
   background-color: var(--mantine-color-white);
   border: 1px solid var(--mantine-color-gray-2);

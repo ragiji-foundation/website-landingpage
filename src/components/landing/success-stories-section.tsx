@@ -1,175 +1,89 @@
-"use client"
-
-import { useState, useRef, useEffect } from "react"
-import { Container, Title, Text, Group, ActionIcon, Card, Box } from "@mantine/core"
-import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react"
-import { useRouter } from "next/navigation"
-import styles from './success-stories-section.module.css'
-
-interface VibeImage {
-  src: string;
-  alt: string;
-  url: string;
-  title: string;
-}
+'use client';
+import { useEffect } from 'react';
+import { Container, Title, Grid, Card, Image, Text, Badge, Button, Group, Overlay } from '@mantine/core';
+import { notifications } from '@mantine/notifications';
+import { IconArrowRight } from '@tabler/icons-react';
+import { useSuccessStoriesStore } from '@/store/useSuccessStoriesStore';
+import { RichTextContent } from '@/components/RichTextContent';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { SuccessStoriesSkeleton } from '../skeletons/SuccessStoriesSkeleton';
+import classes from './success-stories-section.module.css';
 
 export default function SuccessStoriesSection() {
-  const router = useRouter()
-  const scrollContainerRef = useRef<HTMLDivElement>(null)
-  const [canScrollLeft, setCanScrollLeft] = useState(false)
-  const [canScrollRight, setCanScrollRight] = useState(true)
-
-  const images: VibeImage[] = [
-    {
-      src: "https://picsum.photos/seed/picsum/200/300",
-      alt: "Colorful portrait mural",
-      url: "/success-stories/colorful-portrait",
-      title: "Colorful Portrait"
-    },
-    {
-      src: "https://picsum.photos/seed/picsum/200/300",
-      alt: "Abstract street art",
-      url: "/success-stories/abstract-street",
-      title: "Abstract Street"
-    },
-    {
-      src: "https://picsum.photos/seed/picsum/200/300",
-      alt: "Portrait mural",
-      url: "/success-stories/portrait-mural",
-      title: "Portrait Mural"
-    },
-    {
-      src: "https://picsum.photos/seed/picsum/200/300",
-      alt: "Nature artwork",
-      url: "/vibes/nature-art",
-      title: "Nature Art"
-    },
-    {
-      src: "https://picsum.photos/seed/picsum/200/300",
-      alt: "Faces collage bombay",
-      url: "/success-stories/faces-bombay",
-      title: "Faces of Bombay"
-    },
-    {
-      src: "https://picsum.photos/seed/picsum/200/300",
-      alt: "Faces collage by Handx Opr",
-      url: "/success-stories/handx-opr",
-      title: "Handx Opr Collection"
-    },
-    {
-      src: "https://picsum.photos/seed/picsum/200/300",
-      alt: "Faces collage nwq",
-      url: "/success-stories/nwq-collection",
-      title: "NWQ Collection"
-    },
-    {
-      src: "https://picsum.photos/seed/picsum/200/300",
-      alt: "Faces collage zte",
-      url: "/success-stories/zte-series",
-      title: "ZTE Series"
-    },
-  ]
-
-  // Check scroll possibilities
-  const checkScroll = () => {
-    if (!scrollContainerRef.current) return
-
-    const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current
-    setCanScrollLeft(scrollLeft > 0)
-    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10)
-  }
+  const { stories, loading, error, fetchStories } = useSuccessStoriesStore();
+  const router = useRouter();
 
   useEffect(() => {
-    const container = scrollContainerRef.current
-    if (container) {
-      container.addEventListener('scroll', checkScroll)
-      checkScroll()
-    }
-    return () => container?.removeEventListener('scroll', checkScroll)
-  }, [])
+    fetchStories();
+  }, [fetchStories]);
 
-  const scroll = (direction: "left" | "right") => {
-    if (!scrollContainerRef.current) return
+  if (loading) return <SuccessStoriesSkeleton count={6} />;
 
-    const container = scrollContainerRef.current
-    const scrollAmount = container.clientWidth * 0.8
-    const newPosition = direction === "left"
-      ? container.scrollLeft - scrollAmount
-      : container.scrollLeft + scrollAmount
-
-    container.scrollTo({
-      left: newPosition,
-      behavior: "smooth",
-    })
-  }
-
-  const handleCardClick = (url: string) => {
-    router.push(url)
-  }
+  // Get latest 6 stories
+  const latestStories = [...stories]
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .slice(0, 6);
 
   return (
     <Container size="xl" py="xl">
-      <Group justify="space-between" align="flex-start" mb="xl">
-        <div>
-          <Title order={2} size="h1" mb="md">
-            Success Stories
-          </Title>
-            <Text c="dimmed" maw={600}>
-            Discover the inspiring success stories of our community members who have achieved remarkable milestones.
-            </Text>
-        </div>
-        <Group>
-          <ActionIcon
-            variant="light"
-            onClick={() => scroll("left")}
-            disabled={!canScrollLeft}
-            className={styles.scrollButton}
-            aria-label="Scroll left"
-          >
-            <IconChevronLeft />
-          </ActionIcon>
-          <ActionIcon
-            variant="light"
-            onClick={() => scroll("right")}
-            disabled={!canScrollRight}
-            className={styles.scrollButton}
-            aria-label="Scroll right"
-          >
-            <IconChevronRight />
-          </ActionIcon>
-        </Group>
+      <Group justify="space-between" mb="xl">
+        <Title>Success Stories</Title>
+        <Button
+          component={Link}
+          href="/success-stories"
+          variant="light"
+          rightSection={<IconArrowRight size={16} />}
+        >
+          View All Stories
+        </Button>
       </Group>
 
-      <Box
-        ref={scrollContainerRef}
-        className={styles.scrollContainer}
-      >
-        {[...images, ...images].map((image, index) => (
-          <Card
-            key={index}
-            padding="0"
-            className={styles.card}
-            onClick={() => handleCardClick(image.url)}
-          >
-            <Card.Section className={styles.imageContainer}>
-              <img
-                src={image.src || "/placeholder.svg"}
-                alt={image.alt}
-                className={styles.image}
+      <Grid>
+        {latestStories.map((story) => (
+          <Grid.Col key={story.id} span={{ base: 12, sm: 6, md: 4 }}>
+            <Card shadow="sm" padding="lg" radius="md" withBorder className={classes.card}>
+              <Card.Section className={classes.imageSection} onClick={() => router.push(`/success-stories/${story.id}`)}>
+                {story.imageUrl && (
+                  <>
+                    <Image
+                      src={story.imageUrl}
+                      height={200}
+                      alt={story.title}
+                      className={classes.image}
+                    />
+                    <Overlay className={classes.overlay} opacity={0.2} />
+                    <div className={classes.imageCaption}>
+                      <Text size="sm" c="white" fw={500}>Click to read full story</Text>
+                    </div>
+                  </>
+                )}
+              </Card.Section>
+
+              <Group justify="space-between" mt="md" mb="xs">
+                <Text fw={500} lineClamp={1}>{story.title}</Text>
+                {story.featured && (
+                  <Badge color="blue" variant="light">Featured</Badge>
+                )}
+              </Group>
+
+              <RichTextContent
+                content={story.content}
+                truncate
+                maxLength={100}
               />
-              <div className={styles.overlay}>
-                <Text size="lg" fw={500} c="white">
-                  View Details
-                </Text>
-              </div>
-            </Card.Section>
-            <Text size="lg" fw={500} p="md">
-              {image.title}
-            </Text>
-          </Card>
+
+              <Group mt="md">
+                <div>
+                  <Text fw={500}>{story.personName}</Text>
+                  <Text size="sm" c="dimmed">{story.location}</Text>
+                </div>
+              </Group>
+            </Card>
+          </Grid.Col>
         ))}
-      </Box>
+      </Grid>
     </Container>
-  )
+  );
 }
 

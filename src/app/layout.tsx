@@ -11,6 +11,7 @@ import { Notifications } from '@mantine/notifications';
 import { CookieProvider } from '@/context/CookieContext';
 import { CookieBanner } from '@/components/CookieBanner';
 import { GoogleAnalytics } from '@/components/GoogleAnalytics';
+import { JoinUs } from '@/components/JoinUs';
 
 export const metadata = {
   title: 'RAGI JI FOUNDATION',
@@ -37,6 +38,7 @@ export default function RootLayout({
                 <TopHeader />
                 <HeaderMenu />
                 {children}
+                <JoinUs/>
                 <FooterLinks />
                 <CookieBanner />
               </MantineProvider>

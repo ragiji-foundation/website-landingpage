@@ -50,26 +50,40 @@ export default function BlogPostPage() {
 
   useEffect(() => {
     const fetchPost = async () => {
+      // Add null check for params
+      const slug = params?.slug?.toString();
+      if (!slug) {
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
-        const response = await fetch(`/api/blogs/${params.slug}`);
+        const response = await fetch(`/api/blogs/${slug}`);
         if (!response.ok) throw new Error('Failed to fetch');
         const data = await response.json();
         setPost(data);
       } catch (error) {
         console.error('Error fetching blog post:', error);
         // Fallback to mock data
-        const mockPost = mockBlogs.posts.find(p => p.slug === params.slug);
+        const mockPost = mockBlogs.posts.find(p => p.slug === slug);
         if (mockPost) setPost(mockPost);
       } finally {
         setLoading(false);
       }
     };
 
-    if (params.slug) {
-      fetchPost();
-    }
-  }, [params.slug]);
+    fetchPost();
+  }, [params?.slug]);
+
+  // Add early return for missing slug
+  if (!params?.slug) {
+    return (
+      <Container size="lg" py="xl">
+        <Text>Blog post not found</Text>
+      </Container>
+    );
+  }
 
   const renderContent = (content: BlogPost['content']) => {
     const sanitizedHtml = DOMPurify.sanitize(content.html, {

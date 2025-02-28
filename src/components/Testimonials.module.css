@@ -22,3 +22,29 @@
   padding: 0 20px 20px;
   line-height: 1.6;
 }
+
+.card {
+  padding: var(--mantine-spacing-md);
+  background-color: var(--mantine-color-body);
+}
+
+.section {
+  padding: var(--mantine-spacing-md);
+  border-bottom: 1px solid var(--mantine-color-gray-3);
+}
+
+.content {
+  padding-top: var(--mantine-spacing-md);
+  font-style: italic;
+  color: var(--mantine-color-gray-7);
+}
+
+@media (max-width: 768px) {
+  .card {
+    padding: var(--mantine-spacing-sm);
+  }
+
+  .section {
+    padding: var(--mantine-spacing-sm);
+  }
+}

@@ -1,115 +1,62 @@
 'use client';
-import { useState, useEffect } from 'react';
-import {
-  SimpleGrid,
-  Card,
-  Image,
-  Text,
-  Center,
-  Loader,
-  Stack,
-  Modal,
-  AspectRatio,
-} from '@mantine/core';
+import { useEffect, useState } from 'react';
+import { Container, Title, SimpleGrid, Card, Image, Text, Modal, Stack } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import { useGalleryStore } from '@/store/useGalleryStore';
+import { GalleryItem } from '@/types/gallery';
+import { GallerySkeleton } from '../skeletons/GallerySkeleton';
 import classes from './PhotoLibrary.module.css';
 
-interface GalleryItem {
-  id: number;
-  title: string;
-  description?: string;
-  imageUrl: string;
-  category: string;
-}
-
 export function PhotoLibrary() {
-  const [items, setItems] = useState<GalleryItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [selectedImage, setSelectedImage] = useState<GalleryItem | null>(null);
+  const { items, loading, error, fetchGallery } = useGalleryStore();
   const [opened, { open, close }] = useDisclosure(false);
+  const [selectedImage, setSelectedImage] = useState<GalleryItem | null>(null);
 
   useEffect(() => {
-    const fetchGallery = async () => {
-      try {
-        const response = await fetch('/api/gallery');
-        if (!response.ok) throw new Error('Failed to fetch gallery');
-        const data = await response.json();
-        setItems(data);
-      } catch (error) {
-        console.error('Error:', error);
-        setError(error instanceof Error ? error.message : 'Failed to load gallery');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchGallery();
-  }, []);
+  }, [fetchGallery]);
 
   if (loading) {
     return (
-      <Center h={400}>
-        <Loader size="xl" />
-      </Center>
-    );
-  }
-
-  if (error) {
-    return (
-      <Center h={400}>
-        <Stack align="center">
-          <Text c="red" size="xl" fw={700}>Error</Text>
-          <Text>{error}</Text>
-        </Stack>
-      </Center>
-    );
-  }
-
-  if (items.length === 0) {
-    return (
-      <Center h={400}>
-        <Text size="xl">No photos available</Text>
-      </Center>
+      <Container size="xl" py="xl">
+        <Title order={2} ta="center" mb="xl">Photo Gallery</Title>
+        <GallerySkeleton count={12} />
+      </Container>
     );
   }
 
   return (
-    <>
-      <Stack>
-        <Text size="xl" fw={700} ta="center" className={classes.title}>
-          Photo Gallery
-        </Text>
-        <SimpleGrid
-          cols={{ base: 1, sm: 2, md: 3, lg: 4 }}
-          spacing="lg"
-          verticalSpacing="xl"
-        >
-          {items.map((item) => (
-            <Card
-              key={item.id}
-              p="xs"
-              radius="md"
-              className={classes.card}
-              onClick={() => {
-                setSelectedImage(item);
-                open();
-              }}
-            >
-              <AspectRatio ratio={16 / 9}>
-                <Image
-                  src={item.imageUrl}
-                  alt={item.title}
-                  className={classes.image}
-                />
-              </AspectRatio>
-              <Text size="sm" fw={500} mt="sm" ta="center">
-                {item.title}
-              </Text>
-            </Card>
-          ))}
-        </SimpleGrid>
-      </Stack>
+    <Container size="xl" py="xl">
+      <Title order={2} ta="center" mb="xl">Photo Gallery</Title>
+
+      <SimpleGrid cols={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing="lg">
+        {items.map((item) => (
+          <Card
+            key={item.id}
+            shadow="sm"
+            padding="md"
+            radius="md"
+            className={classes.card}
+            onClick={() => {
+              setSelectedImage(item);
+              open();
+            }}
+          >
+            <Card.Section className={classes.imageSection}>
+              <Image
+                src={item.imageUrl}
+                alt={item.title}
+                className={classes.image}
+              />
+              <div className={classes.overlay}>
+                <Text c="white" size="lg">View</Text>
+              </div>
+            </Card.Section>
+            <Text fw={500} size="lg" mt="md">{item.title}</Text>
+            <Text size="sm" c="dimmed">{item.description}</Text>
+          </Card>
+        ))}
+      </SimpleGrid>
 
       <Modal
         opened={opened}
@@ -118,9 +65,7 @@ export function PhotoLibrary() {
           setSelectedImage(null);
         }}
         size="xl"
-        padding="xs"
-        centered
-        title={selectedImage?.title}
+        padding="xl"
       >
         {selectedImage && (
           <Stack>
@@ -129,14 +74,11 @@ export function PhotoLibrary() {
               alt={selectedImage.title}
               fit="contain"
             />
-            {selectedImage.description && (
-              <Text size="sm" c="dimmed">
-                {selectedImage.description}
-              </Text>
-            )}
+            <Title order={3}>{selectedImage.title}</Title>
+            <Text>{selectedImage.description}</Text>
           </Stack>
         )}
       </Modal>
-    </>
+    </Container>
   );
 }

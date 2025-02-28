@@ -1,71 +1,20 @@
 'use client';
-import { Container, Card, Image, Text, Grid, Group, Stack, Button, Title, Skeleton } from '@mantine/core';
+import { Container, Card, Image, Text, Grid, Group, Stack, Button, Title } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
 import { Banner } from '@/components/Banner';
 import { ErrorBoundary } from '@/components/error-boundary';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { IconMapPin, IconPhone } from '@tabler/icons-react';
 import styles from './centers.module.css';
-import { mockCenters } from '@/data/mock-centers';
-
-interface Center {
-  id: number;
-  name: string;
-  location: string;
-  description: string;
-  imageUrl?: string;
-  contactInfo?: string;
-}
-
-function CentersSkeleton() {
-  return (
-    <Grid>
-      {[...Array(6)].map((_, i) => (
-        <Grid.Col key={i} span={{ base: 12, sm: 6, lg: 4 }}>
-          <Card padding="lg">
-            <Skeleton height={200} mb="md" />
-            <Skeleton height={24} width="70%" mb="sm" />
-            <Skeleton height={20} width="40%" mb="sm" />
-            <Skeleton height={60} />
-          </Card>
-        </Grid.Col>
-      ))}
-    </Grid>
-  );
-}
+import { useCenterStore } from '@/store/useCenterStore';
+import { CentersSkeleton } from '@/components/skeletons/CentersSkeleton';
 
 function CenterList() {
-  const [centers, setCenters] = useState<Center[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+  const { centers, loading, error, fetchCenters } = useCenterStore();
 
   useEffect(() => {
-    const fetchCenters = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('/api/centers');
-        if (!response.ok) throw new Error('Failed to fetch centers');
-        const data = await response.json();
-        setCenters(data);
-      } catch (error) {
-        console.error('Error:', error);
-        // Fallback to mock data
-        setCenters(mockCenters);
-        setError(error as Error);
-   
-
-        showNotification({
-          title: 'Notice',
-          message: 'Using fallback data. Some features might be limited.',
-          color: 'yellow'
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchCenters();
-  }, []);
+  }, [fetchCenters]);
 
   if (loading) return <CentersSkeleton />;
 
@@ -74,11 +23,19 @@ function CenterList() {
       <Stack align="center" py="xl">
         <Title order={3}>Unable to load centers</Title>
         <Text c="dimmed">Please try again later</Text>
-        <Button onClick={() => window.location.reload()}>
+        <Button onClick={() => fetchCenters()}>
           Retry
         </Button>
       </Stack>
     );
+  }
+
+  if (error) {
+    showNotification({
+      title: 'Notice',
+      message: 'Using fallback data. Some features might be limited.',
+      color: 'yellow'
+    });
   }
 
   return (

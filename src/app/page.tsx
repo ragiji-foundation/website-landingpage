@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import { ContentItem } from '@/types/content-types';
 
@@ -169,24 +170,17 @@ const featureData: {
 function App() {
 
   return (
-   
-
-<main>
-<CardsCarousel />
+    <main>
+      <CardsCarousel />
       <FeaturesSection {...featureData} />
-
-      <Initiatives />
+      <Initiatives /> {/* No props needed anymore */}
       <Box bg="var(--mantine-color-gray-0)" py="xl">
         <StatsSection />
       </Box>
       <Gallery />
       <Testimonials />
       <SuccessStoriesSection />
-
-</main>
- 
-
-   
+    </main>
   );
 }
 
