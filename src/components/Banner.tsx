@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { Button, Container, Overlay, Text, Title, Group, Badge } from '@mantine/core';
 import { useBannerStore } from '@/store/useBannerStore';
 import { BannerType } from '@/types/banner';
+import { getImageUrl } from '@/utils/image';
 import classes from './Banner.module.css';
 
 interface BreadcrumbItem {
@@ -26,7 +27,7 @@ interface BannerProps {
   };
 }
 
-export function Banner({ type, ...props }: BannerProps) {
+export function Banner({ backgroundImage, type, ...props }: BannerProps) {
   const { getBannerByType, fetchBanners, loading } = useBannerStore();
 
   useEffect(() => {
@@ -37,7 +38,7 @@ export function Banner({ type, ...props }: BannerProps) {
 
   const title = props.title || bannerData?.title;
   const description = props.description || bannerData?.description;
-  const backgroundImage = props.backgroundImage || bannerData?.backgroundImage;
+  backgroundImage = backgroundImage || bannerData?.backgroundImage;
 
   const renderBreadcrumbs = () => {
     if (!props.breadcrumbs?.length) return null;
@@ -87,7 +88,7 @@ export function Banner({ type, ...props }: BannerProps) {
   return (
     <div
       className={`${classes.banner} ${classes[type]}`}
-      style={{ backgroundImage: `url(${backgroundImage})` }}
+      style={{ backgroundImage: `url(${getImageUrl(backgroundImage || '')})` }}
     >
       <Overlay
         gradient="linear-gradient(180deg, rgba(0, 0, 0, 0.25) 0%, rgba(0, 0, 0, .65) 40%)"
