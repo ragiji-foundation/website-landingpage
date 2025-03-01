@@ -1,44 +1,58 @@
-import React from 'react'
+'use client';
+import React, { useEffect, useState } from 'react'
 import { Banner } from '@/components/Banner'
-import { Box } from '@mantine/core'
-import FeaturesSection from '@/components/landing/features-section'
+import { Box, Container, Grid, Image, Text, Title, Center, Loader, Alert } from '@mantine/core';
+import classes from './page.module.css';
+import type { TheNeedData } from '@/types/the-need';
 
-const featureData = {
-  heading: "Experience Innovation",
-  content: [
-    {
-      title: "Get your superpower",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
-      mediaItem: {
-        type: "video" as const,
-        url: "https://www.youtube.com/embed/your-video-id",
-        thumbnail: "/video-thumbnail.jpg"
-      }
-    },
-    {
-      title: "Superfast 5G",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
-      mediaItem: {
-        type: "image" as const,
-        url: "https://placehold.co/600x400/000000/FFF"
-      }
-    },
-    {
-      title: "New year, new design",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
-      mediaItem: {
-        type: "image" as const,
-        url: "https://placehold.co/600x400/000000/FFF"
-      }
-    }
-  ],
-  ctaButton: {
-    text: "Get Started",
-    url: "/signup"
-  }
-};
+const API_URL = process.env.NEXT_PUBLIC_ADMIN_API_URL;
 
 export default function TheNeedPage() {
+  const [data, setData] = useState<TheNeedData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (!API_URL) {
+          throw new Error('API URL is not configured');
+        }
+
+        const response = await fetch(`${API_URL}/the-need`);
+        if (!response.ok) throw new Error('Failed to fetch data');
+        const result = await response.json();
+        setData(result);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <Center h={400}>
+        <Loader size="lg" />
+      </Center>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container size="lg" py="xl">
+        <Alert color="red" title="Error">
+          {error}
+        </Alert>
+      </Container>
+    );
+  }
+
+  if (!data) return null;
+
   return (
     <main>
       <Banner
@@ -53,9 +67,56 @@ export default function TheNeedPage() {
         ]}
         tags={['Education', 'Development', 'Rural', 'Impact']}
       />
+
       <Box bg="var(--mantine-color-gray-0)" py="xl">
-        <FeaturesSection {...featureData} />
+        <Container size="lg" py="xl">
+          <Title order={2} ta="center" mb="md">
+            ⭐ THE EDUCATION CRISIS
+          </Title>
+
+          <Grid gutter="xl" align="center">
+            <Grid.Col span={{ base: 12, md: 7 }}>
+              <Text size="lg">{data.educationCrisis.mainText}</Text>
+              <Text mt="md">{data.educationCrisis.statistics}</Text>
+              <Text mt="md">{data.educationCrisis.impact}</Text>
+            </Grid.Col>
+
+            <Grid.Col span={{ base: 12, md: 5 }}>
+              <Box className={classes.imageWrapper}>
+                <Image
+                  src={data.educationCrisis.imageUrl}
+                  alt="Child in need of education"
+                  className={classes.image}
+                  style={{
+                    border: '1px solid var(--mantine-color-gray-3)',
+                    transition: 'transform 0.3s ease',
+                  }}
+                />
+              </Box>
+            </Grid.Col>
+          </Grid>
+        </Container>
+
+        <Container size="lg" py="xl">
+          <Title order={2} ta="center" mb="md">
+            ⭐ EDUCATION STATISTICS – CRISIS DATA
+          </Title>
+
+          <Center>
+            <Box className={classes.imageWrapper}>
+              <Image
+                src={data.educationCrisis.statsImageUrl}
+                alt="Education Statistics Data"
+                className={classes.image}
+                style={{
+                  border: '1px solid var(--mantine-color-gray-3)',
+                  transition: 'transform 0.3s ease',
+                }}
+              />
+            </Box>
+          </Center>
+        </Container>
       </Box>
     </main>
-  )
+  );
 }
