@@ -5,8 +5,9 @@ import { Container, Title, Text, Image, Badge, Group, Stack, Skeleton } from '@m
 import { Banner } from '@/components/Banner';
 import { RichTextContent } from '@/components/RichTextContent'; // Updated import path
 import { useSuccessStoriesStore } from '@/store/useSuccessStoriesStore';
+import { useBannerStore } from '@/store/useBannerStore';
 import classes from './success-story.module.css';
-
+import { BannerType } from '@/types/banner';
 function StoryDetailSkeleton() {
   return (
     <Container size="md" py="xl">
@@ -28,22 +29,26 @@ function StoryDetailSkeleton() {
 export default function SuccessStoryPage() {
   const params = useParams();
   const { stories, loading, error, fetchStories } = useSuccessStoriesStore();
+  const { fetchBanners, getBannerByType, loading: bannerLoading, error: bannerError } = useBannerStore();
 
   // Add type safety for params
   const storySlug = params?.slug?.toString();
   const [story, setStory] = useState(storySlug ? stories.find(s => s.id === storySlug) : null);
 
   useEffect(() => {
+    fetchBanners();
     if (!story) {
       fetchStories();
     }
-  }, [fetchStories, story]);
+  }, [fetchBanners, fetchStories, story]);
 
   useEffect(() => {
     if (storySlug) {
       setStory(stories.find(s => s.id === storySlug));
     }
   }, [stories, storySlug]);
+
+  const banner = getBannerByType('successstories');
 
   // Handle case when slug is missing
   if (!storySlug) {
@@ -66,17 +71,16 @@ export default function SuccessStoryPage() {
     );
   }
 
-  if (loading || !story) {
+  if (bannerLoading || loading || !story) {
     return (
       <main>
         <Banner
-          type="about"
-          title="Success Story"
+          type="successstories"
+          title="Loading..."
           backgroundImage="/banners/success-stories-banner.jpg"
           breadcrumbs={[
             { label: 'Home', link: '/' },
             { label: 'Success Stories', link: '/success-stories' },
-            { label: 'Story Details' }
           ]}
         />
         <StoryDetailSkeleton />
@@ -84,18 +88,25 @@ export default function SuccessStoryPage() {
     );
   }
 
+  if (bannerError || error || !banner) {
+    // ...error handling...
+  }
+
   return (
     <main>
-      <Banner
-        type="about"
-        title={story.title}
-        backgroundImage={story.imageUrl || '/banners/success-stories-banner.jpg'}
-        breadcrumbs={[
-          { label: 'Home', link: '/' },
-          { label: 'Success Stories', link: '/success-stories' },
-          { label: story.title }
-        ]}
-      />
+      {banner && (
+        <Banner
+          type={banner.type as BannerType}
+          title={story.title}
+          description={banner.description ?? undefined}
+          backgroundImage={story.imageUrl || banner.backgroundImage}
+          breadcrumbs={[
+            { label: 'Home', link: '/' },
+            { label: 'Success Stories', link: '/success-stories' },
+            { label: story.title }
+          ]}
+        />
+      )}
 
       <Container size="md" py="xl">
         {story.imageUrl && (

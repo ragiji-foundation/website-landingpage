@@ -2,12 +2,14 @@
 import { Container, Card, Image, Text, Grid, Group, Stack, Button, Title } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
 import { Banner } from '@/components/Banner';
+import { BannerType } from '@/types/banner';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { useEffect } from 'react';
 import { IconMapPin, IconPhone } from '@tabler/icons-react';
 import styles from './centers.module.css';
 import { useCenterStore } from '@/store/useCenterStore';
 import { CentersSkeleton } from '@/components/skeletons/CentersSkeleton';
+import { useBannerStore } from '@/store/useBannerStore';
 
 function CenterList() {
   const { centers, loading, error, fetchCenters } = useCenterStore();
@@ -90,22 +92,31 @@ function CenterList() {
 }
 
 export default function CentersPage() {
+  const { fetchBanners, getBannerByType, loading: bannerLoading, error: bannerError } = useBannerStore();
+
+  useEffect(() => {
+    fetchBanners();
+  }, [fetchBanners]);
+
+  const banner = getBannerByType('about');
+
+  if (bannerLoading) return <CentersSkeleton />;
+  if (bannerError) return <Text c="red">{bannerError.message}</Text>;
+  if (!banner) return <Text>Banner not found</Text>;
+
   return (
     <ErrorBoundary>
       <main>
         <Banner
-          type="about"
-          title="Our Centers"
-          description="Discover our learning centers across the country where we create impact through education and community development."
-          backgroundImage="/banners/centers-banner.jpg"
+          type={banner.type as BannerType}
+          title={banner.title}
+          description={banner.description ?? "Discover our learning centers"}
+          backgroundImage={banner.backgroundImage || "/banners/centers-banner.jpg"}
           breadcrumbs={[
             { label: 'Home', link: '/' },
-            { label: 'About', link: '/about' },
             { label: 'Our Centers' }
           ]}
-          tags={['Education', 'Community', 'Development']}
         />
-
         <Container size="xl" py="xl">
           <CenterList />
         </Container>

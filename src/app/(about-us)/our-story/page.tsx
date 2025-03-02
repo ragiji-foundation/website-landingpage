@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import { Banner } from '@/components/Banner';
 import OurStory from '@/components/about/our-story';
+import { useBannerStore } from '@/store/useBannerStore';
+import { BannerType } from '@/types/banner';
 import {
   Box, Container, Title, Text, Image, SimpleGrid, Card,
   Group, Timeline, Badge, Skeleton, Alert, Center, Loader
@@ -30,9 +32,14 @@ interface PageData {
 }
 
 export default function OurStoryPage() {
+  const { fetchBanners, getBannerByType, loading: bannerLoading, error: bannerError } = useBannerStore();
   const [data, setData] = useState<PageData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchBanners();
+  }, [fetchBanners]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -51,46 +58,32 @@ export default function OurStoryPage() {
     fetchData();
   }, []);
 
-  if (loading) {
-    return (
-      <main>
-        <Banner
-          type="about"
-          title="Our Story"
-          description="Journey of transforming lives through education and empowerment"
-          backgroundImage="/banners/our-story-banner.jpg"
-          breadcrumbs={[
-            { label: 'Home', link: '/' },
-            { label: 'About', link: '/about' },
-            { label: 'Our Story' }
-          ]}
-        />
-        <Center py="xl">
-          <Loader size="lg" />
-        </Center>
-      </main>
-    );
+  if (loading || bannerLoading) {
+    return <Center py="xl"><Loader size="lg" /></Center>;
   }
 
-  if (error) {
+  if (error || bannerError) {
     return (
       <Container>
         <Alert color="red" title="Error">
-          {error}
+          {error || bannerError?.message}
         </Alert>
       </Container>
     );
   }
+
+  const banner = getBannerByType('about');
+  if (!banner) return <Text>Banner not found</Text>;
 
   if (!data) return null;
 
   return (
     <main>
       <Banner
-        type="about"
-        title="Our Story"
-        description="Journey of transforming lives through education and empowerment"
-        backgroundImage="/banners/our-story-banner.jpg"
+        type={banner.type as BannerType}
+        title={banner.title}
+        description={banner.description ?? "Journey of transforming lives through education"}
+        backgroundImage={banner.backgroundImage || "/banners/our-story-banner.jpg"}
         breadcrumbs={[
           { label: 'Home', link: '/' },
           { label: 'About', link: '/about' },
