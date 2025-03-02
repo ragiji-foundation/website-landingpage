@@ -1,15 +1,27 @@
 import { create } from 'zustand';
-import { Career } from '@/types/career';
-import { mockCareers } from '@/data/mock-careers';
+import { generateSlug } from '@/utils/slug';
 
-interface CareerState {
-  careers: Career[];
-  loading: boolean;
-  error: Error | null;
-  fetchCareers: () => Promise<void>;
+interface Career {
+  id: number;
+  title: string;
+  slug: string;
+  location: string;
+  type: string;
+  description: string;
+  requirements: string;
+  isActive: boolean;
+  createdAt: string;
 }
 
-export const useCareerStore = create<CareerState>((set) => ({
+interface CareerStore {
+  careers: Career[];
+  loading: boolean;
+  error: string | null;
+  fetchCareers: () => Promise<void>;
+  getCareerBySlug: (slug: string) => Career | undefined;
+}
+
+export const useCareerStore = create<CareerStore>((set, get) => ({
   careers: [],
   loading: false,
   error: null,
@@ -21,8 +33,13 @@ export const useCareerStore = create<CareerState>((set) => ({
       const data = await response.json();
       set({ careers: data, loading: false });
     } catch (error) {
-      console.error('Error fetching careers:', error);
-      set({ careers: mockCareers, error: error as Error, loading: false });
+      set({ 
+        error: error instanceof Error ? error.message : 'Failed to fetch careers',
+        loading: false 
+      });
     }
   },
+  getCareerBySlug: (slug: string) => {
+    return get().careers.find(career => career.slug === slug);
+  }
 }));

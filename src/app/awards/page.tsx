@@ -4,9 +4,11 @@ import { Banner } from '@/components/Banner';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { useEffect } from 'react';
 import { useAwardStore } from '@/store/useAwardStore';
+import { useBannerStore } from '@/store/useBannerStore';
 import { AwardsSkeleton } from '@/components/skeletons/AwardsSkeleton';
 import styles from './awards.module.css';
 import { notifications } from '@mantine/notifications';
+import { BannerType } from '@/types/banner';
 
 function AwardGrid() {
   const { awards, loading, error, fetchAwards } = useAwardStore();
@@ -62,14 +64,26 @@ function AwardGrid() {
 }
 
 export default function AwardsPage() {
+  const { fetchBanners, getBannerByType, loading: bannerLoading, error: bannerError } = useBannerStore();
+
+  useEffect(() => {
+    fetchBanners();
+  }, [fetchBanners]);
+
+  const banner = getBannerByType('awards');
+
+  if (bannerLoading) return <AwardsSkeleton />;
+  if (bannerError) return <div>Error loading page: {bannerError.message}</div>;
+  if (!banner) return <div>Banner not found</div>;
+
   return (
     <ErrorBoundary>
       <main>
         <Banner
-          type="about"
-          title="Our Awards & Recognition"
-          description="Celebrating our achievements and milestones in making a difference."
-          backgroundImage="/banners/awards-banner.jpg"
+          type={banner.type as BannerType}
+          title={banner.title}
+          description={banner.description ?? 'Celebrating our achievements and milestones in making a difference.'}
+          backgroundImage={banner.backgroundImage || '/banners/awards-banner.jpg'}
           breadcrumbs={[
             { label: 'Home', link: '/' },
             { label: 'Awards' }

@@ -31,4 +31,23 @@ export default function CentersPage() {
   }, []);
 
   // ...rest of component
+
+  return (
+    <div>
+      <h1>Centers</h1>
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <ul>
+          {centers.map(center => (
+            <li key={center.id}>
+              <h2>{center.name}</h2>
+              <p>{center.location}</p>
+              <p>{center.description}</p>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
 }

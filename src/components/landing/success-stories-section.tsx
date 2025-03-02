@@ -26,7 +26,7 @@ export default function SuccessStoriesSection() {
     .slice(0, 6);
 
   return (
-    <Container size="xl" py="xl">
+    <Container size="lg" py="xl"> {/* Changed from xl to lg */}
       <Group justify="space-between" mb="xl">
         <Title>Success Stories</Title>
         <Button
@@ -41,7 +41,7 @@ export default function SuccessStoriesSection() {
 
       <Grid>
         {latestStories.map((story) => (
-          <Grid.Col key={story.id} span={{ base: 12, sm: 6, md: 4 }}>
+          <Grid.Col key={story.id} span={{ base: 12, sm: 6, md: 4, lg: 3 }}> {/* Added lg: 3 for narrower cards */}
             <Card shadow="sm" padding="lg" radius="md" withBorder className={classes.card}>
               <Card.Section className={classes.imageSection} onClick={() => router.push(`/success-stories/${story.id}`)}>
                 {story.imageUrl && (

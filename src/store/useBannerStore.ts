@@ -1,35 +1,42 @@
 import { create } from 'zustand';
-import { Banner, BannerType } from '@/types/banner';
-import { mockBanners } from '@/data/mock-banners';
 
-interface BannerState {
+interface Banner {
+  id: string;
+  type: string;
+  title: string;
+  description: string | null;
+  backgroundImage: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface BannerStore {
   banners: Banner[];
   loading: boolean;
   error: Error | null;
   fetchBanners: () => Promise<void>;
-  getBannerByType: (type: BannerType) => Banner | undefined;
+  getBannerByType: (type: string) => Banner | undefined;
 }
 
-export const useBannerStore = create<BannerState>((set, get) => ({
+export const useBannerStore = create<BannerStore>((set, get) => ({
   banners: [],
   loading: false,
   error: null,
-
   fetchBanners: async () => {
     try {
       set({ loading: true, error: null });
-      const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/banners`);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/api/banners`);
       if (!response.ok) throw new Error('Failed to fetch banners');
       const data = await response.json();
       set({ banners: data, loading: false });
     } catch (error) {
-      console.error('Error fetching banners:', error);
-      set({ banners: mockBanners, error: error as Error, loading: false });
+      set({
+        error: error instanceof Error ? error : new Error('Failed to fetch banners'),
+        loading: false
+      });
     }
   },
-
-  getBannerByType: (type: BannerType) => {
-    const { banners } = get();
-    return banners.find(banner => banner.type === type);
+  getBannerByType: (type: string) => {
+    return get().banners.find(banner => banner.type === type);
   }
 }));
