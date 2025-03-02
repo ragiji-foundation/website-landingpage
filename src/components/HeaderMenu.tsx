@@ -22,7 +22,7 @@ import Link from 'next/link';
 import classes from './HeaderMenu.module.css';
 import { useLanguage } from '@/context/LanguageContext';
 import SearchQuery from './SearchQuery';
-import { IconSearch } from '@tabler/icons-react';
+
 
 const links = [
   { link: '/', label: 'HOME' },
@@ -159,13 +159,34 @@ export function HeaderMenu() {
         opened={opened}
         onClose={close}
         position="left"
-        size="30vw"
-        padding="md"
-        title="Navigation"
+        size="40%"
+        padding="0"
         hiddenFrom="md"
         zIndex={1000}
+        classNames={{
+          content: classes.mobileDrawer,
+          header: classes.drawerHeader,
+        }}
+        withCloseButton={false}
       >
-        <ScrollArea h="calc(100vh - 60px)" mx="-md">
+        <div className={classes.drawerHeader}>
+          <Image
+            src="/logo.png"
+            alt="Ragi Ji Foundation"
+            width={50}
+            height={50}
+            style={{ objectFit: 'contain' }}
+          />
+          <div className={classes.drawerTitle}>
+            <h3 className={classes.foundationName}>Ragi Ji Foundation</h3>
+            <p className={classes.tagline}>Live For Others</p>
+          </div>
+          <ActionIcon onClick={close} variant="subtle" size="lg">
+            ×
+          </ActionIcon>
+        </div>
+
+        <div className={classes.drawerContent}>
           <div className={classes.mobileSearch}>
             <SearchQuery
               placeholder={t('search.placeholder')}
@@ -184,8 +205,9 @@ export function HeaderMenu() {
                   setLanguage(lang.code);
                   window.location.reload();
                 }}
-                size="sm"
+                size="md"
                 fullWidth
+                className={classes.mobileMenuItem}
               >
                 {lang.label}
               </Button>
@@ -194,7 +216,7 @@ export function HeaderMenu() {
 
           <Divider my="sm" />
 
-          <Stack gap={0} px="md">
+          <Stack gap={0} className={classes.mobileNavigation}>
             {links.map((link) => (
               <NavLink
                 key={link.label}
@@ -203,6 +225,7 @@ export function HeaderMenu() {
                 label={link.label}
                 childrenOffset={28}
                 onClick={link.links ? undefined : close}
+                className={classes.mobileMenuItem}
               >
                 {link.links?.map((subLink) => (
                   <NavLink
@@ -211,12 +234,13 @@ export function HeaderMenu() {
                     href={subLink.link}
                     label={subLink.label}
                     onClick={close}
+                    className={`${classes.mobileMenuItem} ${classes.mobileSubMenu}`}
                   />
                 ))}
               </NavLink>
             ))}
           </Stack>
-        </ScrollArea>
+        </div>
       </Drawer>
     </header>
   );

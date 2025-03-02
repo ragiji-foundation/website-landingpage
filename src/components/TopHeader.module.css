@@ -1,20 +1,66 @@
 .topHeader {
-  background-color: rgba(255, 255, 255, 0.95);
+  background-color: var(--color-primary);
   border-bottom: 1px solid var(--mantine-color-gray-2);
   padding: 8px 0;
+  color: white;
 }
 
 .wrapper {
   min-height: 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-/* ...existing styles... */
+.container {
+  background-color: var(--color-primary);
+  max-width: var(--mantine-container-size-xl);
+  margin: 0 auto;
+}
 
 .rightSection {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 1rem;
   justify-content: flex-end;
+  align-items: center;
+}
+
+.orgName {
+  color: white !important;
+  font-weight: 700;
+}
+
+.contactItem {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.contactIcon {
+  color: rgb(0, 0, 0);
+}
+
+.contactText {
+  color: white;
+  text-decoration: none;
+  font-size: 12px;
+}
+
+.contactText:hover {
+  text-decoration: underline;
+}
+
+.joinButton {
+  padding: 4px 8px;
+  font-size: 12px;
+
+  color: var(--color-primary-light);
+  background-color: var(--mantine-color-orange-filled);
+}
+
+.joinButton:hover {
+  background-color: var(--color-gray-100);
 }
 
 /* Mobile styles */

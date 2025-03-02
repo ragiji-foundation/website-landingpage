@@ -9,24 +9,15 @@ export function TopHeader() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const contactInfo = [
-    { icon: <IconMail size={16} />, text: 'admin@ragijifoundation.com', href: 'mailto:admin@ragijifoundation.com' },
-    { icon: <IconPhone size={16} />, text: '+91 8827968035', href: 'tel:+918827968035' },
+    { icon: <IconMail size={16} stroke={1.5} color="white" />, text: 'admin@ragijifoundation.com', href: 'mailto:admin@ragijifoundation.com' },
+    { icon: <IconPhone size={16} stroke={1.5} color="white" />, text: '+91 8827968035', href: 'tel:+918827968035' },
   ];
 
   return (
     <div className={classes.header}>
-      <Container size="xl" px="xs">
-        <Group
-          justify="space-between"
-          wrap="nowrap"
-          className={classes.wrapper}
-        >
-          <Text
-            size="sm"
-            fw={700}
-            c="var(--mantine-color-orange-filled)"
-            className={classes.orgName}
-          >
+      <Container size="xl" px="xs" className={classes.container}>
+        <Group justify="space-between" wrap="nowrap" className={classes.wrapper}>
+          <Text size="sm" fw={700} className={classes.orgName}>
             RAGI JI
           </Text>
 
@@ -35,9 +26,8 @@ export function TopHeader() {
               <Group gap={4} key={index} wrap="nowrap" className={classes.contactItem}>
                 <ActionIcon
                   variant="subtle"
-                  color="gray"
-                  size="sm"
                   className={classes.contactIcon}
+                  size="sm"
                 >
                   {item.icon}
                 </ActionIcon>
@@ -54,8 +44,8 @@ export function TopHeader() {
 
             <Button
               variant="filled"
-              color="orange"
               size="compact-sm"
+          
               onClick={() => setIsModalOpen(true)}
               className={classes.joinButton}
             >
