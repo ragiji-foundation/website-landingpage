@@ -46,7 +46,7 @@ export const useOurStoryStore = create<OurStoryState>()(
       fetchStory: async () => {
         set({ loading: true, error: null });
         try {
-          const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/our-story`);
+          const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/api/our-story`);
           if (!response.ok) throw new Error('Failed to fetch story');
           const data = await response.json();
           set({ data, loading: false });

@@ -16,7 +16,7 @@ export const useAwardStore = create<AwardState>((set) => ({
   fetchAwards: async () => {
     try {
       set({ loading: true, error: null });
-      const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/awards`);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/api/awards`);
       if (!response.ok) throw new Error('Failed to fetch awards');
       const data = await response.json();
       set({ awards: data, loading: false });

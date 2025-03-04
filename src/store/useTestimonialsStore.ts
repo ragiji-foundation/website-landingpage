@@ -66,7 +66,7 @@ export const useTestimonialsStore = create<TestimonialsState>((set) => ({
   fetchTestimonials: async () => {
     try {
       set({ loading: true, error: null });
-      const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/testimonials`);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/api/testimonials`);
 
       if (!response.ok) throw new Error('Failed to fetch testimonials');
 

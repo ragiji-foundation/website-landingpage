@@ -15,7 +15,7 @@ export const useFeatureStore = create<FeatureState>((set) => ({
   fetchFeatureSection: async (identifier) => {
     try {
       set({ loading: true, error: null });
-      const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/features/${identifier}`);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/api//features/${identifier}`);
       if (!response.ok) throw new Error('Failed to fetch feature section');
       const data = await response.json();
       set((state) => ({

@@ -40,7 +40,7 @@ export const useContentStore = create<ContentState>()(
     fetchInitiatives: async () => {
       try {
         set({ loading: true });
-        const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/initiatives`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/api/initiatives`);
         if (!response.ok) throw new Error('Failed to fetch initiatives');
         const data = await response.json();
         set((state) => ({ ...state, initiatives: data, loading: false }));

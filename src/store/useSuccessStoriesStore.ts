@@ -38,7 +38,7 @@ export const useSuccessStoriesStore = create<SuccessStoriesState>()(
 
           try {
             set({ loading: true, error: null });
-            const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/success-stories`);
+            const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/api/success-stories`);
 
             if (!response.ok) throw new Error('Failed to fetch success stories');
 
@@ -75,7 +75,7 @@ export const useSuccessStoriesStore = create<SuccessStoriesState>()(
         fetchStoryById: async (id: string) => {
           try {
             set({ loading: true, error: null });
-            const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/success-stories/${id}`);
+            const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/api/success-stories/${id}`);
 
             if (!response.ok) throw new Error('Failed to fetch story');
 

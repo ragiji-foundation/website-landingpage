@@ -28,7 +28,7 @@ export const useCareerStore = create<CareerStore>((set, get) => ({
   fetchCareers: async () => {
     try {
       set({ loading: true, error: null });
-      const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/careers`);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/api/careers`);
       if (!response.ok) throw new Error('Failed to fetch careers');
       const data = await response.json();
       set({ careers: data, loading: false });

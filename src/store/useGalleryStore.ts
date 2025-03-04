@@ -19,7 +19,7 @@ export const useGalleryStore = create<GalleryState>((set) => ({
   fetchGallery: async () => {
     try {
       set({ loading: true, error: null });
-      const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/gallery`);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/api/gallery`);
       if (!response.ok) throw new Error('Failed to fetch gallery');
       const data = await response.json();
       set({ items: data, loading: false });
