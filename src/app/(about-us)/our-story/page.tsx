@@ -44,7 +44,7 @@ export default function OurStoryPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/our-story`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/api/our-story`);
         if (!response.ok) throw new Error('Failed to fetch data');
         const result = await response.json();
         setData(result);

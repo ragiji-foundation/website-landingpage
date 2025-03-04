@@ -18,7 +18,7 @@ export const useStatsStore = create<StatsState>()(
     fetchStats: async () => {
       try {
         set({ loading: true, error: null });
-        const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/stats`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/api/stats`);
         if (!response.ok) throw new Error('Failed to fetch stats');
         const data = await response.json();
         set({ stats: data.sort((a: Stat, b: Stat) => a.order - b.order), loading: false });

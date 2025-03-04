@@ -10,7 +10,7 @@ export async function GET(
     const { id } = await context;
 
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_ADMIN_API_URL}/gallery/${id}`,
+      `${process.env.NEXT_PUBLIC_ADMIN_API_URL}/api/gallery/${id}`,
       {
         headers: {
           'Accept': 'application/json'

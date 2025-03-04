@@ -5,7 +5,7 @@ export async function GET() {
   try {
     // Forward to admin API
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_ADMIN_API_URL}/gallery`,
+      `${process.env.NEXT_PUBLIC_ADMIN_API_URL}/api/gallery`,
       {
         headers: {
           'Accept': 'application/json'
@@ -44,7 +44,7 @@ export async function POST(request: Request) {
 
     // Forward to admin API
     const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_ADMIN_API_URL}/gallery`,
+      `${process.env.NEXT_PUBLIC_ADMIN_API_URL}/api/gallery`,
       body,
       {
         headers: {

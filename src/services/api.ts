@@ -8,11 +8,11 @@ export const api = {
   },
 
   async search(query: string) {
-    return this.get(`/search?q=${encodeURIComponent(query)}`);
+    return this.get(`/api/search?q=${encodeURIComponent(query)}`);
   },
 
   async getInitiatives() {
-    return this.get('/initiatives');
+    return this.get('/api/initiatives');
   },
 
   // ... other API methods

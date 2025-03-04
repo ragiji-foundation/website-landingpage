@@ -25,7 +25,7 @@ export default function TheNeedPage() {
           throw new Error('API URL is not configured');
         }
 
-        const response = await fetch(`${API_URL}/the-need`);
+        const response = await fetch(`${API_URL}/api/the-need`);
         if (!response.ok) throw new Error('Failed to fetch data');
         const result = await response.json();
         setData(result);

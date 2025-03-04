@@ -15,7 +15,7 @@ export async function POST(request: Request) {
 
     // Forward to admin API
     const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_ADMIN_API_URL}/enquiries`,
+      `${process.env.NEXT_PUBLIC_ADMIN_API_URL}/api/enquiries`,
       body,
       {
         headers: {

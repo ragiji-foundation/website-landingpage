@@ -6,7 +6,7 @@ export async function GET() {
   try {
     const headersList = headers();
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_ADMIN_API_URL}/carousel`,
+      `${process.env.NEXT_PUBLIC_ADMIN_API_URL}/api/carousel`,
       {
         headers: {
           'Accept': 'application/json',

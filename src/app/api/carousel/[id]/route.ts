@@ -10,7 +10,7 @@ export async function GET(
     const { id } = await context;
 
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_ADMIN_API_URL}/carousel/${id}`,
+      `${process.env.NEXT_PUBLIC_ADMIN_API_URL}/api/carousel/${id}`,
       {
         headers: {
           'Accept': 'application/json'
@@ -50,7 +50,7 @@ export async function DELETE(
     const { id } = await context;
 
     await axios.delete(
-      `${process.env.NEXT_PUBLIC_ADMIN_API_URL}/carousel/${id}`,
+      `${process.env.NEXT_PUBLIC_ADMIN_API_URL}/api/carousel/${id}`,
       {
         headers: {
           'Accept': 'application/json'
