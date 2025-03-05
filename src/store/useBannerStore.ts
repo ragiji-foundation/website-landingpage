@@ -27,7 +27,7 @@ export function isBannerType(type: string): type is BannerType {
   ].includes(type);
 }
 
-interface Banner {
+export interface Banner {
   id: string;
   type: string;
   title: string;
@@ -41,6 +41,7 @@ interface BannerStore {
   banners: Banner[];
   loading: boolean;
   error: Error | null;
+  initialized: boolean; // Track if we've attempted to fetch banners
   fetchBanners: () => Promise<void>;
   getBannerByType: (type: string, useFallback?: boolean) => Banner | undefined;
 }
@@ -120,20 +121,32 @@ export const useBannerStore = create<BannerStore>((set, get) => ({
   banners: [],
   loading: false,
   error: null,
+  initialized: false, // Start as not initialized
+
   fetchBanners: async () => {
+    // Check if we're already loading or have banners and were initialized
+    if (get().loading || (get().banners.length > 0 && get().initialized)) {
+      return; // Prevent duplicate requests
+    }
+
+    set({ loading: true, error: null });
     try {
-      set({ loading: true, error: null });
       const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/api/banner`);
+
       if (!response.ok) throw new Error('Failed to fetch banners');
+
       const data = await response.json();
-      set({ banners: data, loading: false });
+      set({ banners: data, loading: false, initialized: true });
     } catch (error) {
+      console.error('Banner API error:', error);
       set({
         error: error instanceof Error ? error : new Error('Failed to fetch banners'),
-        loading: false
+        loading: false,
+        initialized: true // Still mark as initialized to prevent retries on error
       });
     }
   },
+
   getBannerByType: (type: string, useFallback = true) => {
     const banner = get().banners.find(banner => banner.type === type);
 

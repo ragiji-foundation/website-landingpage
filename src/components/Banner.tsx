@@ -1,9 +1,9 @@
 'use client';
-import { useEffect } from 'react';
-import { Button, Container, Overlay, Text, Title, Group, Badge } from '@mantine/core';
-import { useBannerStore } from '@/store/useBannerStore';
-import { BannerType } from '@/types/banner';
-import { getImageUrl } from '@/utils/image';
+import React from 'react';
+import { Container, Title, Text, Breadcrumbs, Anchor, Box, Badge, Group, Center, Skeleton } from '@mantine/core';
+import Link from 'next/link';
+import { useBanner } from '@/hooks/useBanner';
+import { BannerType } from '@/store/useBannerStore';
 import classes from './Banner.module.css';
 
 interface BreadcrumbItem {
@@ -12,112 +12,76 @@ interface BreadcrumbItem {
 }
 
 interface BannerProps {
-  type: BannerType;
+  type: BannerType | string;
   title?: string;
   description?: string;
-  buttonText?: string;
-  buttonLink?: string;
   backgroundImage?: string;
   breadcrumbs?: BreadcrumbItem[];
   tags?: string[];
-  meta?: {
-    date?: string;
-    author?: string;
-    readTime?: string;
-  };
 }
 
-export function Banner({ backgroundImage, type, ...props }: BannerProps) {
-  const { getBannerByType, fetchBanners, loading } = useBannerStore();
+export function Banner({ type, title, description, backgroundImage, breadcrumbs = [], tags = [] }: BannerProps) {
+  // Use the custom hook to get banner data
+  const { banner, loading, error } = useBanner(type, true);
 
-  useEffect(() => {
-    fetchBanners();
-  }, [fetchBanners]);
-
-  const bannerData = getBannerByType(type);
-
-  const title = props.title || bannerData?.title;
-  const description = props.description || bannerData?.description;
-  backgroundImage = backgroundImage || bannerData?.backgroundImage;
-
-  const renderBreadcrumbs = () => {
-    if (!props.breadcrumbs?.length) return null;
+  // If loading, show a skeleton
+  if (loading) {
     return (
-      <Group mb="lg" className={classes.breadcrumbs}>
-        {props.breadcrumbs.map((item, index) => (
-          <div key={index} className={classes.breadcrumbItem}>
-            {item.link ? (
-              <a href={item.link}>{item.label}</a>
-            ) : (
-              <span>{item.label}</span>
-            )}
-          </div>
-        ))}
-      </Group>
+      <Box className={classes.bannerSkeleton}>
+        <Container size="xl" className={classes.container}>
+          <Skeleton height={30} width="60%" mb="xs" />
+          <Skeleton height={20} width="80%" mb="md" />
+          <Skeleton height={15} width="40%" />
+        </Container>
+      </Box>
     );
-  };
+  }
 
-  const renderMeta = () => {
-    if (!props.meta) return null;
-    return (
-      <Group className={classes.meta} mb="lg">
-        {props.meta.date && <Text c="dimmed">{props.meta.date}</Text>}
-        {props.meta.author && (
-          <Text c="dimmed" className={classes.author}>
-            By {props.meta.author}
-          </Text>
-        )}
-        {props.meta.readTime && <Badge variant="light">{props.meta.readTime}</Badge>}
-      </Group>
-    );
-  };
-
-  const renderTags = () => {
-    if (!props.tags?.length) return null;
-    return (
-      <Group gap="xs" mb="md">
-        {props.tags.map((tag) => (
-          <Badge key={tag} variant="light">
-            {tag}
-          </Badge>
-        ))}
-      </Group>
-    );
-  };
+  // Use provided props if available, otherwise use banner data
+  const bannerTitle = title || (banner?.title || '');
+  const bannerDescription = description || (banner?.description || '');
+  const bannerImage = backgroundImage || (banner?.backgroundImage || '');
 
   return (
-    <div
-      className={`${classes.banner} ${classes[type]}`}
-      style={{ backgroundImage: `url(${getImageUrl(backgroundImage || '')})` }}
+    <Box
+      className={classes.banner}
+      style={{
+        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${bannerImage})`,
+      }}
     >
-      <Overlay
-        gradient="linear-gradient(180deg, rgba(0, 0, 0, 0.25) 0%, rgba(0, 0, 0, .65) 40%)"
-        opacity={1}
-        zIndex={0}
-      />
-      <Container className={classes.container} size="lg">
-        {renderBreadcrumbs()}
-        <Title className={classes.title}>{title}</Title>
-        {renderMeta()}
-        {renderTags()}
-        {description && (
-          <Text className={classes.description} size="xl" mt="xl">
-            {description}
-          </Text>
+      <Container size="xl" className={classes.container}>
+        {breadcrumbs.length > 0 && (
+          <Breadcrumbs className={classes.breadcrumbs}>
+            {breadcrumbs.map((item, index) => {
+              if (item.link) {
+                return (
+                  <Anchor key={index} component={Link} href={item.link} className={classes.breadcrumbLink}>
+                    {item.label}
+                  </Anchor>
+                );
+              }
+              return (
+                <Text key={index} c="white" className={classes.breadcrumbCurrent}>
+                  {item.label}
+                </Text>
+              );
+            })}
+          </Breadcrumbs>
         )}
-        {props.buttonText && (
-          <Button
-            variant="gradient"
-            size="xl"
-            radius="xl"
-            className={classes.control}
-            component="a"
-            href={props.buttonLink}
-          >
-            {props.buttonText}
-          </Button>
+
+        <Title className={classes.title}>{bannerTitle}</Title>
+        {bannerDescription && <Text className={classes.description}>{bannerDescription}</Text>}
+
+        {tags.length > 0 && (
+          <Group mt="lg">
+            {tags.map((tag) => (
+              <Badge key={tag} size="lg" variant="gradient" gradient={{ from: 'orange', to: 'green' }}>
+                {tag}
+              </Badge>
+            ))}
+          </Group>
         )}
       </Container>
-    </div>
+    </Box>
   );
 }

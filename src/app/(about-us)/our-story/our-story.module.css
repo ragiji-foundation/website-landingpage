@@ -129,3 +129,67 @@
   font-weight: bold;
   color: #e5e7eb;
 }
+
+.sectionTitle {
+  position: relative;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+}
+
+.sectionTitle::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--mantine-color-orange-6), var(--mantine-color-green-6));
+  border-radius: 2px;
+}
+
+.imageWrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.storyImage {
+  transition: transform 0.5s ease;
+}
+
+.imageWrapper:hover .storyImage {
+  transform: scale(1.05);
+}
+
+.storyContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.visionCard,
+.missionCard {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  height: 100%;
+}
+
+.visionCard:hover,
+.missionCard:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--mantine-shadow-lg);
+}
+
+.visionCard {
+  border-top: 4px solid var(--mantine-color-orange-6);
+}
+
+.missionCard {
+  border-top: 4px solid var(--mantine-color-green-6);
+}
+
+@media (max-width: 768px) {
+  .storyContent {
+    margin-top: 1.5rem;
+  }
+}
