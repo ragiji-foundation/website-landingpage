@@ -1,0 +1,135 @@
+.richTextContent {
+  font-family: var(--mantine-font-family);
+  line-height: 1.7;
+}
+
+/* Typography */
+.richTextContent h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  margin-top: 1.5rem;
+}
+
+.richTextContent h2 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  margin-top: 1.5rem;
+}
+
+.richTextContent h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.richTextContent h4 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.richTextContent p {
+  margin-bottom: 1rem;
+}
+
+/* Lists */
+.richTextContent ul,
+.richTextContent ol {
+  padding-left: 2rem;
+  margin-bottom: 1rem;
+}
+
+.richTextContent li {
+  margin-bottom: 0.5rem;
+}
+
+/* Links */
+.richTextContent a {
+  color: var(--mantine-color-blue-6);
+  text-decoration: none;
+}
+
+.richTextContent a:hover {
+  text-decoration: underline;
+}
+
+/* Images */
+.richTextContent img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--mantine-radius-sm);
+  margin: 1rem 0;
+}
+
+/* Blockquote */
+.richTextContent blockquote {
+  border-left: 4px solid var(--mantine-color-blue-3);
+  padding-left: 1rem;
+  font-style: italic;
+  color: var(--mantine-color-gray-7);
+  margin: 1rem 0;
+}
+
+/* Code */
+.richTextContent pre {
+  background-color: var(--mantine-color-gray-0);
+  padding: 1rem;
+  border-radius: var(--mantine-radius-sm);
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.richTextContent code {
+  font-family: monospace;
+  background-color: var(--mantine-color-gray-0);
+  padding: 0.2rem 0.4rem;
+  border-radius: var(--mantine-radius-xs);
+}
+
+/* Horizontal rule */
+.richTextContent hr {
+  border: 0;
+  height: 1px;
+  background-color: var(--mantine-color-gray-3);
+  margin: 2rem 0;
+}
+
+/* Text alignment */
+.richTextContent .text-left {
+  text-align: left;
+}
+
+.richTextContent .text-center {
+  text-align: center;
+}
+
+.richTextContent .text-right {
+  text-align: right;
+}
+
+.richTextContent .text-justify {
+  text-align: justify;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .richTextContent h1 {
+    font-size: 1.75rem;
+  }
+
+  .richTextContent h2 {
+    font-size: 1.5rem;
+  }
+
+  .richTextContent h3 {
+    font-size: 1.25rem;
+  }
+
+  .richTextContent h4 {
+    font-size: 1.1rem;
+  }
+}

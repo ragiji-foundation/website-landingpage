@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { Container, Title, Text, Image, Badge, Group, Stack, Skeleton } from '@mantine/core';
 import { Banner } from '@/components/Banner';
-import { RichTextContent } from '@/components/RichTextContent'; // Updated import path
+import RichTextContent  from '@/components/RichTextContent'; // Updated import path
 import { useSuccessStoriesStore } from '@/store/useSuccessStoriesStore';
 import { useBannerStore } from '@/store/useBannerStore';
 import classes from './success-story.module.css';
