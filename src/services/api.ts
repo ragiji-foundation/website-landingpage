@@ -15,5 +15,13 @@ export const api = {
     return this.get('/api/initiatives');
   },
 
+  async getSuccessStories() {
+    return this.get('/api/success-stories');
+  },
+
+  async getSuccessStoryBySlug(slug: string) {
+    return this.get(`/api/success-stories/slug/${slug}`);
+  },
+
   // ... other API methods
 };

@@ -246,3 +246,91 @@
   z-index: -1;
   opacity: 0;
 }
+
+.featuresGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.featureCard {
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.mediaContainer {
+  position: relative;
+  height: 225px;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.videoThumbnail {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.playOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.2);
+  color: white;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.playOverlay:hover {
+  opacity: 1;
+}
+
+.contentContainer {
+  padding: 1.5rem;
+}
+
+.featureTitle {
+  margin-bottom: 0.75rem;
+}
+
+.featureDescription {
+  margin-bottom: 1rem;
+  color: var(--mantine-color-gray-7);
+}
+
+/* Responsive styles */
+@media (min-width: 768px) {
+  .featuresGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 992px) {
+  .featureCard {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .mediaContainer {
+    flex: 0 0 40%;
+    height: 100%;
+    min-height: 250px;
+  }
+
+  .contentContainer {
+    flex: 0 0 60%;
+  }
+
+  .featuresGrid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -6,24 +6,23 @@ import { useBannerStore, BannerType } from '@/store/useBannerStore';
  * Custom hook to fetch and retrieve banner data
  * This abstracts the banner fetching logic to prevent infinite re-renders
  * @param type The banner type to retrieve
- * @param useFallback Whether to use a fallback banner if the requested one doesn't exist
+ * @param autoFetch Whether to automatically fetch banners
  */
-export function useBanner(type: BannerType | string, useFallback: boolean = true) {
-  const { banners, loading, error, initialized, fetchBanners, getBannerByType } = useBannerStore();
+export function useBanner(type: BannerType | string, autoFetch = true) {
+  const { fetchBanners, getBannerByType, loading, error } = useBannerStore();
 
-  // Only fetch if not initialized
   useEffect(() => {
-    if (!initialized) {
+    if (autoFetch) {
       fetchBanners();
     }
-  }, [initialized, fetchBanners]);
+  }, [fetchBanners, autoFetch]);
 
-  const banner = getBannerByType(type, useFallback);
+  const banner = getBannerByType(type);
 
   return {
     banner,
     loading,
     error,
-    banners
+    fetchBanners
   };
 }

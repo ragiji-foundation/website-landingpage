@@ -1,321 +1,243 @@
 "use client"
 
-import { useState, useRef } from "react";
-import { Container, Title, Text, Stack, Button, Modal, AspectRatio, Loader, Group, Box, Anchor } from "@mantine/core";
-import { IconPlayerPlay, IconArrowRight } from "@tabler/icons-react";
+import { useState, useEffect } from "react";
+import { Container, Title, Button, Modal, AspectRatio, Loader, Group, Box, Skeleton, Alert } from "@mantine/core";
+import { IconPlayerPlay, IconArrowRight, IconInfoCircle } from "@tabler/icons-react";
 import { useRouter } from 'next/navigation';
-import { useMediaQuery } from '@mantine/hooks';
-import DOMPurify from 'dompurify';
-import parse from 'html-react-parser';
 import Image from 'next/image';
-import styles from './features-section.module.css';
-
-interface MediaItem {
-  type: 'video' | 'image';
-  url: string;
-  thumbnail?: string;
-}
-
-interface RichTextMark {
-  type: 'bold' | 'italic' | 'underline';
-}
-
-interface RichTextNode {
-  type: string;
-  text?: string;
-  marks?: RichTextMark[];
-  content?: RichTextNode[];
-  level?: number; // Add level property
-}
-
-interface RichTextDocument {
-  type: 'doc';
-  content: RichTextNode[];
-}
-
-interface Feature {
-  title: string;
-  description: string | RichTextDocument;
-}
-
-interface ContentItem extends Feature {
-  mediaItem: MediaItem;
-  slug?: string; // Add slug for URL routing
-}
+import { RichTextContent } from '@/components/RichTextContent';
+import { useFeaturesStore } from '@/store/useFeaturesStore';
+import classes from './features-section.module.css';
 
 interface FeaturesSectionProps {
-  heading: string;
-  content: ContentItem[]; // This is required
-  ctaButton: {
+  heading?: string;
+  ctaButton?: {
     text: string;
     url: string;
   };
+  maxFeatures?: number;
+  category?: string;
 }
 
-// Add default props
-const defaultProps = {
-  heading: "Features",
-  content: [],
-  ctaButton: {
-    text: "Get Started",
-    url: "#"
-  }
-};
+export default function FeaturesSection({
+  heading = "Our Initiatives",
+  ctaButton = { text: "Explore All Initiatives", url: "/initiatives" },
+  maxFeatures = 4,
+  category
+}: FeaturesSectionProps) {
+  const { features, loading, error, fetchFeatures } = useFeaturesStore();
+  const [selectedMedia, setSelectedMedia] = useState<{ type: string, url: string } | null>(null);
+  const [mediaLoading, setMediaLoading] = useState(false);
+  const router = useRouter();
 
-function RichTextContent({ content }: { content: RichTextNode[] | string | RichTextDocument }) {
-  // Handle string content
-  if (typeof content === 'string') {
-    const sanitizedHtml = DOMPurify.sanitize(content, {
-      ADD_TAGS: ['h1', 'h2', 'h3', 'h4', 'p', 'span', 'strong', 'em', 'ul', 'ol', 'li', 'blockquote'],
-      ADD_ATTR: ['class', 'style'],
-    });
-    return <Box className={styles.richContent}>{parse(sanitizedHtml)}</Box>;
-  }
+  // Fetch features on component mount
+  useEffect(() => {
+    fetchFeatures();
+  }, [fetchFeatures]);
 
-  // Handle RichTextDocument
-  if ('type' in content && content.type === 'doc') {
-    return <RichTextContent content={content.content} />;
-  }
+  // Function to extract YouTube video ID
+  const getYoutubeId = (url: string) => {
+    const match = url.match(/(?:youtu\.be\/|youtube\.com(?:\/embed\/|\/v\/|\/watch\?v=|\/user\/\S+))([^\/&\?]{10,12})/);
+    return match?.[1] || '';
+  };
 
-  // Handle array of RichTextNodes
-  if (Array.isArray(content)) {
+  // Function to get embed URL for videos
+  const getEmbedUrl = (url: string) => {
+    const videoId = getYoutubeId(url);
+    return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+  };
+
+  // Handle media click to open modal
+  const handleMediaClick = (item: { type: string, url: string }) => {
+    setSelectedMedia(item);
+    setMediaLoading(true);
+  };
+
+  // Handle modal close
+  const handleModalClose = () => {
+    setSelectedMedia(null);
+    setMediaLoading(false);
+  };
+
+  // Filter features by category if specified
+  const filteredFeatures = category
+    ? features.filter(feature => feature.category === category)
+    : features;
+
+  // Limit to specified number of features
+  const displayFeatures = filteredFeatures.slice(0, maxFeatures);
+
+  // Show loading skeleton
+  if (loading) {
     return (
-      <Stack gap="md">
-        {content.map((node, index) => {
-          switch (node.type) {
-            case 'paragraph':
-              return (
-                <Text key={index} className={styles.richParagraph}>
-                  {node.content?.map((child, childIndex) => {
-                    const text = child.text || '';
-                    if (child.marks?.some(mark => mark.type === 'bold')) {
-                      return <strong key={childIndex} className={styles.richBold}>{text}</strong>;
-                    }
-                    if (child.marks?.some(mark => mark.type === 'italic')) {
-                      return <em key={childIndex} className={styles.richItalic}>{text}</em>;
-                    }
-                    return text;
-                  })}
-                </Text>
-              );
-            case 'bulletList':
-              return (
-                <ul key={index} className={styles.richList}>
-                  {node.content?.map((item, itemIndex) => (
-                    <li key={itemIndex} className={styles.richListItem}>
-                      {item.content?.[0].text}
-                    </li>
-                  ))}
-                </ul>
-              );
-            case 'heading':
-              const HeadingComponent = node.level === 2 ? 'h2' : 'h3';
-              return (
-                <Title
-                  key={index}
-                  order={node.level as 2 | 3}
-                  className={node.level === 2 ? styles.richHeading2 : styles.richHeading3}
-                >
-                  {node.content?.[0].text}
-                </Title>
-              );
-            default:
-              return null;
-          }
-        })}
-      </Stack>
+      <Container size="lg" py="xl">
+        <Skeleton height={40} width="30%" mx="auto" mb="xl" />
+
+        <div className={classes.featuresGrid}>
+          {[...Array(maxFeatures)].map((_, i) => (
+            <div key={i} className={classes.featureCard}>
+              <Skeleton height={225} width="100%" />
+              <div className={classes.contentContainer}>
+                <Skeleton height={30} width="70%" mb="md" />
+                <Skeleton height={60} width="90%" mb="md" />
+                <Skeleton height={36} width={120} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </Container>
     );
   }
 
-  // Fallback for unexpected content
-  return <Text>Invalid content format</Text>;
-}
-
-function MediaContentPair({ item, onMediaClick }: { item: ContentItem, onMediaClick: (media: MediaItem) => void }) {
-  const router = useRouter();
-
-  const handleTitleClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (item.slug) {
-      router.push(`/stories/${item.slug}`);
-    }
-  };
-
-  return (
-    <div className={styles.mediaContentPair}>
-      <div className={styles.mediaItem} onClick={() => onMediaClick(item.mediaItem)}>
-        {item.mediaItem.type === 'video' ? (
-          <div className={styles.videoThumbnail}>
-            <Image
-              src={item.mediaItem.thumbnail || `https://img.youtube.com/vi/${getYoutubeId(item.mediaItem.url)}/maxresdefault.jpg`}
-              alt="Video thumbnail"
-              width={800}
-              height={450}
-              style={{ objectFit: 'cover' }}
-            />
-            <IconPlayerPlay className={styles.playIcon} />
-          </div>
-        ) : (
-          <Image
-            src={item.mediaItem.url}
-            alt="Feature"
-            width={800}
-            height={450}
-            style={{ objectFit: 'cover' }}
-          />
-        )}
-      </div>
-      <div className={styles.content}>
-        <Title
-          order={3}
-          className={styles.contentTitle}
-          onClick={handleTitleClick}
-          style={{ cursor: 'pointer' }}
-        >
-          {item.title}
-        </Title>
-        <RichTextContent content={item.description} />
-        <Anchor
-          onClick={handleTitleClick}
-          className={styles.readMore}
-          mt="xl"
-        >
-          <Group gap={4}>
-            <span>Read More</span>
-            <IconArrowRight size={16} />
-          </Group>
-        </Anchor>
-      </div>
-    </div>
-  );
-}
-
-export default function FeaturesSection({ heading, content, ctaButton }: FeaturesSectionProps) {
-  const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
-  const [loading, setLoading] = useState(false);
-  const isMobile = useMediaQuery('(max-width: 768px)');
-  const videoRef = useRef<HTMLIFrameElement>(null);
-
-  const handleMediaClick = (item: MediaItem) => {
-    setSelectedMedia(item);
-    setLoading(true);
-  };
-
-  const handleMediaLoad = () => {
-    setLoading(false);
-  };
-
-  const handleModalClose = () => {
-    setSelectedMedia(null);
-    setLoading(false);
-    if (videoRef.current) {
-      videoRef.current.src = videoRef.current.src; // Reset video
-    }
-  };
-
-  // Add content validation
-  if (!Array.isArray(content) || content.length === 0) {
+  // Show error state
+  if (error && displayFeatures.length === 0) {
     return (
-      <Container size="xl" py="xl">
-        <Title order={2} size="h1" mb="xl" ta="center">
-          {heading}
-        </Title>
-        <Text c="dimmed" ta="center">No content available</Text>
+      <Container size="lg" py="xl">
+        <Title order={2} ta="center" mb="xl">{heading}</Title>
+        <Alert
+          icon={<IconInfoCircle size={16} />}
+          title="Failed to load features"
+          color="red"
+          mb="xl"
+        >
+          {error.message || "An error occurred while loading features. Please try again later."}
+        </Alert>
       </Container>
     );
   }
 
   return (
-    <Container
-      size="xl"
-      py="xl"
-      style={{
-        position: 'relative',
-        zIndex: 1,
-      }}
-    >
-      <Title order={2} size="h1" mb="xl" ta="center">
-        {heading}
-      </Title>
-      <div className={styles.mediaGrid}>
-        {content.map((item, index) => (
-          <MediaContentPair
-            key={index}
-            item={item}
-            onMediaClick={(media) => {
-              setSelectedMedia(media);
-              setLoading(true);
-            }}
-          />
-        ))}
-      </div>
-      <Group justify="center">
-        <Button
-          component="a"
-          href={ctaButton.url}
-          size="lg"
-          variant="gradient"
-          gradient={{ from: 'blue', to: 'cyan' }}
+    <Container size="lg" py="xl">
+      <Title order={2} ta="center" mb="xl">{heading}</Title>
+
+      {/* Show warning if using fallback data */}
+      {error && displayFeatures.length > 0 && (
+        <Alert
+          icon={<IconInfoCircle size={16} />}
+          title="Note"
+          color="yellow"
+          mb="lg"
+          withCloseButton
         >
-          {ctaButton.text}
-        </Button>
-      </Group>
+          We're experiencing some issues connecting to our servers. Some content might be limited or outdated.
+        </Alert>
+      )}
+
+      {displayFeatures.length === 0 ? (
+        <Box ta="center" mt="xl">No features available</Box>
+      ) : (
+        <div className={classes.featuresGrid}>
+          {displayFeatures.map((feature) => (
+            <div key={feature.id} className={classes.featureCard}>
+              {/* Media Section */}
+              <div
+                className={classes.mediaContainer}
+                onClick={() => handleMediaClick(feature.mediaItem)}
+              >
+                {feature.mediaItem.type === 'video' ? (
+                  <div className={classes.videoThumbnail}>
+                    <Image
+                      src={feature.mediaItem.thumbnail || `https://img.youtube.com/vi/${getYoutubeId(feature.mediaItem.url)}/hqdefault.jpg`}
+                      alt={feature.title}
+                      fill
+                      style={{ objectFit: 'cover' }}
+                    />
+                    <div className={classes.playOverlay}>
+                      <IconPlayerPlay size={48} stroke={1.5} />
+                    </div>
+                  </div>
+                ) : (
+                  <Image
+                    src={feature.mediaItem.url}
+                    alt={feature.title}
+                    width={400}
+                    height={225}
+                    style={{ objectFit: 'cover' }}
+                  />
+                )}
+              </div>
+
+              {/* Content Section */}
+              <div className={classes.contentContainer}>
+                <Title order={3} className={classes.featureTitle}>{feature.title}</Title>
+
+                <RichTextContent
+                  content={feature.description}
+                  truncate={true}
+                  maxLength={120}
+                />
+
+                {feature.slug && (
+                  <Button
+                    variant="subtle"
+                    onClick={() => router.push(`/initiatives/${feature.slug}`)}
+                    rightSection={<IconArrowRight size={16} />}
+                  >
+                    Learn More
+                  </Button>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* CTA Button */}
+      {displayFeatures.length > 0 && filteredFeatures.length > maxFeatures && (
+        <Group justify="center" mt="xl">
+          <Button
+            component="a"
+            href={ctaButton.url}
+            size="lg"
+            variant="gradient"
+            gradient={{ from: 'blue', to: 'cyan' }}
+          >
+            {ctaButton.text}
+          </Button>
+        </Group>
+      )}
+
+      {/* Media Modal */}
       <Modal
         opened={!!selectedMedia}
         onClose={handleModalClose}
-        size="90%"
+        size="xl"
         padding={0}
-        className={styles.modalContent}
-        classNames={{
-          content: styles.modalContent,
-          inner: styles.modalInner
-        }}
         centered
-        withCloseButton={false}
       >
-        <div className={styles.modalInner}>
-          {loading && (
-            <div className={styles.loaderContainer}>
-              <Loader size="xl" />
-            </div>
-          )}
+        {mediaLoading && (
+          <Box ta="center" py="xl">
+            <Loader size="lg" />
+          </Box>
+        )}
 
-          {selectedMedia?.type === 'video' ? (
-            <AspectRatio ratio={16 / 9}>
-              <iframe
-                ref={videoRef}
-                src={getEmbedUrl(selectedMedia.url)}
-                title="Video content"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                onLoad={handleMediaLoad}
-                style={{ opacity: loading ? 0 : 1 }}
-              />
-            </AspectRatio>
-          ) : (
-            <Image
-              src={selectedMedia?.url || ''}
-              alt="Feature"
-              className={styles.fullscreenMedia}
-              onLoad={handleMediaLoad}
-              style={{ opacity: loading ? 0 : 1 }}
-              width={800}
-              height={450}
+        {selectedMedia?.type === 'video' ? (
+          <AspectRatio ratio={16 / 9}>
+            <iframe
+              src={getEmbedUrl(selectedMedia.url)}
+              title="Video content"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              onLoad={() => setMediaLoading(false)}
+              style={{ opacity: mediaLoading ? 0 : 1 }}
             />
-          )}
-        </div>
+          </AspectRatio>
+        ) : selectedMedia && (
+          <Image
+            src={selectedMedia.url || ''}
+            alt="Feature"
+            width={1200}
+            height={675}
+            onLoad={() => setMediaLoading(false)}
+            style={{
+              opacity: mediaLoading ? 0 : 1,
+              maxWidth: '100%',
+              maxHeight: '80vh',
+              objectFit: 'contain'
+            }}
+          />
+        )}
       </Modal>
     </Container>
   );
-}
-
-// Helper functions for video URLs
-function getYoutubeId(url: string) {
-  const match = url.match(/(?:youtu\.be\/|youtube\.com(?:\/embed\/|\/v\/|\/watch\?v=|\/user\/\S+|\/ytscreeningroom\?v=|\/sandalsResorts#\w\/\w\/.*\/))([^\/&\?]{10,12})/);
-  return match?.[1] || '';
-}
-
-function getEmbedUrl(url: string) {
-  const videoId = getYoutubeId(url);
-  return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
 }

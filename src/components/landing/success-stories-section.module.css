@@ -15,19 +15,30 @@
 .card {
   min-width: 300px;
   cursor: pointer;
-  transition: transform 200ms ease, box-shadow 0.3s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   scroll-snap-align: start;
+  height: 100%;
+  transform: translateY(0);
+  overflow: hidden;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+  /* Add bottom margin for more spacing */
 }
 
 @media (min-width: 768px) {
   .card {
     min-width: 400px;
+    height: 100%;
+    min-height: 400px;
+    /* Control minimum height */
   }
 }
 
 .card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .imageContainer {
@@ -99,4 +110,151 @@
 .scrollButton:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.wrapper {
+  background: linear-gradient(180deg, rgba(240, 245, 255, 0.5) 0%, rgba(255, 255, 255, 1) 100%);
+  padding: 2rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.wrapper::before {
+  content: '';
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: rgba(0, 114, 245, 0.05);
+  z-index: 0;
+}
+
+.sectionTitle {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--mantine-color-dark-9);
+}
+
+.sectionSubtitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  color: var(--mantine-color-blue-6);
+  margin-bottom: 0.25rem;
+}
+
+.viewAllButton {
+  transition: transform 0.2s ease;
+  border-width: 1.5px;
+}
+
+.viewAllButton:hover {
+  transform: translateX(3px);
+}
+
+.cardInner {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.imageWrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+.featuredBadge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-weight: 500;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+}
+
+.cardContent {
+  padding: 1.5rem;
+  /* Slightly increased padding */
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-grow: 1;
+}
+
+.cardContent>*:not(:last-child) {
+  margin-bottom: 1rem;
+}
+
+.quoteIcon {
+  color: var(--mantine-color-blue-4);
+  opacity: 0.5;
+  margin-bottom: 0.5rem;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.3;
+  margin-bottom: 0.75rem;
+  color: var(--mantine-color-dark-8);
+}
+
+.contentWrapper {
+  flex: 1;
+  margin-bottom: 1rem;
+}
+
+.content {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--mantine-color-dark-5);
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1rem;
+  margin-top: auto;
+  border-top: 1px solid var(--mantine-color-gray-2);
+}
+
+.avatar {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.personName {
+  color: var(--mantine-color-dark-7);
+  line-height: 1.2;
+}
+
+.date {
+  color: var(--mantine-color-gray-6);
+}
+
+.readMoreButton {
+  margin-top: 1.25rem;
+  transition: background-color 0.2s ease;
+  background-color: var(--mantine-color-blue-1);
+  color: var(--mantine-color-blue-7);
+}
+
+.readMoreButton:hover {
+  background-color: var(--mantine-color-blue-2);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .sectionTitle {
+    font-size: 2rem;
+  }
+
+  .card {
+    margin-bottom: 1.5rem;
+  }
 }

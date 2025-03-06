@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { Container, Title, Card, Avatar, Text, Group } from '@mantine/core';
 import { Carousel } from '@mantine/carousel';
 import { useTestimonialsStore } from '@/store/useTestimonialsStore';
-import { TestimonialsSkeleton } from './skeletons/TestimonialsSkeleton';
+import { TestimonialsSkeleton } from '@/components/skeletons/TestimonialsSkeleton';
 import classes from './Testimonials.module.css';
 
 export function Testimonials() {
@@ -27,7 +27,7 @@ export function Testimonials() {
           slideGap="lg"
           align="start"
           slidesToScroll={1}
-          // Handle responsive design with CSS or another method
+        // Handle responsive design with CSS or another method
         >
           {items.map((testimonial) => (
             <Carousel.Slide key={testimonial.id}>

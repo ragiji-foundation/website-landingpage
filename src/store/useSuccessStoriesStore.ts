@@ -1,15 +1,16 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
-import { SuccessStory } from '@/types/success-story';
-import { mockSuccessStories } from '@/data/mock-success-stories';
+import { SuccessStory as SuccessStoryType } from '@/types/success-story'; // Aliased import
 
-interface SuccessStoriesState {
-  stories: SuccessStory[];
-  selectedStory: SuccessStory | null;
+// Export the SuccessStory type from the store file itself
+export interface SuccessStoriesState {
+  stories: SuccessStoryType[];
+  selectedStory: SuccessStoryType | null;
   loading: boolean;
   error: Error | null;
   fetchStories: () => Promise<void>;
-  setSelectedStory: (story: SuccessStory | null) => void;
+  setSelectedStory: (story: SuccessStoryType | null) => void;
+  fetchStoryBySlug: (slug: string) => Promise<void>;
   fetchStoryById: (id: string) => Promise<void>;
   retryCount: number;
   lastFetched: number | null;
@@ -44,7 +45,7 @@ export const useSuccessStoriesStore = create<SuccessStoriesState>()(
 
             const data = await response.json();
             set({
-              stories: data.sort((a: SuccessStory, b: SuccessStory) => {
+              stories: data.sort((a: SuccessStoryType, b: SuccessStoryType) => {
                 if (a.featured === b.featured) return a.order - b.order;
                 return a.featured ? -1 : 1;
               }),
@@ -60,9 +61,8 @@ export const useSuccessStoriesStore = create<SuccessStoriesState>()(
               set(state => ({ retryCount: state.retryCount + 1 }));
               setTimeout(() => get().fetchStories(), 1000 * get().retryCount);
             } else {
-              // Use mock data as fallback
-              set({
-                stories: get().stories.length ? get().stories : mockSuccessStories,
+              //remove the fallback data from the store to make the app more robust.
+               set({
                 error: error as Error,
                 loading: false
               });
@@ -70,7 +70,42 @@ export const useSuccessStoriesStore = create<SuccessStoriesState>()(
           }
         },
 
-        setSelectedStory: (story) => set({ selectedStory: story }),
+        setSelectedStory: (story: SuccessStoryType | null) => set({ selectedStory: story }),
+
+        fetchStoryBySlug: async (slug: string) => {
+          try {
+            set({ loading: true, error: null });
+
+            // First check if we already have this story in our cache
+            const existingStory = get().stories.find(s => s.slug === slug);
+            if (existingStory) {
+              set({
+                selectedStory: existingStory,
+                loading: false
+              });
+              return;
+            }
+
+            const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/api/success-stories/slug/${slug}`);
+
+            if (!response.ok) throw new Error(`Failed to fetch story with slug: ${slug}`);
+
+            const data = await response.json();
+            set(state => ({
+              stories: state.stories.some(s => s.slug === slug)
+                ? state.stories.map(s => s.slug === slug ? data : s)
+                : [...state.stories, data],
+              selectedStory: data,
+              loading: false
+            }));
+          } catch (error) {
+            console.error(`Error fetching story with slug ${slug}:`, error);
+                set({
+                  error: new Error(`Story with slug ${slug} not found`),
+                  loading: false
+                });
+          }
+        },
 
         fetchStoryById: async (id: string) => {
           try {
@@ -88,18 +123,10 @@ export const useSuccessStoriesStore = create<SuccessStoriesState>()(
             }));
           } catch (error) {
             console.error('Error fetching story:', error);
-
-            // Use mock data as fallback for individual story
-            const mockStory = mockSuccessStories.find(s => s.id === id);
-            if (mockStory) {
-              set(state => ({
-                stories: state.stories.some(s => s.id === id)
-                  ? state.stories.map(s => s.id === id ? mockStory : s)
-                  : [...state.stories, mockStory],
-                error: error as Error,
-                loading: false
-              }));
-            }
+                set({
+                  error: new Error(`Story with slug ${id} not found`),
+                  loading: false
+                });
           }
         },
       }),
@@ -113,3 +140,6 @@ export const useSuccessStoriesStore = create<SuccessStoriesState>()(
     )
   )
 );
+
+// Export the SuccessStoriesState interface under a shorter alias.
+export type SuccessStory = SuccessStoryType;

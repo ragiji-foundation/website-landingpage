@@ -1,13 +1,12 @@
 'use client';
 import { useEffect } from 'react';
-import { Container, Title, Grid, Card, Image, Text, Badge, Button, Group, Overlay } from '@mantine/core';
-import { notifications } from '@mantine/notifications';
+import { Container, Title, Grid, Card, Image, Text, Button, Group, Box } from '@mantine/core';
 import { IconArrowRight } from '@tabler/icons-react';
 import { useSuccessStoriesStore } from '@/store/useSuccessStoriesStore';
-import { RichTextContent } from '@/components/RichTextContent';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { SuccessStoriesSkeleton } from '../skeletons/SuccessStoriesSkeleton';
+import { RichTextContent } from '@/components/RichTextContent';
 import classes from './success-stories-section.module.css';
 
 export default function SuccessStoriesSection() {
@@ -18,67 +17,98 @@ export default function SuccessStoriesSection() {
     fetchStories();
   }, [fetchStories]);
 
-  if (loading) return <SuccessStoriesSkeleton count={6} />;
+  if (loading) return <SuccessStoriesSkeleton count={3} />;
 
-  // Get latest 6 stories
+  if (error) {
+    return (
+      <Container size="lg" py="xl">
+        <Text c="dimmed" ta="center">Unable to load success stories. Please try again later.</Text>
+      </Container>
+    );
+  }
+
+  // Get latest 3 stories for a cleaner design
   const latestStories = [...stories]
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-    .slice(0, 6);
+    .slice(0, 3);
+
+  if (latestStories.length === 0) {
+    return (
+      <Container size="lg" py="xl">
+        <Text c="dimmed" ta="center">No success stories available at the moment.</Text>
+      </Container>
+    );
+  }
+
+  // Update to use slug instead of ID
+  interface Story {
+    id: string;
+    slug: string;
+    title: string;
+    content: string;
+    imageUrl?: string;
+    createdAt: string;
+  }
+
+  const handleCardClick = (story: Story) => {
+    router.push(`/success-stories/${story.slug}`);
+  };
 
   return (
-    <Container size="lg" py="xl"> {/* Changed from xl to lg */}
-      <Group justify="space-between" mb="xl">
-        <Title>Success Stories</Title>
+    <Container size="lg" py="xl">
+      <Group justify="center" mb="xl" align="center">
+        <Title order={2} ta="center">Success Stories</Title>
+      </Group>
+
+      <Group justify="right" mb="md">
         <Button
           component={Link}
           href="/success-stories"
-          variant="light"
+          variant="subtle"
           rightSection={<IconArrowRight size={16} />}
         >
-          View All Stories
+          View All
         </Button>
       </Group>
 
-      <Grid>
+      <Grid gutter="xl">
         {latestStories.map((story) => (
-          <Grid.Col key={story.id} span={{ base: 12, sm: 6, md: 4, lg: 3 }}> {/* Added lg: 3 for narrower cards */}
-            <Card shadow="sm" padding="lg" radius="md" withBorder className={classes.card}>
-              <Card.Section className={classes.imageSection} onClick={() => router.push(`/success-stories/${story.id}`)}>
-                {story.imageUrl && (
-                  <>
-                    <Image
-                      src={story.imageUrl}
-                      height={200}
-                      alt={story.title}
-                      className={classes.image}
-                    />
-                    <Overlay className={classes.overlay} opacity={0.2} />
-                    <div className={classes.imageCaption}>
-                      <Text size="sm" c="white" fw={500}>Click to read full story</Text>
-                    </div>
-                  </>
-                )}
-              </Card.Section>
+          <Grid.Col key={story.id} span={{ base: 12, sm: 6, md: 4, lg: 3 }}>
+            <Card
+              shadow="sm"
+              padding={0}
+              radius="md"
+              className={classes.card}
+              onClick={() => handleCardClick(story)}
+            >
+              {story.imageUrl && (
+                <Card.Section>
+                  <Image
+                    src={story.imageUrl}
+                    height={180}
+                    alt={story.title}
+                  />
+                </Card.Section>
+              )}
 
-              <Group justify="space-between" mt="md" mb="xs">
-                <Text fw={500} lineClamp={1}>{story.title}</Text>
-                {story.featured && (
-                  <Badge color="blue" variant="light">Featured</Badge>
-                )}
-              </Group>
+              <div className={classes.cardContent}>
+                <Title order={3} size="h4" mb="xs">{story.title}</Title>
 
-              <RichTextContent
-                content={story.content}
-                truncate
-                maxLength={100}
-              />
+                <RichTextContent
+                  content={story.content}
+                  truncate
+                  maxLength={120}
+                />
 
-              <Group mt="md">
-                <div>
-                  <Text fw={500}>{story.personName}</Text>
-                  <Text size="sm" c="dimmed">{story.location}</Text>
-                </div>
-              </Group>
+                <Button
+                  variant="light"
+                  color="blue"
+                  fullWidth
+                  mt="md"
+                >
+                  Read Story
+                </Button>
+              </div>
             </Card>
           </Grid.Col>
         ))}

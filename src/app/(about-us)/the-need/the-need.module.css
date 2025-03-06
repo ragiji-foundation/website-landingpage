@@ -1,10 +1,19 @@
 .imageWrapper {
   position: relative;
   cursor: pointer;
+  width: 100%;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  border-radius: var(--mantine-radius-md);
+  overflow: hidden;
+  transition: transform 0.3s ease;
 }
 
 .imageWrapper:hover .image {
-  transform: scale(1.05);
+  transform: scale(1.02);
+}
+
+.imageWrapper:hover {
+  transform: translateY(-5px);
 }
 
 .image {
@@ -12,6 +21,8 @@
   width: 100%;
   height: auto;
   transition: transform 0.3s ease;
+  object-fit: cover;
+  border-radius: 8px;
 }
 
 /* Optional: Add a subtle overlay effect on hover */
@@ -29,4 +40,114 @@
 
 .imageWrapper:hover::after {
   background: rgba(0, 0, 0, 0.1);
+}
+
+.sectionTitle {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 2rem;
+  color: var(--mantine-color-dark-8);
+}
+
+.sectionTitle::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background-color: var(--mantine-color-blue-6);
+}
+
+.statsImage {
+  width: 100%;
+  height: auto;
+  max-height: 600px;
+  object-fit: contain;
+}
+
+.content {
+  color: var(--mantine-color-dark-7);
+  line-height: 1.7;
+  font-size: 1.05rem;
+  margin-bottom: 1rem;
+}
+
+/* HTML Content Styling */
+.htmlContent {
+  color: var(--mantine-color-dark-7);
+  line-height: 1.7;
+}
+
+.htmlContent p {
+  margin-bottom: 1rem;
+  font-size: 1.05rem;
+}
+
+.htmlContent p:last-child {
+  margin-bottom: 0;
+}
+
+/* Empty paragraphs should be hidden */
+.htmlContent p:empty {
+  display: none;
+}
+
+.mainText {
+  font-size: 1.1rem;
+}
+
+.statistics {
+  background-color: var(--mantine-color-gray-1);
+  padding: 1rem;
+  border-radius: var(--mantine-radius-md);
+  border-left: 4px solid var(--mantine-color-blue-5);
+}
+
+.impact {
+  color: var(--mantine-color-dark-8);
+}
+
+.htmlContent ul,
+.htmlContent ol {
+  margin-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.htmlContent li {
+  margin-bottom: 0.5rem;
+}
+
+.htmlContent a {
+  color: var(--mantine-color-blue-6);
+  text-decoration: none;
+}
+
+.htmlContent a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .sectionTitle {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .sectionTitle::after {
+    width: 60px;
+    bottom: -8px;
+  }
+
+  .content {
+    font-size: 1rem;
+  }
+
+  .htmlContent p {
+    font-size: 1rem;
+  }
+
+  .imageWrapper {
+    margin-top: 1.5rem;
+  }
 }

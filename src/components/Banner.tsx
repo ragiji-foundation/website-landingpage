@@ -2,7 +2,6 @@
 import React from 'react';
 import { Container, Title, Text, Breadcrumbs, Anchor, Box, Badge, Group, Center, Skeleton } from '@mantine/core';
 import Link from 'next/link';
-import { useBanner } from '@/hooks/useBanner';
 import { BannerType } from '@/store/useBannerStore';
 import classes from './Banner.module.css';
 
@@ -20,33 +19,23 @@ interface BannerProps {
   tags?: string[];
 }
 
-export function Banner({ type, title, description, backgroundImage, breadcrumbs = [], tags = [] }: BannerProps) {
-  // Use the custom hook to get banner data
-  const { banner, loading, error } = useBanner(type, true);
+export function Banner({
+  type,
+  title,
+  description,
+  backgroundImage,
+  breadcrumbs = [],
+  tags = []
+}: BannerProps) {
 
-  // If loading, show a skeleton
-  if (loading) {
-    return (
-      <Box className={classes.bannerSkeleton}>
-        <Container size="xl" className={classes.container}>
-          <Skeleton height={30} width="60%" mb="xs" />
-          <Skeleton height={20} width="80%" mb="md" />
-          <Skeleton height={15} width="40%" />
-        </Container>
-      </Box>
-    );
-  }
-
-  // Use provided props if available, otherwise use banner data
-  const bannerTitle = title || (banner?.title || '');
-  const bannerDescription = description || (banner?.description || '');
-  const bannerImage = backgroundImage || (banner?.backgroundImage || '');
+  // Figure out class based on type
+  const bannerClass = `${classes.banner} ${classes[type as string] || ''}`;
 
   return (
     <Box
-      className={classes.banner}
+      className={bannerClass}
       style={{
-        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${bannerImage})`,
+        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${backgroundImage})`,
       }}
     >
       <Container size="xl" className={classes.container}>
@@ -69,8 +58,8 @@ export function Banner({ type, title, description, backgroundImage, breadcrumbs 
           </Breadcrumbs>
         )}
 
-        <Title className={classes.title}>{bannerTitle}</Title>
-        {bannerDescription && <Text className={classes.description}>{bannerDescription}</Text>}
+        <Title className={classes.title}>{title}</Title>
+        {description && <Text className={classes.description}>{description}</Text>}
 
         {tags.length > 0 && (
           <Group mt="lg">

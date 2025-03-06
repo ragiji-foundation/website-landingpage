@@ -50,3 +50,51 @@
 .card:nth-child(6) {
   animation-delay: 0.6s;
 }
+
+.pageTitle {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 1.5rem;
+}
+
+.pageTitle::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -10px;
+  width: 60px;
+  height: 4px;
+  background-color: var(--mantine-color-blue-6);
+}
+
+.scrollTopButton {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  z-index: 100;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.filterGroup {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.searchInput {
+  flex: 1;
+  min-width: 200px;
+}
+
+@media (max-width: 768px) {
+  .filterGroup {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .pageTitle {
+    font-size: 1.75rem;
+    margin-bottom: 1.25rem;
+  }
+}

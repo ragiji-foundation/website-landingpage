@@ -1,6 +1,6 @@
 import { Card, Skeleton, Group } from '@mantine/core';
 import { Carousel } from '@mantine/carousel';
-import classes from '../Testimonials.module.css';
+import classes from '@/components/landing/Testimonials.module.css';
 
 export function TestimonialsSkeleton() {
   return (
