@@ -51,10 +51,11 @@ export default function CareersPage() {
   const [careers, setCareers] = useState<Career[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { fetchBanners, getBannerByType, loading: bannerLoading, error: bannerError } = useBannerStore();
+  const { fetchBanners, getBannerByType, banners, loading: bannerLoading, error: bannerError } = useBannerStore();
 
   useEffect(() => {
     fetchBanners();
+    console.log('Fetching banners for careers page');
   }, [fetchBanners]);
 
   const processCareerData = (career: any) => ({
@@ -102,6 +103,11 @@ export default function CareersPage() {
     fetchCareers();
   }, []);
 
+  // Add better debugging
+  const banner = getBannerByType('careers');
+  console.log('Careers banner:', banner);
+  console.log('All banners:', banners);
+
   if (loading || bannerLoading) return <CareersSkeleton />;
 
   if (error || bannerError) {
@@ -109,21 +115,86 @@ export default function CareersPage() {
       <Stack align="center" py="xl">
         <Title order={3}>Unable to load page</Title>
         <Text c="dimmed">{error || bannerError?.message}</Text>
+        <Text>Available banner types: {banners.map(b => b.type).join(', ')}</Text>
         <Button onClick={fetchCareers}>Retry</Button>
       </Stack>
     );
   }
 
-  const banner = getBannerByType('careers');
+  // Use fallback if banner not found
   if (!banner) {
+    console.warn('Career banner not found, using fallback');
     return (
-      <Stack align="center" py="xl">
-        <Title order={3}>Banner not found</Title>
-        <Text c="dimmed">Unable to load page banner</Text>
-      </Stack>
+      <ErrorBoundary>
+        <main>
+          <Banner
+            type="careers"
+            title="Join Our Team"
+            description="Be part of our mission to create positive change."
+            backgroundImage="/banners/careers-banner.jpg"
+            breadcrumbs={[
+              { label: 'Home', link: '/' },
+              { label: 'Careers' }
+            ]}
+          />
+
+          <Container size="xl" py="xl">
+            <Grid gutter="lg">
+              {careers.map((career) => (
+                <Grid.Col key={career.id} span={{ base: 12, md: 6 }}>
+                  <Card shadow="sm" padding="lg" radius="md" className={styles.careerCard}>
+                    <Stack>
+                      <Title order={3}>{career.title}</Title>
+
+                      <Group gap="lg">
+                        <Group gap="xs">
+                          <IconMapPin size={16} />
+                          <Text size="sm">{career.location}</Text>
+                        </Group>
+                        <Group gap="xs">
+                          <IconBriefcase size={16} />
+                          <Badge variant="light">{career.type}</Badge>
+                        </Group>
+                        <Group gap="xs">
+                          <IconClock size={16} />
+                          <Text size="sm" c="dimmed">
+                            {career.formattedDate}
+                          </Text>
+                        </Group>
+                      </Group>
+
+                      <Text lineClamp={3} style={{ whiteSpace: 'pre-line' }}>
+                        {career.description}
+                      </Text>
+
+                      <Group justify="flex-end" gap="md">
+                        <Button
+                          variant="outline"
+                          component={Link}
+                          href={`/careers/${career.slug}`}
+                        >
+                          View Details
+                        </Button>
+                        <Button
+                          variant="filled"
+                          component={Link}
+                          href={`/careers/${career.slug}/apply`}
+                        >
+                          Apply Now
+                        </Button>
+                      </Group>
+                    </Stack>
+                  </Card>
+                </Grid.Col>
+              ))}
+            </Grid>
+          </Container>
+        </main>
+      </ErrorBoundary>
     );
   }
 
+  // Use actual banner
   return (
     <ErrorBoundary>
       <main>

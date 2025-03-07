@@ -2,13 +2,13 @@
   min-height: 400px;
   background-image: linear-gradient(
     -60deg,
-    var(--mantine-color-blue-4) 0%,
-    var(--mantine-color-blue-7) 100%
+    var(--color-primary) 100%,
+    var(--mantine-color-blue-7) 10%
   );
   border-radius: var(--mantine-radius-md);
   padding: calc(var(--mantine-spacing-xl) * 2.5);
 
-  @media (max-width: $mantine-breakpoint-sm) {
+  @media (max-width: var(--mantine-breakpoint-sm)) {
     padding: calc(var(--mantine-spacing-xl) * 1.5);
   }
 }
@@ -25,7 +25,7 @@
   color: var(--mantine-color-blue-0);
   max-width: 300px;
 
-  @media (max-width: $mantine-breakpoint-sm) {
+  @media (max-width: var(--mantine-breakpoint-sm) ){
     max-width: 100%;
   }
 }

@@ -2,30 +2,65 @@
 import { ContactUs } from '@/components/ContactUs';
 import { BannerType } from '@/types/banner'; // Adjust the import path as necessary
 import { Banner } from '@/components/Banner';
-import { Loader, Text } from '@mantine/core';
+import { Loader, Text, Container, Center } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import { useBannerStore } from '@/store/useBannerStore';
 import { useEffect } from 'react';
 
 export default function ContactPage() {
-  const { fetchBanners, getBannerByType, loading, error } = useBannerStore();
+  const { fetchBanners, getBannerByType, banners, loading, error } = useBannerStore();
 
   useEffect(() => {
     fetchBanners();
   }, [fetchBanners]);
 
-  const banner = getBannerByType('contact');
+  // Fix: Better type checking and debugging
+  const banner = getBannerByType('contactus'); // Changed from 'contact' to 'contactus'
 
-  if (loading) return <Loader />;
-  if (error) return <Text c="red">{error.message}</Text>;
-  if (!banner) return <Text>Banner not found</Text>;
+  if (loading) return (
+    <Center p="xl">
+      <Loader size="xl" />
+    </Center>
+  );
 
+  if (error) return (
+    <Container p="xl">
+      <Text c="red">Error loading banner: {error.message}</Text>
+      <Text>Available banners: {banners.length > 0 ?
+        banners.map(b => b.type).join(', ') :
+        'No banners available'}
+      </Text>
+    </Container>
+  );
+
+  // Use fallback if banner not found
+  if (!banner) {
+    console.warn('Contact banner not found, using fallback');
+    return (
+      <>
+        <Banner
+          type="contactus"
+          title="Contact Us"
+          description="Get in touch with us"
+          backgroundImage="/banners/contact-banner.jpg"
+          breadcrumbs={[
+            { label: 'Home', link: '/' },
+            { label: 'Contact Us' }
+          ]}
+        />
+        <ContactUs />
+        <Notifications />
+      </>
+    );
+  }
+
+  // Use actual banner
   return (
     <>
       <Banner
         type={banner.type as BannerType}
         title={banner.title}
-        description={banner.description ?? "Get in touch with us"}
+        description={banner.description}
         backgroundImage={banner.backgroundImage || "/banners/contact-banner.jpg"}
         breadcrumbs={[
           { label: 'Home', link: '/' },

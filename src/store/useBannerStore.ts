@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
-export type BannerType = 'blog' | 'about' | 'initiatives' | 'successstories' | 'media' |
+export type BannerType = 'blog' | 'about' | 'initiatives' | 'successstories' | 'home' | 'media' |
   'electronicmedia' | 'gallery' | 'newscoverage' | 'ourstory' | 'need' | 'centers' | 'contactus' | 'careers' | 'awards' | 'error';
 
 export interface Banner {
@@ -40,18 +40,26 @@ export const useBannerStore = create<BannerState>()(
             throw new Error('API URL is not configured');
           }
 
+          // Fix: Add more robust fetch with better error handling and credentials
           const response = await fetch(`${API_URL}/api/banner`, {
-            cache: 'no-store', // Ensure we don't use browser cache
+            method: 'GET',
+            cache: 'no-store',
             headers: {
-              'Cache-Control': 'no-cache'
-            }
+              'Content-Type': 'application/json',
+              'Cache-Control': 'no-cache',
+              'Accept': 'application/json'
+            },
+            next: { revalidate: 0 } // For Next.js 13+
           });
 
           if (!response.ok) {
-            throw new Error('Failed to fetch banners');
+            const errorText = await response.text();
+            console.error('Banner API error:', errorText);
+            throw new Error(`Failed to fetch banners: ${response.status} ${response.statusText}`);
           }
 
           const data = await response.json();
+          console.log('Banners fetched successfully:', data);
           set({
             banners: data,
             loading: false,
@@ -68,6 +76,7 @@ export const useBannerStore = create<BannerState>()(
 
       getBannerByType: (type) => {
         const { banners } = get();
+        console.log(`Looking for banner type: ${type}, Available banners:`, banners);
         const banner = banners.find(b => b.type === type);
 
         // Return the found banner or null (no default banners)
