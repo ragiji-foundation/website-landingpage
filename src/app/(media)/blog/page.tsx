@@ -146,7 +146,9 @@ function BlogList() {
           headers: {
             'Content-Type': 'application/json',
             'Cache-Control': 'no-cache',
-          }
+          },
+          // Add mode to help with CORS debugging
+          mode: 'cors',
         });
 
         if (!response.ok) {
@@ -165,8 +167,13 @@ function BlogList() {
         setPosts(fetchedPosts);
         setTotalPages(Math.ceil(total / postsPerPage));
       } catch (error) {
+        // More detailed error logging
         console.error('Error fetching blogs:', error);
-        setError('Failed to load blog posts. Please try again later.');
+        if (error instanceof Error) {
+          setError(`Failed to load blog posts: ${error.message}`);
+        } else {
+          setError('Failed to load blog posts. Please try again later.');
+        }
         // Fallback to mock data
         setPosts(mockBlogs.posts);
         setTotalPages(Math.ceil(mockBlogs.total / postsPerPage));
