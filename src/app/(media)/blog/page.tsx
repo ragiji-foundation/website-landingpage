@@ -158,9 +158,9 @@ function BlogList() {
         const data = await response.json();
         console.log('Blog data received:', data);
 
-        // Handle different API response formats
-        const fetchedPosts = Array.isArray(data) ? data : (data.posts || data.data || []);
-        const total = data.total || fetchedPosts.length;
+        // Updated to correctly handle the API response structure
+        const fetchedPosts = data.blogs || [];
+        const total = data.pagination?.total || fetchedPosts.length;
 
         setPosts(fetchedPosts);
         setTotalPages(Math.ceil(total / postsPerPage));
@@ -272,7 +272,7 @@ export default function BlogPage() {
               { label: 'Home', link: '/' },
               { label: 'Blog' }
             ]}
-           
+
           />
           <BlogList />
         </main>
@@ -293,7 +293,7 @@ export default function BlogPage() {
             { label: 'Home', link: '/' },
             { label: 'Blog' }
           ]}
-   
+
         />
         <BlogList />
       </main>

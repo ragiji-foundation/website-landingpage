@@ -22,30 +22,31 @@ import { Banner } from '@/components/Banner';
 import { useBannerStore } from '@/store/useBannerStore';
 import { mockBlogs } from '@/data/mock-blogs';
 
+// Update the BlogPost interface to match both API and mock data structures
 interface BlogPost {
   id: string;
   slug: string;
   title: string;
-  excerpt: string;
-  coverImage: string;
-  publishedAt: string;
-  readingTime: string;
-  author: {
+  excerpt?: string;
+  coverImage?: string;
+  publishedAt?: string;
+  createdAt?: string; // For API response
+  readingTime?: string;
+  author?: {
     name: string;
-    avatar: string;
-    bio: string;
+    avatar?: string;
+    bio?: string;
   };
-  content: {
+  content: string | {
     html: string;
-    meta: {
-      title: string;
-      description: string;
-      keywords: string;
-      ogImage: string;
+    meta?: {
+      title?: string;
+      description?: string;
+      keywords?: string;
+      ogImage?: string;
     };
   };
 }
-
 
 function BlogSkeleton() {
   return (
@@ -104,7 +105,18 @@ export default function BlogPostPage() {
 
         const data = await response.json();
         console.log('Blog post data:', data);
-        setPost(data);
+
+        // Transform API data to match the BlogPost interface if needed
+        const transformedPost: BlogPost = {
+          ...data,
+          // Ensure content is in the right format
+          content: data.content || { html: '' },
+          // Add fallbacks for fields that might be missing or named differently
+          publishedAt: data.publishedAt || data.createdAt,
+          coverImage: data.coverImage || data.imageUrl,
+        };
+
+        setPost(transformedPost);
       } catch (error) {
         console.error('Error fetching blog post:', error);
         setError('Failed to load blog post. Please try again later.');
@@ -205,7 +217,11 @@ export default function BlogPostPage() {
           <Paper p="md" radius="md" withBorder>
             <div
               className="blog-content"
-              dangerouslySetInnerHTML={{ __html: post.content.html }}
+              dangerouslySetInnerHTML={{
+                __html: typeof post.content === 'string'
+                  ? post.content
+                  : post.content.html
+              }}
             />
           </Paper>
         </Container>
