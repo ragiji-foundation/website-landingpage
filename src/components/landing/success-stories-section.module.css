@@ -20,19 +20,21 @@
   height: 100%;
   transform: translateY(0);
   overflow: hidden;
-  border: none;
+  border: 1px solid var(--mantine-color-gray-2);
   display: flex;
   flex-direction: column;
   margin-bottom: 10px;
-  /* Add bottom margin for more spacing */
+  flex: 0 0 auto;
+  /* Prevents shrinking/growing */
 }
 
 @media (min-width: 768px) {
   .card {
-    min-width: 400px;
+    min-width: 350px;
+    max-width: 350px;
+    /* Fixed width to prevent overlap */
     height: 100%;
     min-height: 400px;
-    /* Control minimum height */
   }
 }
 
@@ -54,7 +56,6 @@
 
 .image {
   width: 100%;
-  aspect-ratio: 1;
   object-fit: cover;
   transition: transform 500ms ease;
 }
@@ -178,12 +179,10 @@
 
 .cardContent {
   padding: 1.5rem;
-  /* Slightly increased padding */
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  flex-grow: 1;
 }
 
 .cardContent>*:not(:last-child) {
@@ -213,6 +212,28 @@
   font-size: 0.95rem;
   line-height: 1.6;
   color: var(--mantine-color-dark-5);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+}
+
+.content p {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+}
+
+.content p:last-child {
+  margin-bottom: 0;
+}
+
+.content a {
+  color: var(--mantine-color-blue-6);
+  text-decoration: none;
+}
+
+.content a:hover {
+  text-decoration: underline;
 }
 
 .footer {

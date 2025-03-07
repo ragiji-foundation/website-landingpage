@@ -1,17 +1,18 @@
 'use client';
-import { useEffect } from 'react';
-import { Container, Title, Grid, Card, Image, Text, Button, Group, Box } from '@mantine/core';
-import { IconArrowRight } from '@tabler/icons-react';
+import { useEffect, useRef } from 'react';
+import { Container, Title, Card, Image, Text, Button, Group, Box, ActionIcon } from '@mantine/core';
+import { IconArrowRight, IconArrowLeft, IconArrowNarrowRight } from '@tabler/icons-react';
 import { useSuccessStoriesStore } from '@/store/useSuccessStoriesStore';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { SuccessStoriesSkeleton } from '../skeletons/SuccessStoriesSkeleton';
-import { RichTextContent } from '@/components/RichTextContent';
+// Removed RichTextContent import as we'll use dangerouslySetInnerHTML instead
 import classes from './success-stories-section.module.css';
 
 export default function SuccessStoriesSection() {
   const { stories, loading, error, fetchStories } = useSuccessStoriesStore();
   const router = useRouter();
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchStories();
@@ -54,66 +55,143 @@ export default function SuccessStoriesSection() {
     router.push(`/success-stories/${story.slug}`);
   };
 
+  const scrollLeft = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: -300, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: 300, behavior: 'smooth' });
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  };
+
+  // Truncate HTML content
+  const truncateHTML = (htmlContent: string, maxLength: number) => {
+    // Create a temporary div to parse HTML
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlContent;
+
+    // Get the text content
+    const textContent = tempDiv.textContent || tempDiv.innerText || '';
+
+    if (textContent.length <= maxLength) {
+      return htmlContent;
+    }
+
+    let truncated = textContent.substring(0, maxLength);
+
+    // Don't cut words in the middle
+    if (truncated.lastIndexOf(' ') > maxLength - 20) {
+      truncated = truncated.substring(0, truncated.lastIndexOf(' '));
+    }
+
+    return `${truncated}...`;
+  };
+
   return (
-    <Container size="lg" py="xl">
-      <Group justify="center" mb="xl" align="center">
-        <Title order={2} ta="center">Success Stories</Title>
-      </Group>
+    <Box className={classes.wrapper}>
+      <Container size="lg" py="xl">
+        <Box mb={30}>
 
-      <Group justify="right" mb="md">
-        <Button
-          component={Link}
-          href="/success-stories"
-          variant="subtle"
-          rightSection={<IconArrowRight size={16} />}
-        >
-          View All
-        </Button>
-      </Group>
+          <Title className={classes.sectionTitle} ta="center">Success Stories</Title>
+        </Box>
 
-      <Grid gutter="xl">
-        {latestStories.map((story) => (
-          <Grid.Col key={story.id} span={{ base: 12, sm: 6, md: 4, lg: 3 }}>
+        <Group justify="flex-end" mb="lg">
+          {/* <Group>
+            <ActionIcon
+              variant="light"
+              size="lg"
+              radius="xl"
+              onClick={scrollLeft}
+              className={classes.scrollButton}
+            >
+              <IconArrowLeft size="1.2rem" />
+            </ActionIcon>
+            <ActionIcon
+              variant="light"
+              size="lg"
+              radius="xl"
+              onClick={scrollRight}
+              className={classes.scrollButton}
+            >
+              <IconArrowRight size="1.2rem" />
+            </ActionIcon>
+          </Group> */}
+          <Button
+            component={Link}
+            href="/success-stories"
+            variant="outline"
+            rightSection={<IconArrowNarrowRight size={16} />}
+            className={classes.viewAllButton}
+          >
+            View All Stories
+          </Button>
+        </Group>
+
+        <Box className={classes.scrollContainer} ref={scrollRef}>
+          {latestStories.map((story) => (
             <Card
+              key={story.id}
               shadow="sm"
               padding={0}
               radius="md"
               className={classes.card}
               onClick={() => handleCardClick(story)}
             >
-              {story.imageUrl && (
-                <Card.Section>
-                  <Image
-                    src={story.imageUrl}
-                    height={180}
-                    alt={story.title}
-                  />
-                </Card.Section>
-              )}
+              <div className={classes.cardInner}>
+                {story.imageUrl && (
+                  <div className={classes.imageWrapper}>
+                    <Card.Section className={classes.imageSection}>
+                      <Image
+                        src={story.imageUrl}
+                        height={200}
+                        alt={story.title}
+                        className={classes.image}
+                      />
+                      <div className={classes.overlay} />
+                    </Card.Section>
+                  </div>
+                )}
 
-              <div className={classes.cardContent}>
-                <Title order={3} size="h4" mb="xs">{story.title}</Title>
+                <div className={classes.cardContent}>
+                  <div className={classes.contentWrapper}>
+                    <Title order={3} className={classes.title}>{story.title}</Title>
 
-                <RichTextContent
-                  content={story.content}
-                  truncate
-                  maxLength={120}
-                />
+                    <div
+                      className={classes.content}
+                      dangerouslySetInnerHTML={{
+                        __html: truncateHTML(story.content, 120)
+                      }}
+                    />
+                  </div>
 
-                <Button
-                  variant="light"
-                  color="blue"
-                  fullWidth
-                  mt="md"
-                >
-                  Read Story
-                </Button>
+                  <div className={classes.footer}>
+                    <Text size="sm" className={classes.date}>
+                      {formatDate(story.createdAt)}
+                    </Text>
+                    <Button
+                      variant="subtle"
+                      color="blue"
+                      size="sm"
+                      rightSection={<IconArrowRight size={14} />}
+                    >
+                      Read More
+                    </Button>
+                  </div>
+                </div>
               </div>
             </Card>
-          </Grid.Col>
-        ))}
-      </Grid>
-    </Container>
+          ))}
+        </Box>
+      </Container>
+    </Box>
   );
 }
 
