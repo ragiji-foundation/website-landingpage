@@ -8,6 +8,7 @@ import Image from 'next/image';
 import { RichTextContent } from '@/components/RichTextContent';
 import { useFeaturesStore } from '@/store/useFeaturesStore';
 import classes from './features-section.module.css';
+import { getYoutubeId } from '@/utils/media';
 
 interface FeaturesSectionProps {
   heading?: string;
@@ -20,7 +21,7 @@ interface FeaturesSectionProps {
 }
 
 export default function FeaturesSection({
-  heading = "Our Initiatives",
+  heading = "RAGIJI FOUNDATION",
   ctaButton = { text: "Explore All Initiatives", url: "/initiatives" },
   maxFeatures = 4,
   category
@@ -139,20 +140,19 @@ export default function FeaturesSection({
                     <Image
                       src={feature.mediaItem.thumbnail || `https://img.youtube.com/vi/${getYoutubeId(feature.mediaItem.url)}/hqdefault.jpg`}
                       alt={feature.title}
-                      fill
-                      style={{ objectFit: 'cover' }}
+                      width={300}
+                      height={200}
                     />
-                    <div className={classes.playOverlay}>
-                      <IconPlayerPlay size={48} stroke={1.5} />
+                    <div className={classes.playButton}>
+                      <IconPlayerPlay />
                     </div>
                   </div>
                 ) : (
                   <Image
                     src={feature.mediaItem.url}
                     alt={feature.title}
-                    width={400}
-                    height={225}
-                    style={{ objectFit: 'cover' }}
+                    width={300}
+                    height={200}
                   />
                 )}
               </div>

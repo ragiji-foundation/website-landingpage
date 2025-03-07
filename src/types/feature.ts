@@ -15,7 +15,7 @@ export interface RichTextDocument {
 }
 
 export interface MediaItem {
-  type: 'video' | 'image';
+  type: 'image' | 'video' | 'icon';
   url: string;
   thumbnail?: string;
 }
@@ -23,9 +23,14 @@ export interface MediaItem {
 export interface Feature {
   id: string;
   title: string;
-  description: RichTextDocument;
-  mediaItem: MediaItem;
+  description: string;
+  slug: string;
+  category?: string;
   order: number;
+  mediaItem: MediaItem;
+  createdAt: string;
+  updatedAt: string;
+  isPublished: boolean;
 }
 
 export interface FeatureSection {

@@ -105,6 +105,7 @@ export function HeaderMenu() {
             alt="Ragi Ji Foundation"
             width={180}
             height={80}
+            priority
             style={{ objectFit: 'contain' }}
           />
         </Link>

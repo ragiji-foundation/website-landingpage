@@ -15,6 +15,8 @@ import { CookieBanner } from '@/components/CookieBanner';
 import { GoogleAnalytics } from '@/components/GoogleAnalytics';
 import { JoinUs } from '@/components/JoinUs';
 import { AnalyticsProvider } from '@/components/AnalyticsProvider';
+import Image from 'next/image';
+import Link from 'next/link';
 
 export default function RootLayout({
   children,
@@ -27,6 +29,7 @@ export default function RootLayout({
         <ColorSchemeScript />
       </head>
       <body>
+      
         <CookieProvider>
           <LanguageProvider>
             <SearchProvider>

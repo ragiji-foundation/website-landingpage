@@ -20,17 +20,20 @@ function Card({ imageUrl, title, link }: Omit<CarouselItem, 'id'>) {
       p="xl"
       radius="vs"
       style={{
-        backgroundImage: `linear-gradient(169deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.8)), url(${imageUrl})`,
+        backgroundImage: `linear-gradient(169deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.8) 100%), url(${imageUrl})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         height: 'var(--carousel-height)',
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'center',
+        justifyContent: 'flex-end', // Changed from center to flex-end
+        paddingBottom: '15vh', // Added padding at the bottom
+        transition: 'transform 0.3s ease',
+        '&:hover': {
+          transform: 'scale(1.02)',
+        }
       }}
       className={classes.card}
-      component="a"
-      href={link}
     >
       <Center>
         <div className={classes.cardContent}>
@@ -38,6 +41,15 @@ function Card({ imageUrl, title, link }: Omit<CarouselItem, 'id'>) {
             <Title order={2} className={classes.title} ta="center">
               {title}
             </Title>
+            <Paper
+              component="a"
+              href={link}
+              className={classes.ctaButton}
+              p="md"
+              radius="md"
+            >
+              Learn More
+            </Paper>
           </Stack>
         </div>
       </Center>
@@ -103,9 +115,9 @@ export function CardsCarousel() {
 
   if (error) {
     return (
-      <Center style={{ height: '90vh' }}>
+      <Center style={{ height: '80vh' }}>
         <Stack align="center" gap="md">
-          <Text color="red" size="xl" fw={700}>Error</Text>
+          <Text c="red" size="xl" fw={700}>Error</Text>
           <Text>{error}</Text>
         </Stack>
       </Center>
@@ -119,7 +131,6 @@ export function CardsCarousel() {
       </Center>
     );
   }
-
   const slides = data.map((item) => (
     <Carousel.Slide key={item.id}>
       <Card

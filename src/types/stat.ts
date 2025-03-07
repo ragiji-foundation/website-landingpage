@@ -1,7 +1,9 @@
 export interface Stat {
   id: string;
-  label: string;
+  icon: string;
   value: string;
-  icon?: string;
+  label: string;
   order: number;
+  createdAt?: string;
+  updatedAt?: string;
 }
