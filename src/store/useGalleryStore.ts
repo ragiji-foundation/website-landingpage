@@ -1,32 +1,41 @@
 import { create } from 'zustand';
-import { GalleryItem } from '@/types/gallery';
-import { mockGallery } from '@/data/mock-gallery';
+
+interface GalleryItem {
+  id: number;
+  title: string;
+  imageUrl: string; // Make sure this matches API response
+  description: string;
+  category: string;
+  createdAt: string;
+}
 
 interface GalleryState {
   items: GalleryItem[];
-  selectedImage: GalleryItem | null;
   loading: boolean;
-  error: Error | null;
+  error: string | null;
   fetchGallery: () => Promise<void>;
-  setSelectedImage: (image: GalleryItem | null) => void;
 }
 
 export const useGalleryStore = create<GalleryState>((set) => ({
   items: [],
-  selectedImage: null,
   loading: false,
   error: null,
   fetchGallery: async () => {
+    set({ loading: true });
     try {
-      set({ loading: true, error: null });
-      const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/api/gallery`);
-      if (!response.ok) throw new Error('Failed to fetch gallery');
+      const response = await fetch('/api/gallery');
       const data = await response.json();
-      set({ items: data, loading: false });
+      // Transform API data if needed to match GalleryItem interface
+      const transformedData = data.map((item: any) => ({
+        ...item,
+        imageUrl: item.image_url || item.image || item.imageUrl, // Handle all possible field names
+        image: item.image_url || item.image || item.imageUrl, // Ensure both properties are set
+      }));
+      set({ items: transformedData, error: null });
     } catch (error) {
-      console.error('Error fetching gallery:', error);
-      set({ items: mockGallery, error: error as Error, loading: false });
+      set({ error: 'Failed to fetch gallery items' });
+    } finally {
+      set({ loading: false });
     }
   },
-  setSelectedImage: (image) => set({ selectedImage: image }),
 }));

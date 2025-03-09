@@ -1,55 +1,29 @@
 'use client';
-import { useEffect } from 'react';
-import { Container, SimpleGrid, Paper, Text, Group } from '@mantine/core';
-import { IconUsers, IconBuildingCommunity, IconSchool, IconHeart } from '@tabler/icons-react';
-import { useStatsStore } from '@/store/useStatsStore';
-import { StatsGridSkeleton } from '../skeletons/StatsGridSkeleton';
+import { Container, SimpleGrid, Text, Title } from '@mantine/core';
+import { motion } from 'framer-motion';
 
-// Icon mapping
-const ICONS = {
-  'users': IconUsers,
-  'community': IconBuildingCommunity,
-  'school': IconSchool,
-  'heart': IconHeart,
-  // Add more icons as needed
-};
+const stats = [
+  { value: '10K+', label: 'Lives Impacted' },
+  { value: '50+', label: 'Projects' },
+  { value: '20+', label: 'Communities' },
+];
 
 export default function StatsSection() {
-  const { stats, loading, error, fetchStats } = useStatsStore();
-
-  useEffect(() => {
-    fetchStats();
-  }, [fetchStats]);
-
-  if (loading) {
-    return <StatsGridSkeleton />;
-  }
-
-  // Use fallback data if there's an error or no data
-  const displayStats = stats.length > 0 ? stats : [
-    { id: '1', icon: 'users', value: '5,000+', label: 'Users' },
-    { id: '2', icon: 'community', value: '50+', label: 'Communities' },
-    { id: '3', icon: 'school', value: '100+', label: 'Schools' },
-    { id: '4', icon: 'heart', value: '10K+', label: 'Donations' }
-  ];
-
   return (
     <Container size="lg" py="xl">
-      <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }}>
-        {displayStats.map((stat) => {
-          const Icon = ICONS[stat.icon as keyof typeof ICONS] || IconHeart;
-          return (
-            <Paper key={stat.id} withBorder p="md" radius="md">
-              <Group>
-                <Icon size={28} color="var(--mantine-color-blue-6)" />
-                <div>
-                  <Text size="xl" fw={700}>{stat.value}</Text>
-                  <Text size="sm" c="dimmed">{stat.label}</Text>
-                </div>
-              </Group>
-            </Paper>
-          );
-        })}
+      <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="xl">
+        {stats.map((stat, index) => (
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, scale: 0.5 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: index * 0.2 }}
+          >
+            <Title order={2} ta="center" size="3rem">{stat.value}</Title>
+            <Text ta="center" size="lg" mt="xs">{stat.label}</Text>
+          </motion.div>
+        ))}
       </SimpleGrid>
     </Container>
   );

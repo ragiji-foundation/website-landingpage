@@ -9,6 +9,7 @@ import { AwardsSkeleton } from '@/components/skeletons/AwardsSkeleton';
 import styles from './awards.module.css';
 import { notifications } from '@mantine/notifications';
 import { BannerType } from '@/types/banner';
+import { PageTransition } from '@/components/PageTransition';
 
 function AwardGrid() {
   const { awards, loading, error, fetchAwards } = useAwardStore();
@@ -77,24 +78,26 @@ export default function AwardsPage() {
   if (!banner) return <div>Banner not found</div>;
 
   return (
-    <ErrorBoundary>
-      <main>
-        <Banner
-          type={banner.type as BannerType}
-          title={banner.title}
-          description={banner.description ?? 'Celebrating our achievements and milestones in making a difference.'}
-          backgroundImage={banner.backgroundImage || '/banners/awards-banner.jpg'}
-          breadcrumbs={[
-            { label: 'Home', link: '/' },
-            { label: 'Awards' }
-          ]}
-          tags={['Excellence', 'Impact', 'Recognition']}
-        />
+    <PageTransition>
+      <ErrorBoundary>
+        <main>
+          <Banner
+            type={banner.type as BannerType}
+            title={banner.title}
+            description={banner.description ?? 'Celebrating our achievements and milestones in making a difference.'}
+            backgroundImage={banner.backgroundImage || '/banners/awards-banner.jpg'}
+            breadcrumbs={[
+              { label: 'Home', link: '/' },
+              { label: 'Awards' }
+            ]}
+            tags={['Excellence', 'Impact', 'Recognition']}
+          />
 
-        <Container size="xl" py="xl">
-          <AwardGrid />
-        </Container>
-      </main>
-    </ErrorBoundary>
+          <Container size="xl" py="xl">
+            <AwardGrid />
+          </Container>
+        </main>
+      </ErrorBoundary>
+    </PageTransition>
   );
 }

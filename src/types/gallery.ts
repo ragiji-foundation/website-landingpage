@@ -1,9 +1,11 @@
 export interface GalleryItem {
-  id: string;
+  id: number;
+  image?: string;
+  imageUrl?: string;
   title: string;
-  description: string;
-  imageUrl: string;
+  count?: string;
+  description?: string;
   category: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
 }

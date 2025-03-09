@@ -1,9 +1,0 @@
-.container {
-  background-color: var(--mantine-color-gray-0);
-}
-
-.title {
-  background: linear-gradient(45deg, var(--mantine-color-blue-6), var(--mantine-color-cyan-6));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}

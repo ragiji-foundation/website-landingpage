@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react";
-import { Container, Title, Button, Modal, AspectRatio, Loader, Group, Box, Skeleton, Alert } from "@mantine/core";
+import { Container, Title, Button, Modal, AspectRatio, Loader, Group, Box, Skeleton, Alert, SimpleGrid, Card, Text, Stack } from "@mantine/core";
 import { IconPlayerPlay, IconArrowRight, IconInfoCircle } from "@tabler/icons-react";
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';

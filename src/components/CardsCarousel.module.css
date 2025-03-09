@@ -1,8 +1,44 @@
 .card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  cursor: pointer;
+  height: 90vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  text-align: center;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.3s ease;
+}
+
+.cardOverlay {
+  padding: 4rem 2rem;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.3) 100%);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cardTitle {
+  color: var(--mantine-color-white);
+  margin-bottom: 2rem;
+  font-size: 3.5rem;
+  line-height: 1.2;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.cardButton {
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+}
+
+.error {
+  max-width: 600px;
+  margin: 2rem auto;
+}
+
+.motionWrapper {
+  height: 100%;
 }
 
 .card:hover {
@@ -80,16 +116,48 @@
   --carousel-height: 90vh;
 }
 
-.indicator {
-  width: 12px;
-  height: 4px;
-  transition: width 250ms ease, background-color 250ms ease;
-  background-color: rgba(255, 255, 255, 0);
+.skeletonOverlay {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
 }
 
-.indicator[data-active] {
-  width: 40px;
-  background-color: rgba(255, 255, 255, 0.9);
+.skeletonGradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.2) 50%,
+      rgba(0, 0, 0, 0.8) 100%);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.skeletonOverlay::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg,
+      rgba(255, 255, 255, 0) 0,
+      rgba(255, 255, 255, 0.2) 50%,
+      rgba(255, 255, 255, 0) 100%);
+  animation: shimmer 2s infinite;
+  background-size: 1000px 100%;
 }
 
 @media (max-width: 768px) {
@@ -103,6 +171,29 @@
   }
 
   .title {
+    font-size: 1.5rem;
+  }
+
+  .card {
+    height: 60vh;
+  }
+
+  .cardTitle {
+    font-size: 2rem;
+  }
+
+  .cardButton {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .card {
+    height: 40vh;
+  }
+
+  .cardTitle {
     font-size: 1.5rem;
   }
 }

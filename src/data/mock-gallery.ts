@@ -2,7 +2,14 @@ import { GalleryItem } from '@/types/gallery';
 
 export const mockGallery: GalleryItem[] = [
   {
-    id: "1",
+    id: 1,
+    image: '/gallery/1.jpg',
+    title: 'Education Access',
+    count: '1,000+ Students',
+    category: 'Education'
+  },
+  {
+    id: 1,
     title: 'Education Program Launch',
     description: 'Launch of our new digital literacy program',
     imageUrl: '/gallery/education-launch.jpg',
@@ -11,7 +18,7 @@ export const mockGallery: GalleryItem[] = [
     updatedAt: new Date('2024-01-15').toISOString()
   },
   {
-    id: "2",
+    id: 2,
     title: 'Community Health Camp',
     description: 'Free health checkup camp in rural areas',
     imageUrl: '/gallery/health-camp.jpg',

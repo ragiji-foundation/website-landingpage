@@ -3,28 +3,22 @@ import axios from 'axios';
 
 export async function GET() {
   try {
-    // Forward to admin API
-    const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_ADMIN_API_URL}/api/gallery`,
+    // Replace with your actual API call
+    const data = [
       {
-        headers: {
-          'Accept': 'application/json'
-        }
-      }
-    );
+        id: 1,
+        image: '/gallery/1.jpg',
+        title: 'Education Access',
+        count: '1,000+ Students',
+        category: 'Education'
+      },
+      // ...more items
+    ];
 
-    return NextResponse.json(response.data);
-
+    return NextResponse.json(data);
   } catch (error) {
-    console.error('Gallery fetch error:', error);
-    if (axios.isAxiosError(error)) {
-      return NextResponse.json(
-        { error: error.response?.data?.message || 'Failed to fetch gallery items' },
-        { status: error.response?.status || 500 }
-      );
-    }
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Failed to fetch gallery items' },
       { status: 500 }
     );
   }

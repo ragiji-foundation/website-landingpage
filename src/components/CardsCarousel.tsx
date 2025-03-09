@@ -1,10 +1,12 @@
 "use client";
 import '@mantine/carousel/styles.css';
 import { Carousel } from '@mantine/carousel';
-import { Paper, Title, Center, Stack, Loader, Text } from '@mantine/core';
+import { Paper, Title, Center, Stack, Loader, Text, Badge, Button, Alert, Skeleton } from '@mantine/core';
 import { useEffect, useState } from 'react';
-
+import { motion } from 'framer-motion';
+import { IconArrowRight, IconAlertCircle } from '@tabler/icons-react';
 import classes from './CardsCarousel.module.css';
+import { CarouselSectionLoader } from './CarouselSectionLoader';
 
 interface CarouselItem {
   id: number;
@@ -13,46 +15,58 @@ interface CarouselItem {
   link: string;
 }
 
-function Card({ imageUrl, title, link }: Omit<CarouselItem, 'id'>) {
+function CarouselCard({ imageUrl, title, link }: Omit<CarouselItem, 'id'>) {
   return (
-    <Paper
-      shadow="md"
-      p="xl"
-      radius="vs"
-      style={{
-        backgroundImage: `linear-gradient(169deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.8) 100%), url(${imageUrl})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        height: 'var(--carousel-height)',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'flex-end', // Changed from center to flex-end
-        paddingBottom: '15vh', // Added padding at the bottom
-        transition: 'transform 0.3s ease',
-        '&:hover': {
-          transform: 'scale(1.02)',
-        }
-      }}
-      className={classes.card}
+    <motion.div
+      whileHover={{ scale: 1.02 }}
+      transition={{ duration: 0.3 }}
+      className={classes.motionWrapper}
     >
-      <Center>
-        <div className={classes.cardContent}>
-          <Stack align="center" gap="xl">
-            <Title order={2} className={classes.title} ta="center">
+      <Paper
+        shadow="md"
+        radius={0}
+        className={classes.card}
+        style={{
+          backgroundImage: `linear-gradient(to bottom, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6)), url(${imageUrl})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        <div className={classes.cardOverlay}>
+          <Stack gap="xl" align="center" justify="center">
+            <Title order={1} className={classes.cardTitle}>
               {title}
             </Title>
-            <Paper
+            <Button
               component="a"
               href={link}
-              className={classes.ctaButton}
-              p="md"
-              radius="md"
+              size="xl"
+              variant="gradient"
+              gradient={{ from: 'cyan', to: 'teal' }}
+              rightSection={<IconArrowRight size={20} />}
+              className={classes.cardButton}
             >
               Learn More
-            </Paper>
+            </Button>
           </Stack>
         </div>
-      </Center>
+      </Paper>
+    </motion.div>
+  );
+}
+
+function LoadingSkeleton() {
+  return (
+    <Paper shadow="md" radius={0} className={classes.card}>
+      <div className={classes.skeletonOverlay}>
+        <div className={classes.skeletonGradient} />
+        <div className={classes.cardOverlay}>
+          <Stack gap="xl" align="center" justify="center" style={{ width: '100%' }}>
+            <Skeleton height={60} width="70%" radius="md" />
+            <Skeleton height={50} width={200} radius="xl" />
+          </Stack>
+        </div>
+      </div>
     </Paper>
   );
 }
@@ -105,35 +119,40 @@ export function CardsCarousel() {
     return () => clearInterval(interval);
   }, [data.length]);
 
+  const fallbackData = [
+    {
+      id: 1,
+      title: 'Education Initiative',
+      imageUrl: '/carousel/education.jpg',
+      link: '/initiatives/education'
+    },
+    // ...more fallback items
+  ];
+
   if (loading) {
-    return (
-      <Center style={{ height: '90vh' }}>
-        <Loader size="xl" />
-      </Center>
-    );
+    return <CarouselSectionLoader />;
   }
 
   if (error) {
     return (
-      <Center style={{ height: '80vh' }}>
-        <Stack align="center" gap="md">
-          <Text c="red" size="xl" fw={700}>Error</Text>
-          <Text>{error}</Text>
-        </Stack>
-      </Center>
+      <Alert
+        icon={<IconAlertCircle size="1rem" />}
+        title="Error loading carousel"
+        color="red"
+        radius="md"
+        className={classes.error}
+      >
+        {error}
+      </Alert>
     );
   }
 
-  if (data.length === 0) {
-    return (
-      <Center style={{ height: '90vh' }}>
-        <Title order={2}>No gallery items found</Title>
-      </Center>
-    );
-  }
-  const slides = data.map((item) => (
+  // Use API data if available, otherwise use fallback
+  const carouselData = data.length > 0 ? data : fallbackData;
+
+  const slides = carouselData.map((item) => (
     <Carousel.Slide key={item.id}>
-      <Card
+      <CarouselCard
         imageUrl={item.imageUrl}
         title={item.title}
         link={item.link}
@@ -142,56 +161,39 @@ export function CardsCarousel() {
   ));
 
   return (
-    <Carousel
-      slideSize="100%"
-      slideGap="xs"
-      align="center"
-      slidesToScroll={1}
-      loop
-      withIndicators
-      withControls
-      initialSlide={active}
-      onSlideChange={setActive}
-      controlSize={44}
-      classNames={classes}
-      className={classes.carousel}
-      styles={{
-        root: {
-          height: 'var(--carousel-height)',
-        },
-        controls: {
-          transition: 'opacity 0.3s ease',
-          opacity: 0,
-          '&:hover': {
-            opacity: 0.1,
+    <div className={classes.wrapper}>
+      <Carousel
+        slideSize="100%"
+        slideGap={0}
+        align="start"
+        slidesToScroll={1}
+        loop
+        withControls
+        withIndicators
+        initialSlide={active}
+        onSlideChange={setActive}
+        classNames={classes}
+        styles={{
+          root: {
+            width: '100vw',
+            marginLeft: '0',
+            marginRight: '0',
+            height: '100vh'
           },
-        },
-        control: {
-          background: 'rgba(255, 255, 255, 0.1)',
-          backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(255, 255, 255, 0)',
-          color: 'white',
-          '&:hover': {
-            background: 'rgba(255, 255, 255, 0)',
+          viewport: { overflow: 'visible' },
+          control: {
+            backgroundColor: 'var(--mantine-color-dark-6)',
+            border: 'none',
+            color: 'var(--mantine-color-white)',
+            '&:hover': {
+              backgroundColor: 'var(--mantine-color-dark-5)',
+            },
           },
-        },
-        indicators: {
-          bottom: 40,
-          gap: '0.5rem',
-        },
-        indicator: {
-          width: 12,
-          height: 4,
-          transition: 'width 250ms ease, background-color 250ms ease',
-          backgroundColor: 'rgba(255, 255, 255, 0)',
-          '&[dataActive]': { // Changed from data-active to dataActive
-            width: 40,
-            backgroundColor: 'rgba(255, 255, 255, 0.9)',
-          },
-        },
-      }}
-    >
-      {slides}
-    </Carousel>
+
+        }}
+      >
+        {slides}
+      </Carousel>
+    </div>
   );
 }
