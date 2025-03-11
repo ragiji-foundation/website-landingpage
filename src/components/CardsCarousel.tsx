@@ -1,7 +1,7 @@
 "use client";
 import '@mantine/carousel/styles.css';
 import { Carousel } from '@mantine/carousel';
-import { Paper, Title, Center, Stack, Loader, Text } from '@mantine/core';
+import { Paper, Title, Center, Stack, Loader, Text, Box } from '@mantine/core';
 import { useEffect, useState } from 'react';
 
 import classes from './CardsCarousel.module.css';
@@ -9,41 +9,69 @@ import classes from './CardsCarousel.module.css';
 interface CarouselItem {
   id: number;
   title: string;
-  imageUrl: string;
-  link: string;
+  imageUrl: string | null;
+  link: string | null;
+  active: boolean;
+  order: number;
+  type?: 'image' | 'video';  // Make type optional
+  videoUrl?: string | null;
 }
 
-function Card({ imageUrl, title, link }: Omit<CarouselItem, 'id'>) {
+function Card({ imageUrl, videoUrl, title, type = 'image', link = '#' }: Omit<CarouselItem, 'id' | 'active' | 'order'>) {
+  // Add default type and link values
   return (
     <Paper
       shadow="md"
       p="xl"
       radius="vs"
+      component="a"
+      href={link || '#'}
       style={{
-        backgroundImage: `linear-gradient(169deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.8) 100%), url(${imageUrl})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
+        position: 'relative',
         height: 'var(--carousel-height)',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'flex-end', // Changed from center to flex-end
-        paddingBottom: '15vh', // Added padding at the bottom
-        transition: 'transform 0.3s ease',
-        '&:hover': {
-          transform: 'scale(1.02)',
-        }
+        overflow: 'hidden',
       }}
       className={classes.card}
     >
+      {type === 'image' ? (
+        <div
+          style={{
+            backgroundImage: `linear-gradient(169deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.8) 100%), url(${imageUrl})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+          }}
+        />
+      ) : type === 'video' && videoUrl ? (
+        <Box className={classes.videoContainer}>
+          <video
+            key={videoUrl}
+            src={videoUrl}
+            autoPlay
+            loop
+            muted
+            playsInline
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+            }}
+          />
+          <div className={classes.videoOverlay} />
+        </Box>
+      ) : null}
+
       <Center>
-        <div className={classes.cardContent}>
+        <div className={classes.contentWrapper}>
           <Stack align="center" gap="xl">
             <Title order={2} className={classes.title} ta="center">
               {title}
             </Title>
             <Paper
-              component="a"
-              href={link}
               className={classes.ctaButton}
               p="md"
               radius="md"
@@ -83,7 +111,18 @@ export function CardsCarousel() {
           throw new Error('Invalid data format received');
         }
 
-        setData(items);
+        // Filter active items, sort by order, and ensure required fields
+        const activeItems = items
+          .filter(item => item.active)
+          .sort((a, b) => a.order - b.order)
+          .map(item => ({
+            ...item,
+            type: item.videoUrl ? 'video' : 'image',
+            imageUrl: item.imageUrl || '',  // Provide default empty string
+            link: item.link || '#'  // Provide default hash link
+          }));
+
+        setData(activeItems);
       } catch (error) {
         console.error('Error fetching carousel items:', error);
         setError(error instanceof Error ? error.message : 'Failed to load carousel items');
@@ -135,8 +174,10 @@ export function CardsCarousel() {
     <Carousel.Slide key={item.id}>
       <Card
         imageUrl={item.imageUrl}
+        videoUrl={item.videoUrl}
         title={item.title}
         link={item.link}
+        type={item.type}
       />
     </Carousel.Slide>
   ));
@@ -184,7 +225,7 @@ export function CardsCarousel() {
           height: 4,
           transition: 'width 250ms ease, background-color 250ms ease',
           backgroundColor: 'rgba(255, 255, 255, 0)',
-          '&[dataActive]': { // Changed from data-active to dataActive
+          '&[dataActive]': {
             width: 40,
             backgroundColor: 'rgba(255, 255, 255, 0.9)',
           },
