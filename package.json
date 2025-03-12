@@ -23,6 +23,7 @@
     "dayjs": "^1.11.13",
     "dompurify": "^3.2.4",
     "embla-carousel-react": "^7.1.0",
+    "framer-motion": "^12.5.0",
     "html-react-parser": "^5.2.2",
     "isomorphic-dompurify": "^1.13.0",
     "lexical": "^0.25.0",
