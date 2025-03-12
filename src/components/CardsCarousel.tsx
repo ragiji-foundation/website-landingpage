@@ -18,14 +18,16 @@ interface CarouselItem {
 }
 
 function Card({ imageUrl, videoUrl, title, type = 'image', link = '#' }: Omit<CarouselItem, 'id' | 'active' | 'order'>) {
-  // Add default type and link values
+  // Add default image for missing sources
+  const defaultImage = '/placeholder-image.jpg'; // Make sure this exists in your public folder
+
   return (
     <Paper
       shadow="md"
       p="xl"
       radius="vs"
       component="a"
-      href={link || '#'}
+      href={link || undefined}
       style={{
         position: 'relative',
         height: 'var(--carousel-height)',
@@ -36,7 +38,7 @@ function Card({ imageUrl, videoUrl, title, type = 'image', link = '#' }: Omit<Ca
       {type === 'image' ? (
         <div
           style={{
-            backgroundImage: `linear-gradient(169deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.8) 100%), url(${imageUrl})`,
+            backgroundImage: `linear-gradient(169deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.8) 100%), url(${imageUrl || defaultImage})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             position: 'absolute',
@@ -63,7 +65,21 @@ function Card({ imageUrl, videoUrl, title, type = 'image', link = '#' }: Omit<Ca
           />
           <div className={classes.videoOverlay} />
         </Box>
-      ) : null}
+      ) : (
+        // Fallback for when neither image nor video is available
+        <div
+          style={{
+            backgroundImage: `linear-gradient(169deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.8) 100%), url(${defaultImage})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+          }}
+        />
+      )}
 
       <Center>
         <div className={classes.contentWrapper}>
@@ -118,8 +134,10 @@ export function CardsCarousel() {
           .map(item => ({
             ...item,
             type: item.videoUrl ? 'video' : 'image',
-            imageUrl: item.imageUrl || '',  // Provide default empty string
-            link: item.link || '#'  // Provide default hash link
+            // Ensure we never pass empty strings
+            imageUrl: item.imageUrl || null,
+            videoUrl: item.videoUrl || null,
+            link: item.link || '#'
           }));
 
         setData(activeItems);

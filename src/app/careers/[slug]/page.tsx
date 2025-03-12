@@ -58,7 +58,6 @@ export default async function CareerDetailsPage({ params }: any) {
       <Banner
         type="careers"
         title={career.title}
-        description={career.description as string}
         backgroundImage="/banners/careers-banner.jpg"
         breadcrumbs={[
           { label: "Home", link: "/" },

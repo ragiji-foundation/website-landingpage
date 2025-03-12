@@ -34,8 +34,11 @@ export function Initiatives() {
               {initiative.title}
             </Text>
 
-            <Text mt="xs" c="dimmed" size="sm">
-              {initiative.description}
+            <Text mt="xs" c="dimmed" size="sm" lineClamp={2}>
+              {initiative.description ? 
+                new DOMParser().parseFromString(initiative.description, 'text/html')
+                .body.textContent || initiative.description 
+                : ''}
             </Text>
           </Card>
         ))}

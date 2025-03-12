@@ -86,9 +86,9 @@ export default function AwardsPage() {
           backgroundImage={banner.backgroundImage || '/banners/awards-banner.jpg'}
           breadcrumbs={[
             { label: 'Home', link: '/' },
-            { label: 'Awards' }
+            { label: 'awards' }
           ]}
-          tags={['Excellence', 'Impact', 'Recognition']}
+  
         />
 
         <Container size="xl" py="xl">

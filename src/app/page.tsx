@@ -11,7 +11,13 @@ export default function App() {
   return (
     <main>
       <CardsCarousel />
-      <FeaturesSection />
+      <FeaturesSection 
+        heading="RAGIJI FOUNDATION : The Solution" 
+        ctaButton={{ 
+          text: "Learn More", 
+          url: "#" 
+        }} 
+      />
       <Initiatives />
       <StatsSection />
       <Gallery />

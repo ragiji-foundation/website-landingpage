@@ -17,7 +17,13 @@ function App() {
 
       <CardsCarousel />
       {/* <HeroSection /> */}
-      <FeaturesSection />
+      <FeaturesSection
+        heading="Our Initiatives"
+        ctaButton={{
+          text: "Learn More",
+          url: "/initiatives"
+        }}
+      />
       <Initiatives /> {/* No props needed anymore */}
 
       <StatsSection />

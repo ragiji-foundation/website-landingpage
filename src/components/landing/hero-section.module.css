@@ -1,101 +1,84 @@
-.heroContainer {
-  position: relative;
-  width: 100%;
-  height: 70vh;
-  min-height: 500px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
+.container {
+  padding: var(--mantine-spacing-xl) 0;
+}
+
+.featureCard {
+  background: var(--mantine-color-body);
+  border-radius: var(--mantine-radius-md);
   overflow: hidden;
+  box-shadow: var(--mantine-shadow-sm);
+  transition: transform 0.2s ease;
+  margin-bottom: var(--mantine-spacing-md);
 }
 
-.imageWrapper {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
+.featureCard:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--mantine-shadow-lg);
 }
 
-.backgroundImage {
-  object-fit: cover;
-}
-
-.imageWrapper::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7));
-  z-index: 1;
-}
-
-.content {
+.mediaContainer {
   position: relative;
-  z-index: 2;
-  text-align: center;
-  padding: 2rem;
-  max-width: 900px;
+  width: 100%;
+  height: 300px; /* Increased height for better visibility */
+  border-radius: var(--mantine-radius-md);
+  overflow: hidden;
+  cursor: pointer;
 }
 
-.title {
-  font-size: 3.5rem;
-  font-weight: 800;
-  line-height: 1.2;
-  margin-bottom: 1rem;
-  color: white;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+.contentContainer {
+  padding: var(--mantine-spacing-lg); /* Increased padding for better spacing */
+  height: 100%; /* Ensure it takes full height of the parent */
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Center content vertically within the container */
 }
 
-.subtitle {
-  font-size: 1.25rem;
-  max-width: 70%;
-  margin: 0 auto 2rem;
-  opacity: 0.9;
-  font-weight: 400;
-}
-
-.ctaButton {
+.featureTitle {
+  font-size: 1.75rem; /* Slightly larger for better hierarchy */
   font-weight: 600;
+  margin-bottom: var(--mantine-spacing-md);
+  color: var(--mantine-color-dark-7);
+  line-height: 1.2;
+}
+
+.description {
+  color: var(--mantine-color-gray-7);
+  line-height: 1.7; /* Improved readability */
   font-size: 1rem;
-  padding: 0.75rem 2rem;
+  max-height: 300px; /* Match media height to prevent overflow */
+  overflow-y: auto; /* Scroll if content exceeds max-height */
+  padding-right: var(--mantine-spacing-sm); /* Prevent scrollbar overlap */
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .heroContainer {
-    height: 60vh;
-    min-height: 400px;
-  }
-
-  .title {
-    font-size: 2.5rem;
-  }
-
-  .subtitle {
-    font-size: 1rem;
-    max-width: 90%;
-  }
+/* Style HTML elements within description */
+.description p {
+  margin: 0 0 var(--mantine-spacing-md) 0;
 }
 
-@media (max-width: 480px) {
-  .heroContainer {
-    height: 50vh;
-  }
+.description h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: var(--mantine-spacing-md) 0;
+  color: var(--mantine-color-dark-6);
+}
 
-  .title {
-    font-size: 2rem;
-  }
+.description strong {
+  font-weight: 600;
+  color: var(--mantine-color-dark-7);
+}
 
-  .subtitle {
-    font-size: 0.9rem;
-  }
+.playIcon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  padding: 12px;
+  transition: transform 0.2s ease;
+}
 
-  .ctaButton {
-    padding: 0.5rem 1.5rem;
-  }
+.mediaContainer:hover .playIcon {
+  transform: translate(-50%, -50%) scale(1.1);
 }
