@@ -1,6 +1,6 @@
 'use client';
 import { Container, Group, Button, Text, ActionIcon, Modal, Stack } from '@mantine/core';
-import { IconMail, IconPhone } from '@tabler/icons-react';
+import { IconMail, IconPhone, IconBrandYoutubeFilled, IconBrandFacebookFilled, IconBrandInstagramFilled } from '@tabler/icons-react';
 import { useState } from 'react';
 import { JoinUsModal } from './JoinUsModal';
 import classes from './TopHeader.module.css';
@@ -13,13 +13,35 @@ export function TopHeader() {
     { icon: <IconPhone size={16} stroke={1.5} color="white" />, text: '+91 8827968035', href: 'tel:+918827968035' },
   ];
 
+  const socialLinks = [
+    { icon: <IconBrandYoutubeFilled size={20} color="#FF0000" />, href: 'https://youtube.com' },
+    { icon: <IconBrandFacebookFilled size={20} color="#1877F2" />, href: 'https://facebook.com' },
+    { icon: <IconBrandInstagramFilled size={20} color="#E4405F" />, href: 'https://instagram.com' },
+  ];
+
   return (
     <div className={classes.header}>
       <Container size="xl" px="xs" className={classes.container}>
         <Group justify="space-between" wrap="nowrap" className={classes.wrapper}>
           <Text size="sm" fw={700} className={classes.orgName}>
-            RAGI JI
+            RAGIJI FOUNDATION 
           </Text>
+
+          <Group gap={8} wrap="nowrap" className={classes.socialLinks}>
+            {socialLinks.map((item, index) => (
+              <ActionIcon
+                key={index}
+                component="a"
+                href={item.href}
+                target="_blank"
+                variant="subtle"
+                className={classes.socialIcon}
+                size="sm"
+              >
+                {item.icon}
+              </ActionIcon>
+            ))}
+          </Group>
 
           <Group gap="xs" wrap="nowrap" className={classes.rightSection}>
             {contactInfo.map((item, index) => (
@@ -42,15 +64,7 @@ export function TopHeader() {
               </Group>
             ))}
 
-            <Button
-              variant="filled"
-              size="compact-sm"
-          
-              onClick={() => setIsModalOpen(true)}
-              className={classes.joinButton}
-            >
-              Join Us
-            </Button>
+
           </Group>
         </Group>
       </Container>

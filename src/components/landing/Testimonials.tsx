@@ -6,7 +6,12 @@ import { useTestimonialsStore } from '@/store/useTestimonialsStore';
 import { TestimonialsSkeleton } from '@/components/skeletons/TestimonialsSkeleton';
 import classes from './Testimonials.module.css';
 
-export function Testimonials() {
+interface TestimonialsProps {
+  type?: 'default' | 'carousel';
+  heading?: string;
+}
+
+export function Testimonials({ type = 'default', heading = 'What People Say' }: TestimonialsProps) {
   const { items, loading, error, fetchTestimonials } = useTestimonialsStore();
 
   useEffect(() => {
@@ -16,7 +21,7 @@ export function Testimonials() {
   return (
     <Container size="lg" py="xl">
       <Title order={2} ta="center" mb="xl">
-        What People Say
+        {heading}
       </Title>
 
       {loading ? (

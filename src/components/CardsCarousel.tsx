@@ -1,7 +1,7 @@
 "use client";
 import '@mantine/carousel/styles.css';
 import { Carousel } from '@mantine/carousel';
-import { Paper, Title, Center, Stack, Loader, Text, Box } from '@mantine/core';
+import { Paper, Title, Center, Stack, Loader, Text, Box, Button } from '@mantine/core';
 import { useEffect, useState } from 'react';
 
 import classes from './CardsCarousel.module.css';
@@ -18,21 +18,14 @@ interface CarouselItem {
 }
 
 function Card({ imageUrl, videoUrl, title, type = 'image', link = '#' }: Omit<CarouselItem, 'id' | 'active' | 'order'>) {
-  // Add default image for missing sources
-  const defaultImage = '/placeholder-image.jpg'; // Make sure this exists in your public folder
+  const defaultImage = '/placeholder-image.jpg';
 
   return (
     <Paper
       shadow="md"
-      p="xl"
-      radius="vs"
+      radius={0}
       component="a"
       href={link || undefined}
-      style={{
-        position: 'relative',
-        height: 'var(--carousel-height)',
-        overflow: 'hidden',
-      }}
       className={classes.card}
     >
       {type === 'image' ? (
@@ -42,10 +35,7 @@ function Card({ imageUrl, videoUrl, title, type = 'image', link = '#' }: Omit<Ca
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
+            inset: 0,
           }}
         />
       ) : type === 'video' && videoUrl ? (
@@ -65,38 +55,24 @@ function Card({ imageUrl, videoUrl, title, type = 'image', link = '#' }: Omit<Ca
           />
           <div className={classes.videoOverlay} />
         </Box>
-      ) : (
-        // Fallback for when neither image nor video is available
-        <div
-          style={{
-            backgroundImage: `linear-gradient(169deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.8) 100%), url(${defaultImage})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-          }}
-        />
-      )}
+      ) : null}
 
-      <Center>
-        <div className={classes.contentWrapper}>
-          <Stack align="center" gap="xl">
-            <Title order={2} className={classes.title} ta="center">
-              {title}
-            </Title>
-            <Paper
-              className={classes.ctaButton}
-              p="md"
-              radius="md"
-            >
-              Learn More
-            </Paper>
-          </Stack>
-        </div>
-      </Center>
+      <div className={classes.contentWrapper}>
+        <Stack align="center" gap="xl" style={{ zIndex: 2 }}>
+          <Title className={classes.title} ta="center">
+            {title}
+          </Title>
+          <Button
+            variant="outline"
+            color="white"
+            size="lg"
+            radius="xl"
+            className={classes.ctaButton}
+          >
+            Learn More
+          </Button>
+        </Stack>
+      </div>
     </Paper>
   );
 }
@@ -203,8 +179,8 @@ export function CardsCarousel() {
   return (
     <Carousel
       slideSize="100%"
-      slideGap="xs"
-      align="center"
+      slideGap={0}
+      align="start"
       slidesToScroll={1}
       loop
       withIndicators
@@ -216,36 +192,42 @@ export function CardsCarousel() {
       className={classes.carousel}
       styles={{
         root: {
-          height: 'var(--carousel-height)',
+          width: '100vw',
+          height: '100vh',
+        },
+        viewport: {
+          height: '100%',
+        },
+        container: {
+          height: '100%',
+        },
+        slide: {
+          height: '100%',
         },
         controls: {
-          transition: 'opacity 0.3s ease',
-          opacity: 0,
-          '&:hover': {
-            opacity: 0.1,
-          },
+          zIndex: 2,
         },
         control: {
           background: 'rgba(255, 255, 255, 0.1)',
           backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(255, 255, 255, 0)',
+          border: '1px solid rgba(255, 255, 255, 0.2)',
           color: 'white',
           '&:hover': {
-            background: 'rgba(255, 255, 255, 0)',
+            background: 'rgba(255, 255, 255, 0.2)',
           },
         },
         indicators: {
           bottom: 40,
-          gap: '0.5rem',
+          zIndex: 2,
         },
         indicator: {
           width: 12,
           height: 4,
-          transition: 'width 250ms ease, background-color 250ms ease',
-          backgroundColor: 'rgba(255, 255, 255, 0)',
-          '&[dataActive]': {
+          transition: 'width 250ms ease',
+          backgroundColor: 'rgba(255, 255, 255, 0.5)',
+          '&[data-active]': {
             width: 40,
-            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            backgroundColor: 'white',
           },
         },
       }}

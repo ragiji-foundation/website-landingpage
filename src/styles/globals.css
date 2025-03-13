@@ -1,13 +1,15 @@
-
 :root {
   /* Brand Colors */
   --color-primary: #2a8b52;
-  --color-secondary:var(--mantine-color-orange-filled);
+  --color-secondary: var(--mantine-color-orange-filled);
   --color-tertiary: #f59e0b;
   --color-quaternary: #f472b6;
-  /* --color-primary: rgb(253 126 21); */
+
   --color-primary-light: #f4f4f4;
   --color-primary-dark: #1d4ed8;
+  --gradient-primary: linear-gradient(45deg, #FF4B2B, #FF416C);
+  --color-primary-second: #FF4B2B;
+    /* --color-primary: rgb(253 126 21); */
 
   /* Neutral Colors */
   --color-background: #ffffff;
@@ -22,6 +24,8 @@
   --color-gray-700: #374151;
   --color-gray-800: #1f2937;
   --color-gray-900: #111827;
+  --color-surface: #f8fafc;
+  --color-text: #1a1a1a;
 
   /* Semantic Colors */
   --color-success: #10b981;
@@ -32,6 +36,8 @@
   /* Typography */
   --font-family-base: 'Inter', system-ui, -apple-system, sans-serif;
   --font-family-heading: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-heading: var(--mantine-font-family);
+  --font-body: var(--mantine-font-family);
 
   /* Font Sizes */
   --font-size-xs: 0.75rem;
@@ -73,6 +79,8 @@
   --spacing-8: 2rem;
   --spacing-10: 2.5rem;
   --spacing-12: 3rem;
+  --section-spacing-y: 80px;
+  --section-spacing-x: 24px;
 
   /* Border Radius */
   --radius-sm: 0.125rem;
@@ -96,6 +104,24 @@
   --transition-fast: 150ms;
   --transition-normal: 250ms;
   --transition-slow: 350ms;
+
+  /* Gradient Combinations */
+  --gradient-primary: linear-gradient(135deg, var(--color-primary) 0%, #1a5934 100%);
+  --gradient-warm: linear-gradient(135deg, var(--color-tertiary) 0%, var(--color-secondary) 100%);
+  --gradient-accent: linear-gradient(135deg, var(--color-quaternary) 0%, var(--color-tertiary) 100%);
+  --gradient-light: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+
+  /* Overlays */
+  --overlay-dark: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.7) 100%);
+  --overlay-primary: linear-gradient(180deg, rgba(42, 139, 82, 0) 0%, rgba(42, 139, 82, 0.8) 100%);
+
+  /* Shadows */
+  --shadow-primary: 0 10px 30px rgba(42, 139, 82, 0.15);
+  --shadow-warm: 0 10px 30px rgba(245, 158, 11, 0.15);
+
+  /* Background Patterns */
+  --pattern-dots: radial-gradient(circle, var(--color-gray-200) 1px, transparent 1px);
+  --pattern-lines: repeating-linear-gradient(45deg, var(--color-gray-100) 0, var(--color-gray-100) 1px, transparent 0, transparent 50%);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -170,9 +196,6 @@ body {
   border-inline-end: none !important;
 }
 
-
-
-
 .mantine-Drawer-content {
   min-width: 280px !important;
   width: 30vw !important;
@@ -185,4 +208,44 @@ body {
 
 .mantine-Drawer-overlay {
   background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Section Transitions */
+.section-transition {
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 4px;
+}
+
+/* Container Max Widths */
+.container-large {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 var(--section-spacing-x);
+}
+
+/* Section Spacing Utilities */
+.section-padding {
+  padding: var(--section-spacing-y) var(--section-spacing-x);
+}
+
+/* Gradient Text Effect */
+.gradient-text {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-tertiary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }

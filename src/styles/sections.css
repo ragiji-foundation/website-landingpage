@@ -1,0 +1,58 @@
+.section-spacing {
+  padding: var(--section-spacing-y) 0;
+}
+
+.section-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Section-specific styling */
+.hero-section {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  background: linear-gradient(to bottom,
+      var(--color-background),
+      var(--color-gray-50));
+}
+
+.stats-section {
+  position: relative;
+  z-index: 1;
+}
+
+.features-section {
+  background: white;
+  position: relative;
+}
+
+.success-stories-section {
+  background: var(--color-gray-50);
+}
+
+.gallery-section {
+  position: relative;
+  overflow: hidden;
+}
+
+.testimonials-section {
+  background: white;
+  position: relative;
+}
+
+.initiatives-section {
+  background: var(--color-gray-50);
+  position: relative;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .section-spacing {
+    padding: calc(var(--section-spacing-y) * 0.75) 0;
+  }
+
+  .hero-section {
+    min-height: 60vh;
+  }
+}

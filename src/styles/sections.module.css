@@ -1,0 +1,62 @@
+.heroSection {
+  height: 100vh;
+  position: relative;
+  background: black;
+  color: white;
+}
+
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1;
+}
+
+.impactSection {
+  background: white;
+  padding: 4rem 0;
+  border-bottom: 1px solid var(--color-gray-200);
+}
+
+.initiativesSection {
+  background: var(--color-gray-50);
+  padding: 6rem 0;
+}
+
+.storiesSection {
+  background: white;
+  padding: 6rem 0;
+  position: relative;
+}
+
+.gallerySection {
+  background: var(--color-primary);
+  padding: 6rem 0;
+  color: white;
+}
+
+.getInvolvedSection {
+  background: white;
+  padding: 6rem 0;
+  text-align: center;
+}
+
+.testimonialsSection {
+  background: var(--color-gray-50);
+  padding: 6rem 0;
+}
+
+.fullWidthSection {
+  width: 100vw;
+  max-width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  margin-right: calc(-50vw + 50%);
+  position: relative;
+  overflow: hidden;
+}
+
+.container {
+  max-width: var(--mantine-container-size-xl);
+  margin: 0 auto;
+  padding: 0 var(--mantine-spacing-md);
+}

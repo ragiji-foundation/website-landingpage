@@ -1,0 +1,98 @@
+.wrapper {
+  background: linear-gradient(135deg, var(--color-primary) 0%, #1a5934 100%);
+  padding: rem(80px) 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.wrapper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, rgba(245, 158, 11, 0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.title {
+  color: white;
+  font-size: clamp(2rem, 4vw, 2.5rem);
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.imageWrapper {
+  position: relative;
+  border-radius: rem(12);
+  overflow: hidden;
+  aspect-ratio: 4/3;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease;
+}
+
+.imageWrapper:hover {
+  transform: translateY(-5px);
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.imageWrapper:hover .image {
+  transform: scale(1.1);
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top,
+      rgba(42, 139, 82, 0.9),
+      rgba(245, 158, 11, 0.5));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  display: flex;
+  align-items: flex-end;
+  padding: rem(20);
+}
+
+.imageWrapper:hover .overlay {
+  opacity: 1;
+}
+
+.caption {
+  color: white;
+  font-size: rem(16);
+  font-weight: 500;
+  transform: translateY(20px);
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.imageWrapper:hover .caption {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.modal {
+  .mantine-Modal-content {
+    background: rgba(0, 0, 0, 0.9);
+  }
+}
+
+.modalImage {
+  max-height: 80vh;
+  width: auto;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .wrapper {
+    padding: rem(40px) 0;
+  }
+}
