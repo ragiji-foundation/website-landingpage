@@ -63,6 +63,34 @@
   background-color: var(--color-gray-100);
 }
 
+.socialLinks {
+  padding-left: 1rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+  gap: 12px;
+}
+
+.socialIcon {
+  background: white;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.socialIcon:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.socialIcon:active {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
 /* Mobile styles */
 @media (max-width: 768px) {
   .wrapper {
@@ -98,7 +126,9 @@
   }
 
   .orgName:after {
-    content: " FOUNDATION";
+    content: "Live for Others";
+    margin-left: 10px;
+    color: rgba(255, 255, 255, 0.905);
   }
 
   .wrapper {

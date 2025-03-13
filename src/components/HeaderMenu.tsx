@@ -16,12 +16,16 @@ import {
   Modal,
   ActionIcon,
 } from '@mantine/core';
+import { JoinUsModal } from './JoinUsModal';
+import { useLanguage } from '@/context/LanguageContext';
+import  SearchQuery  from './SearchQuery';
+import { SearchProvider } from '@/context/SearchContext';
+import { LanguageProvider } from '@/context/LanguageContext';
 import { useDisclosure } from '@mantine/hooks';
 import Image from 'next/image';
 import Link from 'next/link';
 import classes from './HeaderMenu.module.css';
-import { useLanguage } from '@/context/LanguageContext';
-import SearchQuery from './SearchQuery';
+
 
 
 const links = [
@@ -62,6 +66,7 @@ const languages: { code: LanguageCode; label: string }[] = [
 export function HeaderMenu() {
   const [opened, { toggle, close }] = useDisclosure(false);
   const [searchOpened, setSearchOpened] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { language, setLanguage, t } = useLanguage();
 
   const navItems = links.map((link, index) => {
@@ -79,7 +84,7 @@ export function HeaderMenu() {
           <Menu.Target>
             <span className={classes.link}>
               <Center>
-                <Text>{link.label}</Text>
+                <Text fw={1000}>{link.label}</Text>
                 <IconChevronDown size={14} stroke={1.5} />
               </Center>
             </span>
@@ -121,6 +126,16 @@ export function HeaderMenu() {
         </Group>
 
         <div className={classes.desktopGroup}>
+          <Button
+            variant="gradient"
+            gradient={{ from: '#FF4B2B', to: '#FF416C' }}
+            size="sm"
+            onClick={() => setIsModalOpen(true)}
+            className={classes.joinUsCta}
+          >
+            Join Us
+          </Button>
+
           <Menu position="bottom-end" trigger="hover">
             <Menu.Target>
               <Button variant="subtle" size="sm">
@@ -155,6 +170,22 @@ export function HeaderMenu() {
           className={classes.mobileGroup}
         />
       </div>
+
+      <Modal
+        opened={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        size="md"
+        centered
+        overlayProps={{
+          blur: 3,
+          opacity: 0.55,
+        }}
+      >
+        <JoinUsModal
+          opened={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+        />
+      </Modal>
 
       <Drawer
         opened={opened}

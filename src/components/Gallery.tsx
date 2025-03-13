@@ -15,7 +15,11 @@ interface GalleryItem {
   createdAt: string;
 }
 
-export default function Gallery() {
+interface GalleryProps {
+  type?: 'masonry' | 'grid';
+}
+
+export  default function Gallery({ type = 'grid' }: GalleryProps) {
   const [images, setImages] = useState<GalleryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
