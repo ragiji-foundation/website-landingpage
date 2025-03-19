@@ -1,6 +1,6 @@
 'use client';
 import { useEffect } from 'react';
-import { Container, Title, Text, Avatar, Group } from '@mantine/core';
+import { Container, Title, Text, Group } from '@mantine/core';
 import { motion } from 'framer-motion';
 import { useTestimonialsStore } from '@/store/useTestimonialsStore';
 import { TestimonialsSkeleton } from '@/components/skeletons/TestimonialsSkeleton';
@@ -43,16 +43,13 @@ export function Testimonials({ heading = 'What People Say' }: TestimonialsProps)
             transition={{ delay: index * 0.1 }}
             className={classes.testimonialCard}
           >
-            <Group>
-              <Avatar src={testimonial.imageUrl} size={40} radius="xl" />
-              <div>
-                <Text fw={500}>{testimonial.name}</Text>
-                <Text size="xs" c="dimmed">{testimonial.role}</Text>
-              </div>
-            </Group>
             <Text mt="md" fz="sm" className={classes.content}>
               {testimonial.content}
             </Text>
+            <div className={classes.authorInfo}>
+              <Text fw={500}>{testimonial.name}</Text>
+              <Text size="xs" c="dimmed">{testimonial.role}</Text>
+            </div>
           </motion.div>
         ))}
       </div>

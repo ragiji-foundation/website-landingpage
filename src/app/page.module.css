@@ -1,0 +1,12 @@
+.downloadButton {
+  background: linear-gradient(45deg, #FF4B2B, #FF416C);
+  color: white;
+  border: none;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 75, 43, 0.3);
+    background: linear-gradient(45deg, #FF416C, #FF4B2B);
+  }
+}

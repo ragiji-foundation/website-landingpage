@@ -1,6 +1,6 @@
 'use client';
 import { Container, Group, Button, Text, ActionIcon, Modal, Stack } from '@mantine/core';
-import { IconMail, IconPhone, IconBrandYoutubeFilled, IconBrandFacebookFilled, IconBrandInstagramFilled } from '@tabler/icons-react';
+import { IconMail, IconPhone, IconBrandYoutubeFilled, IconBrandFacebookFilled, IconBrandInstagramFilled, IconBrandX, icons } from '@tabler/icons-react';
 import { useState } from 'react';
 import { JoinUsModal } from './JoinUsModal';
 import classes from './TopHeader.module.css';
@@ -17,6 +17,7 @@ export function TopHeader() {
     { icon: <IconBrandYoutubeFilled size={20} color="#FF0000" />, href: 'https://youtube.com' },
     { icon: <IconBrandFacebookFilled size={20} color="#1877F2" />, href: 'https://facebook.com' },
     { icon: <IconBrandInstagramFilled size={20} color="#E4405F" />, href: 'https://instagram.com' },
+    { icon: <IconBrandX size={20} color="#000000" />, href: 'https://x.com' },
   ];
 
   return (

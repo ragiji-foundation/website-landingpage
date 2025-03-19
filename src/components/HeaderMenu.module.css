@@ -1,6 +1,7 @@
 .header {
   height: 90px;
-  background-color: var(--mantine-color-body);
+  /* background-color: var(--mantine-color-body); */
+  background-color:#fffdff;
   border-bottom: 1px solid var(--mantine-color-gray-3);
   z-index: 100;
 }

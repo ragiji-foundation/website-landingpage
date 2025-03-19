@@ -78,55 +78,40 @@ export default function StatsSection() {
 
   if (loading) {
     return (
-      <div className={classes.wrapper}>
-        <Container size="lg">
-          <Title order={2} className={classes.sectionTitle}>Our Impact</Title>
-          <div className={classes.statsGrid}>
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className={classes.statCard}>
-                <Skeleton height={60} mb="md" radius="md" />
-                <Skeleton height={24} width="70%" radius="md" />
-              </div>
-            ))}
-          </div>
-        </Container>
-      </div>
+      <Container size="lg" py={80}>
+        <div className={classes.statsGrid}>
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className={classes.statCard}>
+              <Skeleton height={60} mb="md" radius="md" />
+              <Skeleton height={24} width="70%" radius="md" />
+            </div>
+          ))}
+        </div>
+      </Container>
     );
   }
 
   return (
-    <div className={classes.wrapper}>
-      <Container size="lg">
-        <Title order={2} className={classes.sectionTitle}>
-          Making a Difference
-        </Title>
-        <div className={classes.statsGrid}>
-          {stats.map((stat, index) => (
-            <motion.div
-              key={stat.id}
-              className={classes.statCard}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{
-                duration: 0.6,
-                delay: index * 0.1,
-                ease: [0.215, 0.61, 0.355, 1]
-              }}
-            >
-              <motion.div
-                initial={{ scale: 0.8 }}
-                whileInView={{ scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 + 0.2 }}
-              >
-                <Text ta={Center} className={classes.value}>{stat.value}</Text>
-                <Text ta={Center}  className={classes.label}>{stat.label}</Text>
-              </motion.div>
-            </motion.div>
-          ))}
-        </div>
-      </Container>
-    </div>
+    <Container size="lg" py={80}>
+      <div className={classes.statsGrid}>
+        {stats.map((stat, index) => (
+          <motion.div
+            key={stat.id}
+            className={classes.statCard}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{
+              duration: 0.5,
+              delay: index * 0.1,
+              ease: [0.22, 1, 0.36, 1]
+            }}
+          >
+            <Text className={classes.value}>{stat.value}</Text>
+            <Text className={classes.label}>{stat.label}</Text>
+          </motion.div>
+        ))}
+      </div>
+    </Container>
   );
 }
