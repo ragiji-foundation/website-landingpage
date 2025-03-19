@@ -20,32 +20,30 @@ import dayjs from 'dayjs';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Banner } from '@/components/Banner';
 import { useBannerStore } from '@/store/useBannerStore';
-import { mockBlogs } from '@/data/mock-blogs';
 
-// Update the BlogPost interface to match both API and mock data structures
 interface BlogPost {
-  id: string;
+  id: number;
   slug: string;
+  locale: string;
   title: string;
-  excerpt?: string;
-  coverImage?: string;
-  publishedAt?: string;
-  createdAt?: string; // For API response
-  readingTime?: string;
-  author?: {
+  content: string;
+  status: string;
+  authorName: string;
+  metaDescription?: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  authorId: number;
+  categoryId?: number;
+  createdAt: string;
+  updatedAt: string;
+  category?: {
+    id: number;
     name: string;
-    avatar?: string;
-    bio?: string;
   };
-  content: string | {
-    html: string;
-    meta?: {
-      title?: string;
-      description?: string;
-      keywords?: string;
-      ogImage?: string;
-    };
-  };
+  tags: Array<{
+    id: number;
+    name: string;
+  }>;
 }
 
 function BlogSkeleton() {
@@ -76,10 +74,8 @@ export default function BlogPostPage() {
   const API_URL = process.env.NEXT_PUBLIC_ADMIN_API_URL;
 
   useEffect(() => {
-    // Fetch banner data
     fetchBanners().catch(console.error);
 
-    // Fetch blog post data
     const fetchBlogPost = async () => {
       try {
         setLoading(true);
@@ -89,7 +85,7 @@ export default function BlogPostPage() {
           throw new Error('API URL not configured');
         }
 
-        const response = await fetch(`${API_URL}/api/blogs/${slug}`, {
+        const response = await fetch(`${API_URL}/api/blogs/${slug}?locale=en`, {
           headers: {
             'Content-Type': 'application/json',
             'Cache-Control': 'no-cache',
@@ -106,26 +102,17 @@ export default function BlogPostPage() {
         const data = await response.json();
         console.log('Blog post data:', data);
 
-        // Transform API data to match the BlogPost interface if needed
-        const transformedPost: BlogPost = {
-          ...data,
-          // Ensure content is in the right format
-          content: data.content || { html: '' },
-          // Add fallbacks for fields that might be missing or named differently
-          publishedAt: data.publishedAt || data.createdAt,
-          coverImage: data.coverImage || data.imageUrl,
-        };
+        if (data.status !== 'published') {
+          throw new Error('Blog post is not published');
+        }
 
-        setPost(transformedPost);
+        setPost(data);
       } catch (error) {
         console.error('Error fetching blog post:', error);
-        setError('Failed to load blog post. Please try again later.');
-
-        // Fallback to mock data
-        const mockPost = mockBlogs.posts.find(p => p.slug === slug);
-        if (mockPost) {
-          setPost(mockPost);
-          setError(null);
+        if (error instanceof Error) {
+          setError(error.message);
+        } else {
+          setError('Failed to load blog post. Please try again later.');
         }
       } finally {
         setLoading(false);
@@ -137,8 +124,6 @@ export default function BlogPostPage() {
 
   // Get blog banner
   const banner = getBannerByType('blog');
-  const imageUrl = post?.coverImage || '/images/blog-placeholder.jpg';
-  const publishDate = post?.publishedAt || '';
 
   if (loading) {
     return <BlogSkeleton />;
@@ -190,39 +175,54 @@ export default function BlogPostPage() {
           <Title order={1} mb="lg">{post.title}</Title>
 
           <Group mb="xl">
-            {post.author && (
-              <Group gap="xs">
-                <IconUser size={18} />
-                <Text>{post.author.name}</Text>
-              </Group>
-            )}
+            <Group gap="xs">
+              <IconUser size={18} />
+              <Text>{post.authorName}</Text>
+            </Group>
 
-            {publishDate && (
-              <Group gap="xs">
-                <IconCalendar size={18} />
-                <Text>{dayjs(publishDate).format('MMMM D, YYYY')}</Text>
-              </Group>
+            <Group gap="xs">
+              <IconCalendar size={18} />
+              <Text>{dayjs(post.createdAt).format('MMMM D, YYYY')}</Text>
+            </Group>
+
+            {post.category && (
+              <Text c="dimmed">• {post.category.name}</Text>
             )}
           </Group>
 
           <Image
-            src={imageUrl}
+            src="/images/blog-placeholder.jpg"
             alt={post.title}
             radius="md"
             mb="xl"
             height={400}
-            fallbackSrc="/images/blog-placeholder.jpg"
           />
 
           <Paper p="md" radius="md" withBorder>
             <div
               className="blog-content"
               dangerouslySetInnerHTML={{
-                __html: typeof post.content === 'string'
-                  ? post.content
-                  : post.content.html
+                __html: post.content
               }}
             />
+
+            {post.tags && post.tags.length > 0 && (
+              <>
+                <Divider my="lg" />
+                <Group gap="xs">
+                  {post.tags.map(tag => (
+                    <Button
+                      key={tag.id}
+                      variant="light"
+                      size="xs"
+                      radius="xl"
+                    >
+                      {tag.name}
+                    </Button>
+                  ))}
+                </Group>
+              </>
+            )}
           </Paper>
         </Container>
       </main>
