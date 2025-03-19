@@ -225,7 +225,7 @@ export function CardsCarousel() {
           height: 4,
           transition: 'width 250ms ease',
           backgroundColor: 'rgba(255, 255, 255, 0.5)',
-          '&[data-active]': {
+          '&[dataActive]': {
             width: 40,
             backgroundColor: 'white',
           },

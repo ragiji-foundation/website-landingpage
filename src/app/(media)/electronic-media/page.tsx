@@ -123,7 +123,7 @@ const mockData: MediaItem[] = [
   }
 ];
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://admin.ragijifoundation.com';
+const API_URL = process.env.NEXT_PUBLIC_ADMIN_API_URL || 'https://admin.ragijifoundation.com';
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;
 
@@ -142,7 +142,7 @@ export default function ElectronicMediaPage() {
 
   const fetchWithRetry = async (retries: number): Promise<MediaItem[]> => {
     try {
-      const response = await fetch(`${API_URL}/electronic-media`);
+      const response = await fetch(`${API_URL}/api/electronic-media`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }

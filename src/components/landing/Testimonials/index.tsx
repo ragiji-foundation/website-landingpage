@@ -1,6 +1,6 @@
 'use client';
-import { useEffect } from 'react';
-import { Container, Title, Text, Group } from '@mantine/core';
+import { useEffect, useRef } from 'react';
+import { Container, Title, Text } from '@mantine/core';
 import { motion } from 'framer-motion';
 import { useTestimonialsStore } from '@/store/useTestimonialsStore';
 import { TestimonialsSkeleton } from '@/components/skeletons/TestimonialsSkeleton';
@@ -12,15 +12,13 @@ interface TestimonialsProps {
 
 export function Testimonials({ heading = 'What People Say' }: TestimonialsProps) {
   const { items, loading, error, fetchTestimonials } = useTestimonialsStore();
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchTestimonials();
   }, [fetchTestimonials]);
 
-  if (loading) {
-    return <TestimonialsSkeleton />;
-  }
-
+  if (loading) return <TestimonialsSkeleton />;
   if (error) {
     return (
       <Container size="lg" py="xl">
@@ -29,18 +27,28 @@ export function Testimonials({ heading = 'What People Say' }: TestimonialsProps)
     );
   }
 
+  const duplicatedItems = [...items, ...items]; // Duplicate items for seamless scroll
+
   return (
-    <Container size="lg" py="xl">
+    <div style={{ width: '100vw', overflow: 'hidden' }}>
       <Title order={2} ta="center" mb="xl">
         {heading}
       </Title>
-      <div className={classes.testimonialGrid}>
-        {items.map((testimonial, index) => (
+      <motion.div
+        ref={containerRef}
+        className={classes.testimonialGrid}
+        animate={{
+          x: [0, -window.innerWidth],
+        }}
+        transition={{
+          duration: 30,
+          repeat: Infinity,
+          ease: "linear",
+        }}
+      >
+        {duplicatedItems.map((testimonial, index) => (
           <motion.div
-            key={testimonial.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
+            key={`${testimonial.id}-${index}`}
             className={classes.testimonialCard}
           >
             <Text mt="md" fz="sm" className={classes.content}>
@@ -52,7 +60,7 @@ export function Testimonials({ heading = 'What People Say' }: TestimonialsProps)
             </div>
           </motion.div>
         ))}
-      </div>
-    </Container>
+      </motion.div>
+    </div>
   );
 }
