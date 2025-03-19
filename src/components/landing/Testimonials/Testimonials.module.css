@@ -45,13 +45,19 @@
 }
 
 .authorInfo {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--mantine-color-gray-2);
   display: flex;
-  align-items: center;
-  gap: rem(16);
-  border-top: 1px solid var(--color-gray-200);
+  flex-direction: column;
+  gap: 0.25rem;
   background: linear-gradient(90deg, var(--color-gray-50), transparent);
   margin: 0 -24px -24px;
   padding: 20px 24px;
+  text-align: left;
+  /* Add this line */
+  align-items: flex-end;
+  /* Add this line */
 }
 
 .authorName {
