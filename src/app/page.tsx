@@ -2,7 +2,7 @@
 import { Box, Container } from '@mantine/core';
 import { CardsCarousel } from '@/components/CardsCarousel';
 import SuccessStoriesSection from '@/components/landing/success-stories-section';
-import Gallery from '@/components/Gallery';
+
 import { Initiatives } from '@/components/Initiatives';
 import { Testimonials } from '@/components/landing/Testimonials';
 import FeaturesSection from '@/components/landing/features-section';
@@ -11,6 +11,7 @@ import { PageTransition } from '@/components/Transitions';  // Updated path
 import { ScrollProgress } from '@/components/ScrollProgress';
 import { AnimatedSection } from '@/components/AnimatedSection';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import GallerySection from '@/components/GallerySection';
 
 export default function App() {
   return (
@@ -42,6 +43,27 @@ export default function App() {
           </Box>
         </AnimatedSection>
 
+        {/* 2. Stats Section */}
+        <AnimatedSection>
+          <Box
+            component="section"
+            style={{
+              width: '100vw',
+              maxWidth: '100vw',
+              marginLeft: 'calc(-50vw + 50%)',
+              marginRight: 'calc(-50vw + 50%)',
+              background: 'linear-gradient(135deg, #FF4B2B 0%, #FF416C 100%)',
+              position: 'relative',
+              padding: 0,
+              overflow: 'hidden'
+            }}
+          >
+            <ErrorBoundary>
+              <StatsSection />
+            </ErrorBoundary>
+          </Box>
+        </AnimatedSection>
+
         {/* 3. Features Section */}
         <AnimatedSection>
           <Box
@@ -58,7 +80,7 @@ export default function App() {
             }}
           >
             <ErrorBoundary>
-            <FeaturesSection
+              <FeaturesSection
                 heading="RAGIJI FOUNDATION : The Solution"
                 ctaButton={{
                   text: "Learn More",
@@ -69,8 +91,7 @@ export default function App() {
           </Box>
         </AnimatedSection>
 
-
-        {/* 2. Stats Section */}
+        {/* 4. Success Stories Section */}
         <AnimatedSection>
           <Box
             component="section"
@@ -79,48 +100,19 @@ export default function App() {
               maxWidth: '100vw',
               marginLeft: 'calc(-50vw + 50%)',
               marginRight: 'calc(-50vw + 50%)',
-              background: 'white',
+              background: 'linear-gradient(to right, rgba(255, 75, 43, 0.05), rgba(255, 65, 108, 0.05))',
               position: 'relative',
-              marginTop: '-4rem',
-              paddingTop: '8rem',
-              paddingBottom: '4rem',
-              clipPath: 'polygon(0 0, 100% 4rem, 100% 100%, 0 100%)'
+              padding: 0,
+              overflow: 'hidden'
             }}
           >
-            <Container size="xl">
-              <ErrorBoundary>
-                <StatsSection />
-              </ErrorBoundary>
-            </Container>
-          </Box>
-        </AnimatedSection>
-
-
-
-        {/* 4. Success Stories Carousel */}
-        <AnimatedSection>
-          <Box
-            component="section"
-            style={{
-              width: '100vw',
-              maxWidth: '100vw',
-              marginLeft: 'calc(-50vw + 50%)',
-              marginRight: 'calc(-50vw + 50%)',
-              background: 'white',
-              position: 'relative',
-              marginTop: '-4rem',
-              paddingTop: '8rem',
-              paddingBottom: '4rem',
-              clipPath: 'polygon(0 0, 100% 4rem, 100% 100%, 0 100%)'
-            }}
-          >
-            <Container size="xl">
+            <ErrorBoundary>
               <SuccessStoriesSection />
-            </Container>
+            </ErrorBoundary>
           </Box>
         </AnimatedSection>
 
-        {/* 5. Impact Gallery */}
+        {/* 5. Our Gallery */}
         <AnimatedSection>
           <Box
             component="section"
@@ -138,7 +130,7 @@ export default function App() {
             }}
           >
             <Container size="xl">
-              <Gallery type="masonry" />
+              <GallerySection />
             </Container>
           </Box>
         </AnimatedSection>
@@ -181,17 +173,15 @@ export default function App() {
               maxWidth: '100vw',
               marginLeft: 'calc(-50vw + 50%)',
               marginRight: 'calc(-50vw + 50%)',
-              background: 'white',
+              background: 'linear-gradient(135deg, rgba(255, 75, 43, 0.05) 0%, rgba(255, 65, 108, 0.1) 100%)',
               position: 'relative',
-              marginTop: '-4rem',
-              paddingTop: '8rem',
-              paddingBottom: '4rem',
-              clipPath: 'polygon(0 0, 100% 4rem, 100% 100%, 0 100%)'
+              padding: 0,
+              overflow: 'hidden'
             }}
           >
-            <Container size="xl">
+            <ErrorBoundary>
               <Testimonials type="carousel" />
-            </Container>
+            </ErrorBoundary>
           </Box>
         </AnimatedSection>
       </main>
