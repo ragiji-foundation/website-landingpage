@@ -96,6 +96,129 @@
   opacity: 1;
 }
 
+.storyCard {
+  padding: 4rem 0;
+  margin-bottom: 0;
+  border-radius: 0;
+  background-color: var(--mantine-color-white);
+  transition: transform 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  margin-right: calc(-50vw + 50%);
+}
+
+.storyCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.03;
+  z-index: 0;
+}
+
+.storyCard:nth-child(odd)::before {
+  background: linear-gradient(135deg, #ff7b00, #ff9e2c);
+}
+
+.storyCard:nth-child(even)::before {
+  background: linear-gradient(135deg, #00b894, #55efc4);
+}
+
+.storyContainer {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.contentContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.mediaContainer {
+  overflow: hidden;
+  border-radius: var(--mantine-radius-md);
+}
+
+.storyTitle {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 600;
+  color: var(--mantine-color-dark-8);
+  line-height: 1.2;
+}
+
+.storyCard:nth-child(odd) .storyTitle {
+  color: #c85000;
+}
+
+.storyCard:nth-child(even) .storyTitle {
+  color: #006d4e;
+}
+
+.description {
+  color: var(--mantine-color-dark-5);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* Add these new styles for rich text content */
+.richText {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: var(--mantine-color-dark-8);
+    margin-bottom: 1rem;
+    font-weight: 600;
+  }
+
+  p {
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+
+  strong {
+    font-weight: 600;
+    color: var(--mantine-color-dark-7);
+  }
+
+  em {
+    font-style: italic;
+  }
+
+  ul,
+  ol {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+  }
+
+  li {
+    margin-bottom: 0.5rem;
+  }
+
+  blockquote {
+    border-left: 4px solid var(--mantine-color-blue-5);
+    padding-left: 1rem;
+    margin: 1rem 0;
+    font-style: italic;
+    color: var(--mantine-color-dark-6);
+  }
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .listCard {
@@ -110,5 +233,27 @@
   .listContent {
     padding-left: 0.5rem;
     padding-right: 0.5rem;
+  }
+
+  .storyContainer {
+    padding: 0 1rem;
+    gap: 2rem;
+    grid-template-columns: 1fr;
+  }
+
+  .storyCard {
+    padding: 2rem 0;
+  }
+
+  .contentContainer {
+    order: 2;
+  }
+
+  .mediaContainer {
+    order: 1;
+  }
+
+  .storyCard::before {
+    opacity: 0.02;
   }
 }

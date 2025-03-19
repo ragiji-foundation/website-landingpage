@@ -1,4 +1,4 @@
-import { Box, Grid, Title, AspectRatio, Image, Text, Overlay, Center, Paper, Container } from '@mantine/core';
+import { Box, Grid, Title, AspectRatio, Image, Text, Overlay, Center, Paper, Container, Button } from '@mantine/core';
 import { IconPlayerPlay } from '@tabler/icons-react';
 import { useState, useEffect } from 'react';
 import classes from './features-section.module.css';
@@ -225,7 +225,21 @@ function FeaturesSection({ heading, ctaButton }: FeaturesSectionProps) {
       >
         {heading}
       </Title>
+      
       {features.map((feature, index) => renderFeatureContent(feature, index))}
+      <Center mb={40}>
+        <Button
+          component="a"
+          href={ctaButton.url}
+          variant={ctaButton.variant}
+          gradient={ctaButton.gradient}
+          size={ctaButton.size}
+          className={ctaButton.className}
+          leftSection={ctaButton.leftIcon}
+        >
+          {ctaButton.text}
+        </Button>
+      </Center>
     </Box>
   );
 }

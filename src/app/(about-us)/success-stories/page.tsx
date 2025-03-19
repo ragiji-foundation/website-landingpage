@@ -20,7 +20,10 @@ import {
   Divider,
   SimpleGrid,
   Skeleton,
-  Alert
+  Alert,
+  Paper,
+  AspectRatio,
+  Center
 } from '@mantine/core';
 import { useRouter } from 'next/navigation';
 import { IconSearch, IconFilter, IconGridDots, IconList, IconArrowUp, IconInfoCircle } from '@tabler/icons-react';
@@ -206,8 +209,9 @@ export default function SuccessStoriesPage() {
         ]}
       />
 
+      {/* Move search and filter section outside the regular container */}
       <Container size="lg" py="xl">
-        {/* Show error banner if API had an error but we're using cached data */}
+        {/* Error Alert */}
         {(storiesError || bannerError) && (
           <Alert
             icon={<IconInfoCircle />}
@@ -219,39 +223,8 @@ export default function SuccessStoriesPage() {
           </Alert>
         )}
 
-        {/* Featured Stories Section */}
-        {featuredStories.length > 0 && (
-          <>
-            <Title order={2} mb="lg" className={classes.sectionTitle}>Featured Stories</Title>
-            <SimpleGrid cols={{ base: 1, md: 3 }} mb="xl">
-              {featuredStories.map(story => (
-                <Card
-                  key={story.id}
-                  shadow="sm"
-                  p="lg"
-                  radius="md"
-                  withBorder
-                  className={classes.featuredCard}
-                  onClick={() => handleCardClick(story.id)}
-                >
-                  <Card.Section>
-                    <Image
-                      src={story.imageUrl}
-                      height={160}
-                      alt={story.title}
-                    />
-                  </Card.Section>
-                  <Badge color="blue" mt="md">Featured</Badge>
-                  <Title order={3} mt="sm">{story.title}</Title>
-                </Card>
-              ))}
-            </SimpleGrid>
-            <Divider my="xl" />
-          </>
-        )}
-
         {/* Search and Filter Section */}
-        <Group justify="apart" mb="lg">
+        <Group justify="apart" mb="xl">
           <TextInput
             placeholder="Search stories..."
             leftSection={<IconSearch size={14} />}
@@ -280,126 +253,103 @@ export default function SuccessStoriesPage() {
               ]}
               style={{ width: '150px' }}
             />
-
-            <Tabs value={viewMode} onChange={(value) => setViewMode(value || 'grid')}>
-              <Tabs.List>
-                <Tabs.Tab value="grid" leftSection={<IconGridDots size={16} />} />
-                <Tabs.Tab value="list" leftSection={<IconList size={16} />} />
-              </Tabs.List>
-            </Tabs>
           </Group>
         </Group>
+      </Container>
 
-        {/* View Mode Selection */}
-        <Box pos="relative">
-          {filteredStories.length === 0 && !loading ? (
-            <Text ta="center" c="dimmed" py="xl">
-              {searchTerm
-                ? 'No stories found for your search criteria.'
-                : 'No stories available at the moment.'}
-            </Text>
-          ) : (
-            <>
-              {/* Grid View */}
-              {viewMode === 'grid' && (
-                <Grid gutter="lg">
-                  {paginatedStories.map(story => (
-                    <Grid.Col key={story.id} span={{ base: 12, sm: 6, md: 4 }}>
-                      <Card
-                        shadow="sm"
-                        padding={0}
-                        radius="md"
-                        className={classes.card}
-                        onClick={() => handleCardClick(story.id)}
-                      >
-                        {story.imageUrl && (
-                          <Card.Section>
-                            <Image
-                              src={story.imageUrl}
-                              height={180}
-                              alt={story.title}
-                            />
-                          </Card.Section>
-                        )}
-
-                        <div className={classes.cardContent}>
-                          <Title order={3} size="h4" mb="xs">{story.title}</Title>
-
-                          <RichTextContent
-                            content={story.content}
-                            truncate
-                            maxLength={120}
-                          />
-
-                          <Button
-                            variant="light"
-                            color="blue"
-                            fullWidth
-                            mt="md"
-                          >
-                            Read Story
-                          </Button>
-                        </div>
-                      </Card>
-                    </Grid.Col>
-                  ))}
-                </Grid>
-              )}
-
-              {/* List View */}
-              {viewMode === 'list' && (
-                <div className={classes.listContainer}>
-                  {paginatedStories.map(story => (
-                    <Card
-                      key={story.id}
-                      shadow="sm"
-                      padding="lg"
-                      radius="md"
-                      withBorder
-                      className={classes.listCard}
-                      onClick={() => handleCardClick(story.id)}
-                    >
-                      <Group justify="apart" align="flex-start">
-                        {story.imageUrl && (
+      {/* Stories List - No container wrapper needed as cards are full width */}
+      <Box pos="relative">
+        {filteredStories.length === 0 && !loading ? (
+          <Text ta="center" c="dimmed" py="xl">
+            {searchTerm
+              ? 'No stories found for your search criteria.'
+              : 'No stories available at the moment.'}
+          </Text>
+        ) : (
+          <>
+            {paginatedStories.map((story, index) => (
+              <Paper key={story.id} className={classes.storyCard}>
+                <Container size="l" className={classes.storyContainer}>
+                  {index % 2 === 0 ? (
+                    <>
+                      <div className={classes.contentContainer}>
+                        <Title order={3} className={classes.storyTitle}>{story.title}</Title>
+                        <div
+                          className={`${classes.description} ${classes.richText}`}
+                          dangerouslySetInnerHTML={{
+                            __html: story.content.slice(0, 280) + (story.content.length > 280 ? '...' : '')
+                          }}
+                        />
+                        <Button
+                          variant="light"
+                          color="blue"
+                          onClick={() => handleCardClick(story.id)}
+                          mt="md"
+                        >
+                          Read Story
+                        </Button>
+                      </div>
+                      <div className={classes.mediaContainer}>
+                        <AspectRatio ratio={16 / 9}>
                           <Image
                             src={story.imageUrl}
-                            width={180}
-                            height={120}
                             alt={story.title}
-                            className={classes.listImage}
+                            radius="md"
+                            fit="cover"
                           />
-                        )}
-                        <div className={classes.listContent}>
-                          <Title order={3} size="h4">{story.title}</Title>
-                          <RichTextContent
-                            content={story.content}
-                            truncate
-                            maxLength={180}
+                        </AspectRatio>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className={classes.mediaContainer}>
+                        <AspectRatio ratio={16 / 9}>
+                          <Image
+                            src={story.imageUrl}
+                            alt={story.title}
+                            radius="md"
+                            fit="cover"
                           />
-                        </div>
-                        <Button variant="subtle" color="blue">
-                          Read More
+                        </AspectRatio>
+                      </div>
+                      <div className={classes.contentContainer}>
+                        <Title order={3} className={classes.storyTitle}>{story.title}</Title>
+                        <div
+                          className={`${classes.description} ${classes.richText}`}
+                          dangerouslySetInnerHTML={{
+                            __html: story.content.slice(0, 280) + (story.content.length > 280 ? '...' : '')
+                          }}
+                        />
+                        <Button
+                          variant="light"
+                          color="blue"
+                          onClick={() => handleCardClick(story.id)}
+                          mt="md"
+                        >
+                          Read Story
                         </Button>
-                      </Group>
-                    </Card>
-                  ))}
-                </div>
-              )}
+                      </div>
+                    </>
+                  )}
+                </Container>
+              </Paper>
+            ))}
 
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <Group justify="center" mt="xl">
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <Container size="lg" py="xl">
+                <Group justify="center">
                   <Pagination
                     total={totalPages}
                     value={currentPage}
                     onChange={setCurrentPage}
                   />
                 </Group>
-              )}
-            </>
-          )}
-        </Box>
-      </Container>
+              </Container>
+            )}
+          </>
+        )}
+      </Box>
     </main>
   );
 }
