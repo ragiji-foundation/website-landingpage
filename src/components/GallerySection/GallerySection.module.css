@@ -134,7 +134,7 @@
   padding: 1rem;
   z-index: 1000000;
 
-  [data-active] {
+  [dataActive] {
     background-color: var(--color-primary);
   }
 }

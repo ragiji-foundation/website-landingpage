@@ -15,6 +15,7 @@ import { CookieBanner } from '@/components/CookieBanner';
 import { GoogleAnalytics } from '@/components/GoogleAnalytics';
 import { JoinUs } from '@/components/JoinUs';
 import { AnalyticsProvider } from '@/components/AnalyticsProvider';
+import { WhatsAppButton } from '@/components/WhatsAppButton';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -29,7 +30,7 @@ export default function RootLayout({
         <ColorSchemeScript />
       </head>
       <body>
-      
+
         <CookieProvider>
           <LanguageProvider>
             <SearchProvider>
@@ -42,6 +43,7 @@ export default function RootLayout({
                 {children}
                 <JoinUs />
                 <FooterLinks />
+                <WhatsAppButton />
                 <CookieBanner />
               </MantineProvider>
             </SearchProvider>

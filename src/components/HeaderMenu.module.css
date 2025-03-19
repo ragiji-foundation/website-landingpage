@@ -1,7 +1,7 @@
 .header {
   height: 90px;
   /* background-color: var(--mantine-color-body); */
-  background-color:#fffdff;
+  background-color: #fffdff;
   border-bottom: 1px solid var(--mantine-color-gray-3);
   z-index: 100;
 }
@@ -25,12 +25,13 @@
 
 @media (max-width: 768px) {
   .inner {
-    padding: 10px var(--mantine-spacing-md);
+    padding: 5px var(--mantine-spacing-md);
   }
 
   .header {
     height: auto;
-    min-height: 70px;
+    min-height: 60px;
+    /* reduced from 70px */
   }
 }
 
@@ -108,7 +109,7 @@
   transition: all var(--transition-normal);
 
   &:hover {
- 
+
     background-color: var(--color-primary);
     color: var(--color-background);
   }
