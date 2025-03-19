@@ -114,8 +114,8 @@
 }
 
 .wrapper {
-  background: linear-gradient(180deg, rgba(240, 245, 255, 0.5) 0%, rgba(255, 255, 255, 1) 100%);
-  padding: 2rem 0;
+  width: 100%;
+  padding: 5rem 0;
   position: relative;
   overflow: hidden;
 }
@@ -132,11 +132,20 @@
   z-index: 0;
 }
 
+.container {
+  max-width: var(--mantine-container-size-xl);
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
 .sectionTitle {
   font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-  color: var(--mantine-color-dark-9);
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 3rem;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .sectionSubtitle {

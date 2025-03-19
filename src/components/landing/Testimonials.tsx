@@ -19,41 +19,52 @@ export function Testimonials({ type = 'default', heading = 'What People Say' }: 
   }, [fetchTestimonials]);
 
   return (
-    <Container size="lg" py="xl">
-      <Title order={2} ta="center" mb="xl">
-        {heading}
-      </Title>
+    <div className={classes.wrapper}>
+      <Container size="lg">
+        <Title className={classes.title}>
+          {heading}
+        </Title>
 
-      {loading ? (
-        <TestimonialsSkeleton />
-      ) : (
-        <Carousel
-          slideSize="33.333333%"
-          slideGap="lg"
-          align="start"
-          slidesToScroll={1}
-        // Handle responsive design with CSS or another method
-        >
-          {items.map((testimonial) => (
-            <Carousel.Slide key={testimonial.id}>
-              <Card withBorder radius="md" className={classes.card}>
-                <Card.Section className={classes.section}>
-                  <Group>
-                    <Avatar src={testimonial.imageUrl} size={40} radius="xl" />
-                    <div>
-                      <Text fw={500}>{testimonial.name}</Text>
-                      <Text size="xs" c="dimmed">{testimonial.role}</Text>
-                    </div>
-                  </Group>
-                </Card.Section>
-                <Text fz="sm" className={classes.content}>
-                  {testimonial.content}
-                </Text>
-              </Card>
-            </Carousel.Slide>
-          ))}
-        </Carousel>
-      )}
-    </Container>
+        {loading ? (
+          <TestimonialsSkeleton />
+        ) : (
+          <Carousel
+            slideSize="33.333333%"
+            slideGap="lg"
+            align="start"
+            slidesToScroll={1}
+            styles={{
+              control: {
+                background: 'rgba(255, 255, 255, 0.8)',
+                border: '1px solid rgba(255, 75, 43, 0.1)',
+                color: '#FF4B2B',
+                '&:hover': {
+                  background: 'white',
+                },
+              },
+            }}
+          >
+            {items.map((testimonial) => (
+              <Carousel.Slide key={testimonial.id}>
+                <Card withBorder radius="md" className={classes.card}>
+                  <Card.Section className={classes.section}>
+                    <Group>
+                      <Avatar src={testimonial.imageUrl} size={40} radius="xl" />
+                      <div>
+                        <Text fw={500}>{testimonial.name}</Text>
+                        <Text size="xs" c="dimmed">{testimonial.role}</Text>
+                      </div>
+                    </Group>
+                  </Card.Section>
+                  <Text fz="sm" className={classes.content}>
+                    {testimonial.content}
+                  </Text>
+                </Card>
+              </Carousel.Slide>
+            ))}
+          </Carousel>
+        )}
+      </Container>
+    </div>
   );
 }
