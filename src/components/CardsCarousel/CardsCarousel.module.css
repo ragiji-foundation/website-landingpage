@@ -1,7 +1,12 @@
+:root {
+  --carousel-height: 30vh;
+  --carousel-indicator-bottom: 40px;
+}
+
 .wrapper {
   position: relative;
   width: 100vw;
-  height: 100vh;
+  height: var(--carousel-height);
   overflow: hidden;
   margin-left: calc(-50vw + 50%);
   margin-right: calc(-50vw + 50%);
@@ -53,6 +58,7 @@
   margin-bottom: 1.5rem;
   background: linear-gradient(135deg, white, #e2e8f0);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -82,13 +88,109 @@
   background: rgba(255, 255, 255, 0.1);
 }
 
+.carousel {
+  width: 100vw;
+  height: var(--carousel-height);
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+
+/* Tablet styles */
+@media (max-width: 1024px) {
+  :root {
+    --carousel-height: 50vh !important;
+  }
+
+  .carousel,
+  .wrapper,
+  .container,
+  .videoBackground,
+  .video,
+  .overlay {
+    height: 50vh !important;
+    min-height: 50vh !important;
+  }
+}
+
+/* Mobile styles */
 @media (max-width: 768px) {
-  .wrapper {
-    height: 90vh;
+  :root {
+    --carousel-height: 30vh !important;
+    --carousel-indicator-bottom: 10px;
+  }
+
+  .carousel,
+  .wrapper,
+  .container,
+  .videoBackground,
+  .video,
+  .overlay {
+    height: var(--carousel-height) !important;
+    min-height: var(--carousel-height) !important;
+  }
+
+  /* Reset any max-height constraints */
+  .wrapper,
+  .carousel {
+    max-height: 30vh !important;
   }
 
   .content {
     text-align: center;
     padding: 0 1rem;
+    max-height: 30vh !important;
+    overflow: hidden;
+  }
+
+  .title {
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    margin-bottom: 0.5rem;
+  }
+
+  .description {
+    font-size: clamp(0.875rem, 2vw, 1rem);
+    margin-bottom: 1rem;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .contentWrapper {
+    padding: 0 1rem;
+  }
+
+  .title {
+    font-size: clamp(1.25rem, 4vw, 1.75rem);
+    margin-bottom: 0.5rem;
+  }
+
+  .description {
+    font-size: 0.875rem;
+    margin-bottom: 0.75rem;
+    display: none;
+  }
+
+  .ctaButton {
+    font-size: 0.875rem;
+    padding: 0.5rem 1.5rem;
+    height: auto;
+  }
+
+  .indicators {
+    bottom: 10px;
+  }
+
+  .videoContainer video,
+  .card [style*="background-image"] {
+    height: 30vh;
+  }
+
+  /* Ensure video maintains aspect ratio */
+  .video {
+    object-fit: cover !important;
   }
 }

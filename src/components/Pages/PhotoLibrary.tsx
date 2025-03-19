@@ -31,7 +31,39 @@ interface PhotoLibraryProps {
   sortBy?: string;
   viewMode?: 'grid' | 'masonry';
 }
+// API interface matching the server response
+interface ApiPhoto {
+  id: number;
+  title: string;
+  description: string;
+  imageUrl: string;
+  category: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
+// Helper function to convert API response to our Photo type
+const mapApiToPhoto = (apiPhoto: ApiPhoto): Photo => ({
+  id: apiPhoto.id.toString(),
+  title: apiPhoto.title,
+  url: apiPhoto.imageUrl,
+  category: apiPhoto.category,
+  date: apiPhoto.createdAt,
+  description: apiPhoto.description,
+});
+
+// Fetch photos from API
+const fetchPhotos = async (): Promise<Photo[]> => {
+  try {
+    const response = await fetch('https://admin.ragijifoundation.com/api/gallery');
+    if (!response.ok) throw new Error('Failed to fetch');
+    const data: ApiPhoto[] = await response.json();
+    return data.map(mapApiToPhoto);
+  } catch (error) {
+    console.error('Error fetching photos:', error);
+    return DEMO_PHOTOS; // Fallback to demo data
+  }
+};
 // Demo photos data - in a real implementation, this would come from an API
 const DEMO_PHOTOS: Photo[] = [
   {

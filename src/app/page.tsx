@@ -3,6 +3,7 @@ import { Box, Container } from '@mantine/core';
 import { CardsCarousel } from '@/components/CardsCarousel';
 import SuccessStoriesSection from '@/components/landing/success-stories-section';
 import ElectronicMediaSection from '@/components/landing/electronic-media';
+import { useMediaQuery } from '@mantine/hooks';
 
 import { Initiatives } from '@/components/Initiatives';
 import { Testimonials } from '@/components/landing/Testimonials/index';
@@ -16,6 +17,9 @@ import GallerySection from '@/components/GallerySection';
 import classes from './page.module.css';
 
 export default function App() {
+  // Add this hook to detect mobile/tablet screens
+  const isMobile = useMediaQuery('(max-width: 768px)');
+
   return (
     <PageTransition>
       <ScrollProgress />
@@ -32,7 +36,9 @@ export default function App() {
               padding: 0,
               margin: 0,
               background: 'var(--gradient-primary)',
-              minHeight: '90vh',
+              minHeight: isMobile ? '30vh' : '30vh',
+              maxHeight: isMobile ? '30vh' : '90vh',
+              height: isMobile ? '30vh' : 'auto',
               display: 'flex',
               alignItems: 'center',
               position: 'relative',
