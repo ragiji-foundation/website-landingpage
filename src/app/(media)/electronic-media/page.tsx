@@ -4,6 +4,7 @@ import { Container, Grid, Card, Image, Text, Button, Group, Stack, Skeleton, Tit
 import { Banner } from '@/components/Banner';
 import { notifications } from '@mantine/notifications';
 import { IconVideo, IconExternalLink } from '@tabler/icons-react';
+import { useBannerStore } from '@/store/useBannerStore';
 import classes from './electronic-media.module.css';
 
 interface MediaItem {
@@ -15,6 +16,10 @@ interface MediaItem {
   date: string;
   source: string;
 }
+
+// use api https://admin.ragijifoundation.com/api/electronic-media to fetch media items
+// if failed, use mock data
+
 
 const mockData: MediaItem[] = [
   {
@@ -118,33 +123,63 @@ const mockData: MediaItem[] = [
   }
 ];
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://admin.ragijifoundation.com';
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000;
+
 export default function ElectronicMediaPage() {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [activePage, setActivePage] = useState(1);
   const itemsPerPage = 6;
 
+  const { fetchBanners, getBannerByType } = useBannerStore();
+
   useEffect(() => {
-    const fetchMediaItems = async () => {
+    fetchBanners();
+  }, [fetchBanners]);
+
+  const fetchWithRetry = async (retries: number): Promise<MediaItem[]> => {
+    try {
+      const response = await fetch(`${API_URL}/electronic-media`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      if (retries > 0) {
+        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+        return fetchWithRetry(retries - 1);
+      }
+      throw error;
+    }
+  };
+
+  useEffect(() => {
+    const fetchMedia = async () => {
       try {
-        const response = await fetch('/api/electronic-media');
-        if (!response.ok) throw new Error('Failed to fetch media items');
-        const data = await response.json();
+        setLoading(true);
+        setError(null);
+        const data = await fetchWithRetry(MAX_RETRIES);
         setMediaItems(data);
       } catch (error) {
         console.error('Error fetching media items:', error);
-        setMediaItems(mockData); // Fallback to mock data
+        setError('Failed to fetch media items. Showing cached content.');
+        setMediaItems(mockData);
         notifications.show({
-          title: 'Notice',
+          title: 'Connection Error',
           message: 'Using cached data. Some content might not be up to date.',
-          color: 'yellow'
+          color: 'yellow',
+          autoClose: 5000
         });
       } finally {
         setLoading(false);
       }
     };
 
-    fetchMediaItems();
+    fetchMedia();
   }, []);
 
   const LoadingSkeleton = () => (
@@ -169,13 +204,20 @@ export default function ElectronicMediaPage() {
     activePage * itemsPerPage
   );
 
+  const banner = getBannerByType('electronicmedia');
+  const fallbackBanner = {
+    title: "Electronic Media Coverage",
+    description: "News coverage and media appearances highlighting our impact and initiatives",
+    backgroundImage: "/banners/media-banner.jpg"
+  };
+
   return (
     <main>
       <Banner
         type="electronicmedia"
-        title="Electronic Media Coverage"
-        description="News coverage and media appearances highlighting our impact and initiatives"
-        backgroundImage="/banners/media-banner.jpg"
+        title={banner?.title || fallbackBanner.title}
+        description={banner?.description || fallbackBanner.description}
+        backgroundImage={banner?.backgroundImage || fallbackBanner.backgroundImage}
         breadcrumbs={[
           { label: 'Home', link: '/' },
           { label: 'Media', link: '/electronic-media' },
@@ -188,6 +230,12 @@ export default function ElectronicMediaPage() {
           <Title order={2} size="h1" ta="center" mb="xl">
             Media Appearances
           </Title>
+
+          {error && (
+            <Text c="red" size="sm" ta="center">
+              {error}
+            </Text>
+          )}
 
           {loading ? (
             <LoadingSkeleton />

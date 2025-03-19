@@ -14,18 +14,17 @@ const data = [
       { label: 'Our Story', link: '/our-story' },
       { label: 'Our Initiatives', link: '/our-initiatives' },
       { label: 'Success Stories', link: '/success-stories' },
-
     ],
   },
   {
     title: 'Our Initiatives',
     links: [
-      { label: 'Education', link: '/education' },
-      { label: 'Healthcare', link: '/healthcare' },
-      { label: 'Rural Development', link: '/rural-development' },
-      { label: 'Women Empowerment', link: '/women-empowerment' },
-      { label: 'Skill Development', link: '/skill-development' },
-
+      { label: 'Education and Skill Development', link: '/initiatives/education' },
+      { label: 'Health', link: '/initiatives/health' },
+      { label: 'Environment Protection and Plantation', link: '/initiatives/environment' },
+      { label: 'Sanitization and Rural Development', link: '/initiatives/rural-development' },
+      { label: 'Cultural and Sports Activity', link: '/initiatives/cultural-sports' },
+      { label: 'Others', link: '/initiatives/others' },
     ],
   },
   {

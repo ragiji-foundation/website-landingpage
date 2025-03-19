@@ -97,39 +97,19 @@ export default function SuccessStoriesSection() {
 
   return (
     <Box className={classes.wrapper}>
-      <Container size="lg" py="xl">
-        <Box mb={30}>
-
+      <Container size="lg" py={{ base: 'md', sm: 'xl' }}>
+        <Box mb={{ base: 20, sm: 30 }}>
           <Title className={classes.sectionTitle} ta="center">Success Stories</Title>
         </Box>
 
-        <Group justify="flex-end" mb="lg">
-          {/* <Group>
-            <ActionIcon
-              variant="light"
-              size="lg"
-              radius="xl"
-              onClick={scrollLeft}
-              className={classes.scrollButton}
-            >
-              <IconArrowLeft size="1.2rem" />
-            </ActionIcon>
-            <ActionIcon
-              variant="light"
-              size="lg"
-              radius="xl"
-              onClick={scrollRight}
-              className={classes.scrollButton}
-            >
-              <IconArrowRight size="1.2rem" />
-            </ActionIcon>
-          </Group> */}
+        <Group justify="flex-end" mb={{ base: 'md', sm: 'lg' }}>
           <Button
             component={Link}
             href="/success-stories"
             variant="outline"
             rightSection={<IconArrowNarrowRight size={16} />}
             className={classes.viewAllButton}
+            size="sm"
           >
             View All Stories
           </Button>
@@ -151,9 +131,11 @@ export default function SuccessStoriesSection() {
                     <Card.Section className={classes.imageSection}>
                       <Image
                         src={story.imageUrl}
-                        height={200}
                         alt={story.title}
                         className={classes.image}
+                        height={200}
+                        width="100%"
+                        fit="cover"
                       />
                       <div className={classes.overlay} />
                     </Card.Section>
@@ -163,17 +145,16 @@ export default function SuccessStoriesSection() {
                 <div className={classes.cardContent}>
                   <div className={classes.contentWrapper}>
                     <Title order={3} className={classes.title}>{story.title}</Title>
-
                     <div
                       className={classes.content}
                       dangerouslySetInnerHTML={{
-                        __html: truncateHTML(story.content, 120)
+                        __html: truncateHTML(story.content, window.innerWidth <= 768 ? 80 : 120)
                       }}
                     />
                   </div>
 
                   <div className={classes.footer}>
-                    <Text size="sm" className={classes.date}>
+                    <Text size="sm" c="dimmed">
                       {formatDate(story.createdAt)}
                     </Text>
                     <Button
