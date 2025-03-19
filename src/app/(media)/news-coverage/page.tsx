@@ -197,7 +197,7 @@ const mockData: NewsItem[] = [
   }
 ];
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://admin.ragijifoundation.com';
+const API_URL = process.env.NEXT_PUBLIC_ADMIN_API_URL || 'https://admin.ragijifoundation.com';
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;
 
@@ -214,7 +214,7 @@ export default function NewsCoveragePage() {
 
   const fetchWithRetry = async (retries: number): Promise<NewsItem[]> => {
     try {
-      const response = await fetch(`${API_URL}/news-coverage`);
+      const response = await fetch(`${API_URL}/api/news-coverage`);
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const data = await response.json();
       // Sort by date descending
