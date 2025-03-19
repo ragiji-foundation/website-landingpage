@@ -4,37 +4,42 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import dayjs from 'dayjs';
 import { ErrorBoundary } from '@/components/error-boundary';
-import { mockBlogs } from '@/data/mock-blogs';
 import { Banner } from '@/components/Banner';
 import { useBannerStore } from '@/store/useBannerStore';
 
 interface BlogPost {
-  id: string;
+  id: number;
   slug: string;
+  locale: string;
   title: string;
-  excerpt?: string;
-  content?: string | { html: string; meta: { title: string; description: string; keywords: string; ogImage: string; } };
-  coverImage?: string;
-  imageUrl?: string; // Support for different field names
-  publishedAt?: string;
-  createdAt?: string; // Support for different field names
-  author?: {
+  content: string;
+  status: string;
+  authorName: string;
+  metaDescription?: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  authorId: number;
+  categoryId?: number;
+  createdAt: string;
+  updatedAt: string;
+  category?: {
+    id: number;
     name: string;
-    avatar?: string;
   };
+  tags: Array<{
+    id: number;
+    name: string;
+  }>;
 }
 
 function BlogCard({ post }: { post: BlogPost }) {
   const router = useRouter();
 
-  // Handle different field naming conventions
-  const imageUrl = post.coverImage || post.imageUrl || '/images/blog-placeholder.jpg';
-  const publishDate = post.publishedAt || post.createdAt || new Date().toISOString();
+  // Use a default image since the schema doesn't include images
+  const imageUrl = '/images/blog-placeholder.jpg';
 
-  // Extract excerpt from content if not provided
-  const excerpt = post.excerpt || (typeof post.content === 'string' ?
-    post.content.replace(/<[^>]*>/g, '').substring(0, 150) + '...' :
-    'Read more about this post...');
+  // Create excerpt from content
+  const excerpt = post.metaDescription || post.content.replace(/<[^>]*>/g, '').substring(0, 150) + '...';
 
   return (
     <Card
@@ -73,23 +78,13 @@ function BlogCard({ post }: { post: BlogPost }) {
 
         <Group justify="space-between" mt="md">
           <Group gap="xs">
-            {post.author && (
-              <>
-                {post.author.avatar && (
-                  <Image
-                    src={post.author.avatar}
-                    alt={post.author.name}
-                    width={24}
-                    height={24}
-                    radius="xl"
-                  />
-                )}
-                <Text size="sm">{post.author.name}</Text>
-              </>
+            <Text size="sm">{post.authorName}</Text>
+            {post.category && (
+              <Text size="sm" c="dimmed">• {post.category.name}</Text>
             )}
           </Group>
           <Text size="sm" c="dimmed">
-            {dayjs(publishDate).format('MMM D, YYYY')}
+            {dayjs(post.createdAt).format('MMM D, YYYY')}
           </Text>
         </Group>
       </Stack>
@@ -138,8 +133,7 @@ function BlogList() {
           throw new Error('API URL not configured');
         }
 
-        // Updated to fetch from admin API
-        const url = `${API_URL}/api/blogs?page=${currentPage}&limit=${postsPerPage}`;
+        const url = `${API_URL}/api/blogs?page=${currentPage}&limit=${postsPerPage}&locale=en`;
         console.log('Fetching blogs from:', url);
 
         const response = await fetch(url, {
@@ -147,7 +141,6 @@ function BlogList() {
             'Content-Type': 'application/json',
             'Cache-Control': 'no-cache',
           },
-          // Add mode to help with CORS debugging
           mode: 'cors',
         });
 
@@ -160,23 +153,21 @@ function BlogList() {
         const data = await response.json();
         console.log('Blog data received:', data);
 
-        // Updated to correctly handle the API response structure
-        const fetchedPosts = data.blogs || [];
+        // Only show published posts
+        const fetchedPosts = (data.blogs || []).filter((post: BlogPost) => post.status === 'published');
         const total = data.pagination?.total || fetchedPosts.length;
 
         setPosts(fetchedPosts);
         setTotalPages(Math.ceil(total / postsPerPage));
       } catch (error) {
-        // More detailed error logging
         console.error('Error fetching blogs:', error);
         if (error instanceof Error) {
           setError(`Failed to load blog posts: ${error.message}`);
         } else {
           setError('Failed to load blog posts. Please try again later.');
         }
-        // Fallback to mock data
-        setPosts(mockBlogs.posts);
-        setTotalPages(Math.ceil(mockBlogs.total / postsPerPage));
+        setPosts([]);
+        setTotalPages(0);
       } finally {
         setLoading(false);
       }
