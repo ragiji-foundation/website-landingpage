@@ -2,6 +2,7 @@
 import { Box, Container, Title, Text, Button, Group, Paper, Stack } from '@mantine/core';
 import { IconArrowRight } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
+import { useLanguage } from '@/context/LanguageContext';
 import classes from './CardsCarousel.module.css';
 
 interface CarouselItem {
@@ -78,6 +79,8 @@ function Card({ imageUrl, videoUrl, title, type = 'image', link = '#' }: Omit<Ca
 }
 
 export function CardsCarousel() {
+  const { t } = useLanguage();
+
   return (
     <Box className={classes.wrapper}>
       <div className={classes.videoBackground}>
@@ -101,12 +104,10 @@ export function CardsCarousel() {
           className={classes.content}
         >
           <Title className={classes.title}>
-            Empowering Communities
-            <br />
-            Transforming Lives
+            {t('home.hero.heading')}
           </Title>
           <Text className={classes.description} size="xl">
-            Join us in creating sustainable change and building stronger communities together.
+            {t('home.hero.subheading')}
           </Text>
           <Group mt={40}>
             <Button
@@ -116,7 +117,7 @@ export function CardsCarousel() {
               rightSection={<IconArrowRight size={20} />}
               className={classes.primaryButton}
             >
-              Get Involved
+              {t('home.hero.ctaButton')}
             </Button>
             <Button
               size="lg"
@@ -124,7 +125,7 @@ export function CardsCarousel() {
               color="white"
               className={classes.secondaryButton}
             >
-              Learn More
+              {t('common.readMore')}
             </Button>
           </Group>
         </motion.div>

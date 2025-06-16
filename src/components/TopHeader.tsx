@@ -3,14 +3,24 @@ import { Container, Group, Button, Text, ActionIcon, Modal, Stack } from '@manti
 import { IconMail, IconPhone, IconBrandYoutubeFilled, IconBrandFacebookFilled, IconBrandInstagramFilled, IconBrandX, icons } from '@tabler/icons-react';
 import { useState } from 'react';
 import { JoinUsModal } from './JoinUsModal';
+import { useLanguage } from '@/context/LanguageContext';
 import classes from './TopHeader.module.css';
 
 export function TopHeader() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { t } = useLanguage();
 
   const contactInfo = [
-    { icon: <IconMail size={16} stroke={1.5} color="white" />, text: 'admin@ragijifoundation.com', href: 'mailto:admin@ragijifoundation.com' },
-    { icon: <IconPhone size={16} stroke={1.5} color="white" />, text: '+91 8827968035', href: 'tel:+918827968035' },
+    { 
+      icon: <IconMail size={16} stroke={1.5} color="white" />, 
+      text: t('footer.getintouch.email'), 
+      href: 'mailto:admin@ragijifoundation.com' 
+    },
+    { 
+      icon: <IconPhone size={16} stroke={1.5} color="white" />, 
+      text: t('footer.getintouch.phone'), 
+      href: 'tel:+918827968035' 
+    },
   ];
 
   const socialLinks = [
@@ -25,7 +35,7 @@ export function TopHeader() {
       <Container size="xl" px="xs" className={classes.container}>
         <Group justify="space-between" wrap="nowrap" className={classes.wrapper}>
           <Text size="sm" fw={700} className={classes.orgName}>
-            RAGIJI FOUNDATION 
+            {t('footer.organization.name')}
           </Text>
 
           <Group gap={8} wrap="nowrap" className={classes.socialLinks}>
@@ -64,8 +74,6 @@ export function TopHeader() {
                 </Text>
               </Group>
             ))}
-
-
           </Group>
         </Group>
       </Container>

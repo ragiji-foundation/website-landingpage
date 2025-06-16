@@ -15,8 +15,19 @@ import { AnimatedSection } from '@/components/AnimatedSection';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import GallerySection from '@/components/GallerySection';
 import classes from './page.module.css';
+import { useEffect } from 'react';
+import { useLanguage } from '@/context/LanguageContext';
 
-export default function App() {
+export default function App({ params: { locale } }: { params: { locale: string } }) {
+  const { language, setLanguage, t } = useLanguage();
+
+  // Synchronize the context language with the URL locale
+  useEffect(() => {
+    if (locale && locale !== language) {
+      setLanguage(locale as 'en' | 'hi');
+    }
+  }, [locale, language, setLanguage]);
+
   // Add this hook to detect mobile/tablet screens
   const isMobile = useMediaQuery('(max-width: 768px)');
 

@@ -1,20 +1,22 @@
 'use client';
 import React, { createContext, useContext, useState } from 'react';
 
+interface SearchResult {
+  title: string;
+  type: string;
+  url: string;
+}
+
 interface SearchContextType {
   searchContent: (query: string) => void;
-  searchResults: Array<{
-    title: string;
-    type: string;
-    url: string;
-  }>;
+  searchResults: SearchResult[];
   isSearching: boolean;
 }
 
 const SearchContext = createContext<SearchContextType | undefined>(undefined);
 
 export function SearchProvider({ children }: { children: React.ReactNode }) {
-  const [searchResults, setSearchResults] = useState([]);
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
   const searchContent = async (query: string) => {
@@ -24,6 +26,8 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
     try {
       // Replace this with your actual API call
       const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+      if (!response.ok) throw new Error('Search request failed');
+
       const data = await response.json();
       setSearchResults(data);
     } catch (error) {
@@ -47,4 +51,4 @@ export function useSearch() {
     throw new Error('useSearch must be used within a SearchProvider');
   }
   return context;
-} 
+}

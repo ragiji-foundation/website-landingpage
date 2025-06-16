@@ -11,15 +11,9 @@ import {
   Modal,
 } from '@mantine/core';
 import { useState } from 'react';
+import { useLanguage } from '@/context/LanguageContext';
 import axios from 'axios';
 import classes from './JoinUsModal.module.css';
-
-const ROLES = [
-  { value: 'volunteer', label: 'Volunteer' },
-  { value: 'full-time', label: 'Full Time Role' },
-  { value: 'internship', label: 'Internship' },
-  { value: 'partnership', label: 'NGO Partnership' },
-];
 
 interface JoinUsModalProps {
   opened: boolean;
@@ -27,6 +21,15 @@ interface JoinUsModalProps {
 }
 
 export function JoinUsModal({ opened, onClose }: JoinUsModalProps) {
+  const { t } = useLanguage();
+  
+  const ROLES = [
+    { value: 'volunteer', label: t('volunteer.opportunities.teaching.title') },
+    { value: 'full-time', label: t('careers.openings.type') },
+    { value: 'internship', label: t('careers.internships.heading') },
+    { value: 'partnership', label: t('joinus.partner.title') },
+  ];
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -52,7 +55,7 @@ export function JoinUsModal({ opened, onClose }: JoinUsModalProps) {
       if (response.status === 201) { // Check for successful response
         setStatus({
           type: 'success',
-          message: 'Thank you for your interest! We will contact you shortly.',
+          message: t('joinus.form.success') || 'Thank you for your interest! We will contact you shortly.',
         });
 
         // Clear form after success
@@ -77,7 +80,7 @@ export function JoinUsModal({ opened, onClose }: JoinUsModalProps) {
 
       setStatus({
         type: 'error',
-        message: axios.isAxiosError(error) && error.response?.data?.error ? error.response.data.error : 'Failed to submit. Please try again.',
+        message: axios.isAxiosError(error) && error.response?.data?.error ? error.response.data.error : t('joinus.form.error') || 'Failed to submit. Please try again.',
       });
     } finally {
       setIsSubmitting(false);
@@ -103,15 +106,15 @@ export function JoinUsModal({ opened, onClose }: JoinUsModalProps) {
     >
       <form onSubmit={handleSubmit} className={classes.form}>
         <Stack gap="md">
-          <Title order={3} size="h4">Join Our Mission</Title>
+          <Title order={3} size="h4">{t('joinus.banner.title')}</Title>
           <Text size="sm" c="dimmed">
-            Make a difference in the lives of others by becoming part of our team
+            {t('joinus.banner.description')}
           </Text>
 
           <TextInput
             required
-            label="Full Name"
-            placeholder="Your name"
+            label={t('contact.form.name')}
+            placeholder={t('contact.form.name')}
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             disabled={isSubmitting}
@@ -120,7 +123,7 @@ export function JoinUsModal({ opened, onClose }: JoinUsModalProps) {
           <Group grow>
             <TextInput
               required
-              label="Email"
+              label={t('contact.form.email')}
               placeholder="your@email.com"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -129,7 +132,7 @@ export function JoinUsModal({ opened, onClose }: JoinUsModalProps) {
 
             <TextInput
               required
-              label="Phone"
+              label={t('contact.form.phone')}
               placeholder="+91 XXXXX XXXXX"
               value={formData.phone}
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
@@ -139,8 +142,8 @@ export function JoinUsModal({ opened, onClose }: JoinUsModalProps) {
 
           <Select
             required
-            label="I want to join as"
-            placeholder="Select role"
+            label={t('joinus.form.role')}
+            placeholder={t('joinus.form.selectRole')}
             data={ROLES}
             value={formData.role}
             onChange={(value) => setFormData({ ...formData, role: value || '' })}
@@ -149,8 +152,8 @@ export function JoinUsModal({ opened, onClose }: JoinUsModalProps) {
 
           <Textarea
             required
-            label="Why do you want to join us?"
-            placeholder="Tell us about your motivation and how you can contribute..."
+            label={t('joinus.form.motivation')}
+            placeholder={t('joinus.form.motivationPlaceholder')}
             minRows={3}
             maxRows={5}
             value={formData.message}
@@ -166,7 +169,7 @@ export function JoinUsModal({ opened, onClose }: JoinUsModalProps) {
 
           <Group justify="flex-end" mt="md">
             <Button variant="light" onClick={onClose} disabled={isSubmitting}>
-              Cancel
+              {t('common.close')}
             </Button>
             <Button
               type="submit"
@@ -174,7 +177,7 @@ export function JoinUsModal({ opened, onClose }: JoinUsModalProps) {
               variant="gradient"
               gradient={{ from: 'orange', to: 'red' }}
             >
-              {isSubmitting ? 'Submitting...' : 'Submit Application'}
+              {isSubmitting ? t('common.submitting') : t('joinus.form.submit')}
             </Button>
           </Group>
         </Stack>

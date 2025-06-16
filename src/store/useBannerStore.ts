@@ -14,14 +14,15 @@ export interface Banner {
   ctaLink?: string;
   createdAt: string;
   updatedAt: string;
+  locale?: string; // Add locale field for internationalization
 }
 
 interface BannerState {
   banners: Banner[];
   loading: boolean;
   error: Error | null;
-  fetchBanners: () => Promise<void>;
-  getBannerByType: (type: BannerType | string) => Banner | null;
+  fetchBanners: (locale?: string) => Promise<void>;
+  getBannerByType: (type: BannerType | string, locale?: string) => Banner | null;
 }
 
 export const useBannerStore = create<BannerState>()(
@@ -31,7 +32,7 @@ export const useBannerStore = create<BannerState>()(
       loading: false,
       error: null,
 
-      fetchBanners: async () => {
+      fetchBanners: async (locale) => {
         set({ loading: true, error: null });
 
         try {
@@ -40,8 +41,12 @@ export const useBannerStore = create<BannerState>()(
             throw new Error('API URL is not configured');
           }
 
-          // Fix: Add more robust fetch with better error handling and credentials
-          const response = await fetch(`${API_URL}/api/banner`, {
+          // Add locale parameter to the request if provided
+          const url = locale 
+            ? `${API_URL}/api/banner?locale=${locale}`
+            : `${API_URL}/api/banner`;
+          
+          const response = await fetch(url, {
             method: 'GET',
             cache: 'no-store',
             headers: {
@@ -49,38 +54,37 @@ export const useBannerStore = create<BannerState>()(
               'Cache-Control': 'no-cache',
               'Accept': 'application/json'
             },
-            next: { revalidate: 0 } // For Next.js 13+
+            next: { revalidate: 0 }
           });
 
           if (!response.ok) {
-            const errorText = await response.text();
-            console.error('Banner API error:', errorText);
-            throw new Error(`Failed to fetch banners: ${response.status} ${response.statusText}`);
+            throw new Error(`Failed to fetch banners: ${response.status}`);
           }
 
           const data = await response.json();
-          console.log('Banners fetched successfully:', data);
-          set({
-            banners: data,
-            loading: false,
-            error: null
-          });
+          set({ banners: data, loading: false });
         } catch (error) {
-          console.error('Error fetching banners:', error);
-          set({
-            error: error as Error,
-            loading: false
+          console.error('Failed to fetch banners:', error);
+          set({ 
+            error: error instanceof Error ? error : new Error('Unknown error occurred'), 
+            loading: false 
           });
         }
       },
 
-      getBannerByType: (type) => {
+      getBannerByType: (type, locale) => {
         const { banners } = get();
-        console.log(`Looking for banner type: ${type}, Available banners:`, banners);
-        const banner = banners.find(b => b.type === type);
 
-        // Return the found banner or null (no default banners)
-        return banner || null;
+        // First try to find a banner with matching type and locale
+        if (locale) {
+          const localizedBanner = banners.find(
+            banner => banner.type === type && banner.locale === locale
+          );
+          if (localizedBanner) return localizedBanner;
+        }
+
+        // Fall back to a banner with just matching type
+        return banners.find(banner => banner.type === type) || null;
       }
     })
   )

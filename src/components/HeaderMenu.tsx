@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { IconChevronDown } from '@tabler/icons-react';
 import {
   Burger,
@@ -11,49 +11,45 @@ import {
   Text,
   Button,
   Divider,
-  ScrollArea,
   NavLink,
   Modal,
   ActionIcon,
 } from '@mantine/core';
 import { JoinUsModal } from './JoinUsModal';
 import { useLanguage } from '@/context/LanguageContext';
-import  SearchQuery  from './SearchQuery';
-import { SearchProvider } from '@/context/SearchContext';
-import { LanguageProvider } from '@/context/LanguageContext';
+import SearchQuery from './SearchQuery';
 import { useDisclosure } from '@mantine/hooks';
 import Image from 'next/image';
 import Link from 'next/link';
 import classes from './HeaderMenu.module.css';
 
-
-
-const links = [
-  { link: '/', label: 'HOME' },
+// Define the navigation structure
+const navigationStructure = [
+  { link: '/', labelKey: 'nav.home' },
   {
     link: '#1',
-    label: 'ABOUT US',
+    labelKey: 'nav.aboutus',
     links: [
-      { link: '/the-need', label: 'THE NEED' },
-      { link: '/our-story', label: 'OUR STORY' },
-      { link: '/our-initiatives', label: 'OUR INITIATIVES' },
-      { link: '/success-stories', label: 'SUCCESS STORIES' },
-      { link: '/our-centers', label: 'OUR CENTERS' },
+      { link: '/the-need', labelKey: 'nav.theneed' },
+      { link: '/our-story', labelKey: 'nav.ourstory' },
+      { link: '/our-initiatives', labelKey: 'nav.ourinitiatives' },
+      { link: '/success-stories', labelKey: 'nav.successstories' },
+      { link: '/our-centers', labelKey: 'nav.ourcenters' },
     ],
   },
-  { link: '/awards', label: 'AWARDS' },
+  { link: '/awards', labelKey: 'nav.awards' },
   {
     link: '#2',
-    label: 'MEDIA',
+    labelKey: 'nav.media',
     links: [
-      { link: '/news-coverage', label: 'NEWS COVERAGE' },
-      { link: '/gallery', label: 'GALLERY' },
-      { link: '/blog', label: 'BLOGS' },
-      { link: '/electronic-media', label: 'ELECTRONIC MEDIA' },
+      { link: '/news-coverage', labelKey: 'nav.newscoverage' },
+      { link: '/gallery', labelKey: 'nav.gallery' },
+      { link: '/blog', labelKey: 'nav.blogs' },
+      { link: '/electronic-media', labelKey: 'nav.electronicmedia' },
     ],
   },
-  { link: '/careers', label: 'CAREERS' },
-  { link: '/contact-us', label: 'CONTACT US' },
+  { link: '/careers', labelKey: 'nav.careers' },
+  { link: '/contact-us', labelKey: 'nav.contactus' },
 ];
 
 type LanguageCode = 'en' | 'hi';
@@ -67,15 +63,32 @@ export function HeaderMenu() {
   const [opened, { toggle, close }] = useDisclosure(false);
   const [searchOpened, setSearchOpened] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { language, setLanguage, t } = useLanguage();
+  const { language, setLanguage, t, dictionary } = useLanguage();
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  const navItems = links.map((link, index) => {
-    if (link.links) {
-      const menuItems = link.links.map((item, subIndex) => (
+  // Verify translations are loaded
+  useEffect(() => {
+    setIsLoaded(!!dictionary);
+  }, [dictionary]);
+
+  // Safe translation function with fallback
+  const getTranslation = (key: string, fallback: string) => {
+    try {
+      const result = t(key);
+      return result === key ? fallback : result;
+    } catch (error) {
+      console.error(`Translation error for key: ${key}`, error);
+      return fallback;
+    }
+  };
+
+  const navItems = navigationStructure.map((item, index) => {
+    if (item.links) {
+      const menuItems = item.links.map((subItem, subIndex) => (
         <Menu.Item key={subIndex}>
-          <a href={item.link} className={classes.dropdownLink}>
-            {item.label}
-          </a>
+          <Link href={`/${language}${subItem.link}`} className={classes.dropdownLink}>
+            {getTranslation(subItem.labelKey, subItem.labelKey.split('.').pop() || '')}
+          </Link>
         </Menu.Item>
       ));
 
@@ -84,7 +97,7 @@ export function HeaderMenu() {
           <Menu.Target>
             <span className={classes.link}>
               <Center>
-                <Text fw={1000}>{link.label}</Text>
+                <Text fw={1000}>{getTranslation(item.labelKey, item.labelKey.split('.').pop() || '')}</Text>
                 <IconChevronDown size={14} stroke={1.5} />
               </Center>
             </span>
@@ -95,16 +108,16 @@ export function HeaderMenu() {
     }
 
     return (
-      <a key={index} href={link.link} className={classes.link}>
-        {link.label}
-      </a>
+      <Link key={index} href={`/${language}${item.link}`} className={classes.link}>
+        {getTranslation(item.labelKey, item.labelKey.split('.').pop() || '')}
+      </Link>
     );
   });
 
   return (
     <header className={classes.header}>
       <div className={classes.inner}>
-        <Link href="/">
+        <Link href={`/${language}`}>
           <Image
             src="/logo1.png"
             alt="Ragi Ji Foundation"
@@ -117,7 +130,7 @@ export function HeaderMenu() {
 
         <div className={classes.searchContainer}>
           <SearchQuery
-            placeholder={t('search.placeholder')}
+            placeholder={getTranslation('search.placeholder', 'Search')}
           />
         </div>
 
@@ -133,13 +146,13 @@ export function HeaderMenu() {
             onClick={() => setIsModalOpen(true)}
             className={classes.joinUsCta}
           >
-            Join Us
+            {getTranslation('nav.joinus', 'JOIN US')}
           </Button>
 
           <Menu position="bottom-end" trigger="hover">
             <Menu.Target>
               <Button variant="subtle" size="sm">
-                {languages.find(lang => lang.code === language)?.label}
+                {language === 'en' ? 'English' : 'हिंदी'}
                 <IconChevronDown size={14} stroke={1.5} />
               </Button>
             </Menu.Target>
@@ -147,10 +160,7 @@ export function HeaderMenu() {
               {languages.map((lang) => (
                 <Menu.Item
                   key={lang.code}
-                  onClick={() => {
-                    setLanguage(lang.code);
-                    window.location.reload();
-                  }}
+                  onClick={() => setLanguage(lang.code)}
                   style={{
                     fontWeight: language === lang.code ? 'bold' : 'normal',
                     backgroundColor: language === lang.code ? '#f0f0f0' : 'transparent'
@@ -210,8 +220,8 @@ export function HeaderMenu() {
             style={{ objectFit: 'contain' }}
           />
           <div className={classes.drawerTitle}>
-            <h3 className={classes.foundationName}>Ragi Ji Foundation</h3>
-            <p className={classes.tagline}>Live For Others</p>
+            <h3 className={classes.foundationName}>{getTranslation('footer.organization.name', 'Ragi Ji Foundation')}</h3>
+            <p className={classes.tagline}>{getTranslation('footer.slogan', 'Live For Others')}</p>
           </div>
           <ActionIcon onClick={close} variant="subtle" size="lg">
             ×
@@ -221,7 +231,7 @@ export function HeaderMenu() {
         <div className={classes.drawerContent}>
           <div className={classes.mobileSearch}>
             <SearchQuery
-              placeholder={t('search.placeholder')}
+              placeholder={getTranslation('search.placeholder', 'Search')}
               onClose={close}
             />
           </div>
@@ -235,7 +245,6 @@ export function HeaderMenu() {
                 variant={language === lang.code ? 'light' : 'subtle'}
                 onClick={() => {
                   setLanguage(lang.code);
-                  window.location.reload();
                 }}
                 size="md"
                 fullWidth
@@ -249,22 +258,22 @@ export function HeaderMenu() {
           <Divider my="sm" />
 
           <Stack gap={0} className={classes.mobileNavigation}>
-            {links.map((link) => (
+            {navigationStructure.map((item) => (
               <NavLink
-                key={link.label}
+                key={item.labelKey}
                 component="a"
-                href={link.links ? '#' : link.link}
-                label={link.label}
+                href={item.links ? '#' : `/${language}${item.link}`}
+                label={getTranslation(item.labelKey, item.labelKey.split('.').pop() || '')}
                 childrenOffset={28}
-                onClick={link.links ? undefined : close}
+                onClick={item.links ? undefined : close}
                 className={classes.mobileMenuItem}
               >
-                {link.links?.map((subLink) => (
+                {item.links?.map((subItem) => (
                   <NavLink
-                    key={subLink.label}
+                    key={subItem.labelKey}
                     component="a"
-                    href={subLink.link}
-                    label={subLink.label}
+                    href={`/${language}${subItem.link}`}
+                    label={getTranslation(subItem.labelKey, subItem.labelKey.split('.').pop() || '')}
                     onClick={close}
                     className={`${classes.mobileMenuItem} ${classes.mobileSubMenu}`}
                   />

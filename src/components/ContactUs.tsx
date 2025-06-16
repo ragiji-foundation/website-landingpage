@@ -10,11 +10,14 @@ import {
   Paper
 } from '@mantine/core';
 import { ContactIconsList } from './ContactIcons';
+import { useLanguage } from '@/context/LanguageContext';
 import classes from './ContactUs.module.css';
 import { useState } from 'react';
 import axios from 'axios';
 
 export function ContactUs() {
+  const { t } = useLanguage();
+  
   const [formData, setFormData] = useState({
     email: '',
     name: '',
@@ -38,7 +41,7 @@ export function ContactUs() {
 
       setSubmitStatus({
         type: 'success',
-        message: 'Thank you for your message. We will get back to you soon!'
+        message: t('contact.form.success')
       });
       setFormData({ email: '', name: '', subject: '', message: '' });
 
@@ -46,7 +49,7 @@ export function ContactUs() {
       console.error('Form submission error:', error);
       setSubmitStatus({
         type: 'error',
-        message: 'Failed to send message. Please try again.'
+        message: t('contact.form.error')
       });
     } finally {
       setIsSubmitting(false);
@@ -57,30 +60,30 @@ export function ContactUs() {
     <div className={classes.wrapper}>
       <SimpleGrid cols={{ base: 1, sm: 2 }} spacing={50}>
         <div>
-          <Title className={classes.title}>Contact us</Title>
+          <Title className={classes.title}>{t('contact.banner.title')}</Title>
           <Text className={classes.description} mt="sm" mb={30}>
-            Leave your message and we will get back to you within 24 hours
+            {t('contact.info.description')}
           </Text>
           <ContactIconsList
             data={[
               {
-                title: 'Email',
-                description: 'admin@ragijifoundation.com',
+                title: t('contact.info.email'),
+                description: t('footer.getintouch.email'),
                 icon: 'mail'
               },
               {
-                title: 'Phone',
-                description: '+91 8827968035',
+                title: t('contact.info.phone'),
+                description: t('footer.getintouch.phone'),
                 icon: 'phone',
               },
               {
-                title: 'Address',
-                description: 'HOUSE NO-12 GRAM MAHAPURA POST KOTHD, Kothada B.O Kothada, DHAR 454449, Madhya Pradesh, India',
+                title: t('contact.info.address'),
+                description: `${t('footer.organization.address.line1')} ${t('footer.organization.address.line2')} ${t('footer.organization.address.line3')}`,
                 icon: 'location',
               },
               {
-                title: 'Working hours',
-                description: 'Monday - Saturday: 9:00 AM - 6:00 PM',
+                title: t('contact.info.hours'),
+                description: t('contact.info.hoursValue'),
                 icon: 'clock',
               },
             ]}
@@ -90,7 +93,7 @@ export function ContactUs() {
         <Paper shadow="md" radius="lg" p="xl" className={classes.form}>
           <form onSubmit={handleSubmit}>
             <TextInput
-              label="Email"
+              label={t('contact.form.email')}
               placeholder="your@email.com"
               required
               value={formData.email}
@@ -99,8 +102,8 @@ export function ContactUs() {
               disabled={isSubmitting}
             />
             <TextInput
-              label="Name"
-              placeholder="Your Name"
+              label={t('contact.form.name')}
+              placeholder={t('contact.form.name')}
               mt="md"
               required
               value={formData.name}
@@ -109,8 +112,8 @@ export function ContactUs() {
               disabled={isSubmitting}
             />
             <TextInput
-              label="Subject"
-              placeholder="Subject"
+              label={t('contact.form.subject')}
+              placeholder={t('contact.form.subject')}
               mt="md"
               required
               value={formData.subject}
@@ -120,8 +123,8 @@ export function ContactUs() {
             />
             <Textarea
               required
-              label="Your message"
-              placeholder="Please type your message here"
+              label={t('contact.form.message')}
+              placeholder={t('contact.form.messagePlaceholder')}
               minRows={4}
               mt="md"
               value={formData.message}
@@ -146,7 +149,7 @@ export function ContactUs() {
                 className={classes.control}
                 loading={isSubmitting}
               >
-                {isSubmitting ? 'Sending...' : 'Send message'}
+                {isSubmitting ? t('common.submitting') : t('contact.form.submit')}
               </Button>
             </Group>
           </form>

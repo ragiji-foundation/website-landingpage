@@ -1,46 +1,22 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // We're now using App Router with middleware for i18n,
+  // so we don't need the older pages router i18n config
+  /* 
+  i18n: {
+    locales: ['en', 'hi'],
+    defaultLocale: 'en',
+  },
+  */
+  
   // Remove swcMinify as it's enabled by default in Next.js 12+
   reactStrictMode: true,
-  images: {
-    domains: [
-      'res.cloudinary.com', // Add Cloudinary domain
-      'cloudinary.com',
-      'images.unsplash.com', // Common image sources
-      'via.placeholder.com',
-      'picsum.photos',
-      'placehold.co',
-      'img.youtube.com',
-      'ragijifoundation.com',
-      'admin.ragijifoundation.com'
-    ],
-    // Optionally, you can also configure remote patterns for more specific control
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'res.cloudinary.com',
-        pathname: '**',
-      },
-      {
-        protocol: 'https',
-        hostname: '**.amazonaws.com'
-      }
-    ]
-  },
-  async headers() {
-    return [
-      {
-        // matching all API routes
-        source: "/api/:path*",
-        headers: [
-          { key: "Access-Control-Allow-Credentials", value: "true" },
-          { key: "Access-Control-Allow-Origin", value: "https://www.ragijifoundation.com" },
-          { key: "Access-Control-Allow-Methods", value: "POST, OPTIONS" },
-          { key: "Access-Control-Allow-Headers", value: "Content-Type, Authorization" },
-        ]
-      }
-    ]
-  }
+  transpilePackages: ['@mantine/core', 'react-fast-marquee'],
+  
+  // Do not use the i18n config since we're using App Router with [locale]
+  // We're handling the routing with the dynamic [locale] segment and middleware
+  
+  // Other configs as needed
 }
 
 module.exports = nextConfig
