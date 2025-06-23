@@ -56,7 +56,7 @@ function CenterList() {
         mb="xl"
       >
         <Stack>
-          <Text>We couldn't retrieve our centers information. Please try again later.</Text>
+          <Text>We couldn&lsquo;t retrieve our centers information. Please try again later.</Text>
           <Button
             variant="outline"
             onClick={() => fetchCenters()}

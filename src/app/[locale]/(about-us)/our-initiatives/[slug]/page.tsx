@@ -116,7 +116,7 @@ export default function InitiativeDetailPage() {
             title={error || 'Initiative not found'}
             color="red"
           >
-            We couldn't find the initiative you're looking for. Please return to the initiatives page and try again.
+            We couldn&lsquo;t find the initiative you're looking for. Please return to the initiatives page and try again.
           </Alert>
         </Container>
       </main>

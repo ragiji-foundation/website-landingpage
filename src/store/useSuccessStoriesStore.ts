@@ -69,8 +69,7 @@ export const useSuccessStoriesStore = create<SuccessStoriesState>()(
               set(state => ({ retryCount: state.retryCount + 1 }));
               setTimeout(() => get().fetchStories(locale), 1000 * get().retryCount);
             } else {
-              //remove the fallback data from the store to make the app more robust.
-               set({
+              set({
                 error: error as Error,
                 loading: false
               });
@@ -84,10 +83,8 @@ export const useSuccessStoriesStore = create<SuccessStoriesState>()(
           try {
             set({ loading: true, error: null });
 
-            // First check if we already have this story in our cache for this locale
-            const existingStory = get().stories.find(
-              s => s.slug === slug && (s.locale === locale || !s.locale)
-            );
+            // First check if we already have this story in our cache
+            const existingStory = get().stories.find(s => s.slug === slug);
             
             if (existingStory) {
               set({
@@ -105,8 +102,7 @@ export const useSuccessStoriesStore = create<SuccessStoriesState>()(
 
             const data = await response.json();
             set(state => ({
-              stories: [...state.stories.filter(s => !(s.slug === slug && s.locale === locale)), 
-                       {...data, locale}],
+              stories: [...state.stories.filter(s => s.slug !== slug), data],
               selectedStory: data,
               loading: false
             }));
@@ -130,8 +126,7 @@ export const useSuccessStoriesStore = create<SuccessStoriesState>()(
 
             const data = await response.json();
             set(state => ({
-              stories: [...state.stories.filter(s => !(s.id === id && s.locale === locale)),
-                       {...data, locale}],
+              stories: [...state.stories.filter(s => s.id !== id), data],
               loading: false
             }));
           } catch (error) {

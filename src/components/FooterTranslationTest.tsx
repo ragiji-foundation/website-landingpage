@@ -59,7 +59,7 @@ export function FooterTranslationTest() {
         
         <Divider my="sm" label="Organization Information" />
         
-        <Stack spacing="xs">
+        <Stack gap="xs">
           <Text><strong>Slogan:</strong> {t('footer.slogan')}</Text>
           <Text><strong>Name:</strong> {t('footer.organization.name')}</Text>
           <Text><strong>Full Name:</strong> {t('footer.organization.fullName')}</Text>
@@ -71,7 +71,7 @@ export function FooterTranslationTest() {
         {showAll && (
           <>
             <Divider my="sm" label="All Footer Keys" />
-            <Stack spacing="xs">
+            <Stack gap="xs">
               {footerSections.map(key => (
                 <Text key={key} size="sm">
                   <strong>{key}:</strong> {t(key)}

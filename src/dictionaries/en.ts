@@ -74,6 +74,16 @@ export const enDictionary = {
       heading: 'Empowering Communities, Transforming Lives',
       subheading: 'Join us in our mission to create sustainable change',
       ctaButton: 'Get Involved'
+    },
+    features: {
+      subheading: 'The Solution for Social Change',
+      description: 'Empowering Communities Through Sustainable Development'
+    },
+    initiatives: {
+      viewAll: 'View All Initiatives'
+    },
+    testimonials: {
+      heading: 'What People Say About Us'
     }
   },
   
@@ -1099,7 +1109,7 @@ export const enDictionary = {
   },
 
   // Expanded Gallery Page
-  gallery: {
+  galleryPage: {
     banner: {
       title: 'Photo Gallery',
       description: 'Visual journey of our impact and activities'
@@ -1135,5 +1145,12 @@ export const enDictionary = {
       nonprofit: 'Non-profit Use',
       request: 'Request License'
     }
+  },
+
+  cookies: {
+    message: 'We use cookies to enhance your browsing experience, serve personalized content, and analyze our traffic. By clicking "Accept", you consent to our use of cookies.',
+    learnMore: 'Learn more',
+    accept: 'Accept',
+    decline: 'Decline',
   }
 };

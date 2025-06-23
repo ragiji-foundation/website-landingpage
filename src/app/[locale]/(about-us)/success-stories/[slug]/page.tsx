@@ -108,7 +108,7 @@ export default function SuccessStoryDetail() {
             color="red"
             mb="lg"
           >
-            The story you're looking for may have been moved or deleted.
+            The story you&lsquo;re looking for may have been moved or deleted.
           </Alert>
 
           <Button
@@ -147,7 +147,7 @@ export default function SuccessStoryDetail() {
             color="yellow"
             mb="lg"
           >
-            We're experiencing some issues connecting to our servers. Some content might be limited or outdated.
+            We&lsquo;re experiencing some issues connecting to our servers. Some content might be limited or outdated.
           </Alert>
         )}
 

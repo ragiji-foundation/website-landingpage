@@ -9,7 +9,7 @@ import { Initiatives } from '@/components/Initiatives';
 import { Testimonials } from '@/components/landing/Testimonials/index';
 import FeaturesSection from '@/components/landing/features-section';
 import StatsSection from '@/components/landing/stats-section';
-import { PageTransition } from '@/components/Transitions';  // Updated path
+import { PageTransition } from '@/components/Transitions';  
 import { ScrollProgress } from '@/components/ScrollProgress';
 import { AnimatedSection } from '@/components/AnimatedSection';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -18,12 +18,27 @@ import classes from './page.module.css';
 import { useEffect } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 
-export default function App({ params: { locale } }: { params: { locale: string } }) {
+// Define the proper type for page params in client component
+interface PageProps {
+  params: {
+    locale: string;
+  };
+}
+
+export default function App({ params }: PageProps) {
   const { language, setLanguage, t } = useLanguage();
+  const locale = params.locale;
+
+  // Add debugging
+  useEffect(() => {
+    console.log('Page params locale:', locale);
+    console.log('Context language:', language);
+  }, [locale, language]);
 
   // Synchronize the context language with the URL locale
   useEffect(() => {
     if (locale && locale !== language) {
+      console.log(`Updating language from ${language} to ${locale}`);
       setLanguage(locale as 'en' | 'hi');
     }
   }, [locale, language, setLanguage]);
@@ -62,8 +77,6 @@ export default function App({ params: { locale } }: { params: { locale: string }
           </Box>
         </AnimatedSection>
 
-
-
         {/* 2. Features Section */}
         <AnimatedSection>
           <Box
@@ -81,12 +94,12 @@ export default function App({ params: { locale } }: { params: { locale: string }
           >
             <ErrorBoundary>
               <FeaturesSection
-                heading="RAGIJI FOUNDATION"
-                subheading="The Solution for Social Change"
-                description="Empowering Communities Through Sustainable Development"
+                heading={t('footer.organization.name')}
+                subheading={t('home.features.subheading')}
+                description={t('home.features.description')}
                 ctaButton={{
-                  text: "Download Brochure",
-                  url: "/brochure",
+                  text: t('joinus.downloadBrochure'),
+                  url: `/${language}/brochure`,
                   variant: "gradient",
                   gradient: { from: '#FF4B2B', to: '#FF416C' },
                   size: "lg",
@@ -127,10 +140,10 @@ export default function App({ params: { locale } }: { params: { locale: string }
           >
             <Container size="xl">
               <Initiatives
-                heading="Our Initiatives"
+                heading={t('initiatives.banner.title')}
                 ctaButton={{
-                  text: "View All Initiatives",
-                  url: "/our-initiatives"
+                  text: t('home.initiatives.viewAll'),
+                  url: `/${language}/our-initiatives`
                 }}
               />
             </Container>
@@ -204,7 +217,6 @@ export default function App({ params: { locale } }: { params: { locale: string }
           </Box>
         </AnimatedSection>
 
-
         {/* 7. Testimonials */}
         <AnimatedSection>
           <Box
@@ -221,11 +233,10 @@ export default function App({ params: { locale } }: { params: { locale: string }
             }}
           >
             <ErrorBoundary>
-              <Testimonials />
+              <Testimonials heading={t('home.testimonials.heading')} />
             </ErrorBoundary>
           </Box>
         </AnimatedSection>
-
 
         {/* 8. Stats Section */}
         <AnimatedSection>

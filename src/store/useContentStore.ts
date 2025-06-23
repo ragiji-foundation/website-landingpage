@@ -3,16 +3,39 @@ import { devtools } from 'zustand/middleware';
 import { Initiative } from '@/types/initiative';
 import { Testimonial } from '@/types/testimonial';
 import { GalleryItem } from '@/types/gallery';
-import { mockInitiatives } from '@/data/mock-initiatives';
-import { mockTestimonials } from '@/data/mock-testimonials';
-import { mockGallery } from '@/data/mock-gallery';
+
+interface NewsArticle {
+  id: number;
+  title: string;
+  titleHi?: string;
+  source: string;
+  date: string;
+  imageUrl?: string;
+  link?: string;
+  description?: string;
+  descriptionHi?: string;
+}
+
+interface ElectronicMedia {
+  id: number;
+  title: string;
+  titleHi?: string;
+  description?: string;
+  descriptionHi?: string;
+  videoUrl: string;
+  thumbnail?: string;
+  order: number;
+}
+
+
+
 
 interface ContentState {
   initiatives: Initiative[];
   testimonials: Testimonial[];
   gallery: GalleryItem[];
-  news: any[];
-  electronicMedia: any[];
+  news: NewsArticle[];
+  electronicMedia: ElectronicMedia[];
   loading: boolean;
   error: Error | null;
   locale: string;
@@ -48,8 +71,7 @@ export const useContentStore = create<ContentState>()(
       } catch (error) {
         console.error('Error fetching initiatives:', error);
         // Use locale-specific data if available, otherwise use English data
-        const localeSpecificData = mockInitiatives[locale] || mockInitiatives.en;
-        set((state) => ({ ...state, initiatives: localeSpecificData, loading: false }));
+        set({ initiatives: [], loading: false });
       }
     },
 
@@ -63,8 +85,7 @@ export const useContentStore = create<ContentState>()(
         set((state) => ({ ...state, testimonials: data, loading: false }));
       } catch (error) {
         console.error('Error fetching testimonials:', error);
-        const localeSpecificData = mockTestimonials[locale] || mockTestimonials.en;
-        set((state) => ({ ...state, testimonials: localeSpecificData, loading: false }));
+        set({ testimonials: [], loading: false });
       }
     },
 
@@ -78,8 +99,7 @@ export const useContentStore = create<ContentState>()(
         set((state) => ({ ...state, gallery: data, loading: false }));
       } catch (error) {
         console.error('Error fetching gallery:', error);
-        const localeSpecificData = mockGallery[locale] || mockGallery.en;
-        set((state) => ({ ...state, gallery: localeSpecificData, loading: false }));
+        set({ gallery: [], loading: false });
       }
     },
 

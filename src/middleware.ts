@@ -2,57 +2,43 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 const locales = ['en', 'hi'];
-const defaultLocale = 'hi';
+const defaultLocale = 'en';
 
-// Check if the pathname has a locale
-function pathnameHasLocale(pathname: string) {
-  return locales.some(
-    (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
+function getLocale(request: NextRequest): string {
+  // Check if any of the supported locales are in the pathname
+  const pathname = request.nextUrl.pathname;
+  const pathnameIsMissingLocale = locales.every(
+    (locale) => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`
   );
-}
 
-// Get the locale from the Accept-Language header
-function getLocaleFromHeader(request: NextRequest) {
-  const headerLang = request.headers.get('accept-language')?.split(',')[0].split('-')[0];
-  return locales.includes(headerLang as string) ? headerLang : defaultLocale;
+  // Redirect if there is no locale
+  if (pathnameIsMissingLocale) {
+    return defaultLocale;
+  }
+
+  return locales.find(locale => pathname.startsWith(`/${locale}`)) || defaultLocale;
 }
 
 export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-
-  // Skip middleware for static files, api routes, favicon, etc.
-  if (
-    [
-      '/favicon.ico',
-      '/logo.png',
-      '/logo1.png',
-      '/manifest.json',
-    ].includes(pathname) ||
-    pathname.startsWith('/_next') ||
-    pathname.startsWith('/api') ||
-    pathname.match(/\.(jpg|png|svg|ico|css|js)$/)
-  ) {
-    return;
-  }
-
-  // If the pathname already has a locale, do nothing
-  if (pathnameHasLocale(pathname)) {
-    return;
-  }
-
-  // Get the locale from the Accept-Language header or use the default
-  const locale = getLocaleFromHeader(request);
+  const pathname = request.nextUrl.pathname;
   
-  // Redirect to the same pathname but with the locale
-  const url = new URL(`/${locale}${pathname === '/' ? '' : pathname}`, request.url);
-  url.search = request.nextUrl.search;
-  
-  return NextResponse.redirect(url);
+  // Check if there is any supported locale in the pathname
+  const pathnameIsMissingLocale = locales.every(
+    (locale) => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`
+  );
+
+  // Redirect if there is no locale
+  if (pathnameIsMissingLocale) {
+    const locale = getLocale(request);
+    return NextResponse.redirect(
+      new URL(`/${locale}${pathname}`, request.url)
+    );
+  }
 }
 
 export const config = {
   matcher: [
-    // Match all request paths except for the ones we explicitly exclude
-    '/((?!api|_next|favicon.ico).*)'
+    // Skip all internal paths (_next)
+    '/((?!_next|api|favicon.ico).*)',
   ],
 };

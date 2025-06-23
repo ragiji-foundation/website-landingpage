@@ -23,5 +23,5 @@ export const api = {
     return this.get(`/api/success-stories/slug/${slug}`);
   },
 
-  // ... other API methods
+  
 };

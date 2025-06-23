@@ -24,7 +24,7 @@ export default function TranslationTestPage() {
       </Stack>
 
       <Title order={2} mb={10}>Footer Translations</Title>
-      <Stack spacing="xs">
+      <Stack gap="xs">
         <Text>Footer Slogan: {t('footer.slogan')}</Text>
         <Text>Footer Rights: {t('footer.rights')}</Text>
         <Text>About Us Title: {t('footer.aboutus.title')}</Text>

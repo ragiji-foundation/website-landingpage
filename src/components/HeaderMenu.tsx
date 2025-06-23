@@ -19,6 +19,7 @@ import { JoinUsModal } from './JoinUsModal';
 import { useLanguage } from '@/context/LanguageContext';
 import SearchQuery from './SearchQuery';
 import { useDisclosure } from '@mantine/hooks';
+import { useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import classes from './HeaderMenu.module.css';
@@ -65,6 +66,10 @@ export function HeaderMenu() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { language, setLanguage, t, dictionary } = useLanguage();
   const [isLoaded, setIsLoaded] = useState(false);
+  
+  // Add router and pathname hooks for manual navigation
+  const router = useRouter();
+  const pathname = usePathname();
 
   // Verify translations are loaded
   useEffect(() => {
@@ -80,6 +85,33 @@ export function HeaderMenu() {
       console.error(`Translation error for key: ${key}`, error);
       return fallback;
     }
+  };
+
+  // Enhanced language switching function
+  const handleLanguageSwitch = (newLanguage: LanguageCode) => {
+    console.log('Switching to language:', newLanguage);
+    console.log('Current pathname:', pathname);
+    
+    // Update the language context
+    setLanguage(newLanguage);
+    
+    // Manually construct the new URL with the new locale
+    const segments = pathname.split('/');
+    
+    // Check if the current path already has a locale
+    if (['en', 'hi'].includes(segments[1])) {
+      // Replace the existing locale
+      segments[1] = newLanguage;
+    } else {
+      // Add the locale at the beginning
+      segments.splice(1, 0, newLanguage);
+    }
+    
+    const newPath = segments.join('/');
+    console.log('Navigating to:', newPath);
+    
+    // Navigate to the new path
+    router.push(newPath);
   };
 
   const navItems = navigationStructure.map((item, index) => {
@@ -160,7 +192,7 @@ export function HeaderMenu() {
               {languages.map((lang) => (
                 <Menu.Item
                   key={lang.code}
-                  onClick={() => setLanguage(lang.code)}
+                  onClick={() => handleLanguageSwitch(lang.code)}
                   style={{
                     fontWeight: language === lang.code ? 'bold' : 'normal',
                     backgroundColor: language === lang.code ? '#f0f0f0' : 'transparent'
@@ -244,7 +276,8 @@ export function HeaderMenu() {
                 key={lang.code}
                 variant={language === lang.code ? 'light' : 'subtle'}
                 onClick={() => {
-                  setLanguage(lang.code);
+                  handleLanguageSwitch(lang.code);
+                  close(); // Close the mobile drawer after switching
                 }}
                 size="md"
                 fullWidth

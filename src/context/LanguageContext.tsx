@@ -26,7 +26,6 @@ export const translations = {
       aboutUs: 'ABOUT US',
       theNeed: 'THE NEED',
       ourStory: 'OUR STORY',
-      // ... other navigation items
     },
     search: {
       placeholder: 'Search',
@@ -39,13 +38,24 @@ export const translations = {
       aboutUs: 'हमारे बारे में',
       theNeed: 'आवश्यकता',
       ourStory: 'हमारी कहानी',
-      // ... other navigation items
     },
     search: {
       placeholder: 'खोजें',
       noResults: 'कोई परिणाम नहीं मिला',
     },
   },
+} as const;
+
+// Type-safe helper function to navigate nested objects
+const getNestedValue = (obj: Record<string, any>, keys: string[]): any => {
+  let current = obj;
+  for (const key of keys) {
+    if (current === null || current === undefined || typeof current !== 'object') {
+      return undefined;
+    }
+    current = current[key];
+  }
+  return current;
 };
 
 // Initialize with full dictionaries when available
@@ -71,6 +81,7 @@ export function LanguageProvider({ children, initialLocale = 'en' }: { children:
         setIsLoading(true);
         const dict = await getDictionary(language);
         setDictionary(dict);
+        console.log(`Dictionary loaded for language: ${language}`);
       } catch (error) {
         console.error('Failed to load dictionary:', error);
         // Fallback to static dictionary
@@ -83,50 +94,41 @@ export function LanguageProvider({ children, initialLocale = 'en' }: { children:
     loadDictionary();
   }, [language]);
 
-  const handleSetLanguage = (lang: LanguageCode) => {
-    setLanguage(lang);
-    
-    // Update URL to reflect language change
+  // Sync language with URL pathname when component mounts or pathname changes
+  useEffect(() => {
     if (pathname) {
       const segments = pathname.split('/');
-      // If the second segment (index 1) is a locale, replace it
-      if (['en', 'hi'].includes(segments[1])) {
-        segments[1] = lang;
-        router.push(segments.join('/'));
-      } else {
-        // This shouldn't normally happen with our middleware, but just in case
-        router.push(`/${lang}${pathname}`);
+      const currentLocale = segments[1];
+      
+      if (['en', 'hi'].includes(currentLocale) && currentLocale !== language) {
+        console.log(`Syncing language from URL: ${currentLocale}`);
+        setLanguage(currentLocale as LanguageCode);
       }
     }
+  }, [pathname, language]);
+
+  const handleSetLanguage = (lang: LanguageCode) => {
+    console.log(`Setting language to: ${lang}`);
+    setLanguage(lang);
+    
+    // Don't navigate here - let the component handle navigation
+    // This prevents double navigation issues
   };
 
-  // Translation function with improved error handling
+  // Translation function with improved error handling and type safety
   const t = (key: string): string => {
     if (!key || typeof key !== 'string') return '';
     
     try {
       const keys = key.split('.');
-      let result = dictionary;
       
-      // Navigate through the nested dictionary structure
-      for (const k of keys) {
-        if (!result || typeof result !== 'object') {
-          // console.warn(`Translation path broken at '${k}' in key '${key}'`);
-          return key;
-        }
-        
-        result = result[k];
-        
-        if (result === undefined) {
-          // Try fallback to basic translations if not found in dictionary
-          let fallback = translations[language];
-          for (const k of keys) {
-            fallback = fallback?.[k];
-            if (fallback === undefined) break;
-          }
-          
-          return fallback || key;
-        }
+      // First try to get from main dictionary
+      let result = getNestedValue(dictionary, keys);
+      
+      if (result === undefined) {
+        // Try fallback to basic translations if not found in dictionary
+        const fallbackDictionary = translations[language];
+        result = getNestedValue(fallbackDictionary, keys);
       }
       
       // Return the found string or the key as fallback

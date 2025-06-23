@@ -10,46 +10,12 @@ export interface MediaItem {
 export interface StoryData {
   id: string;
   title: string;
+  titleHi?: string;
   content: string;
+  contentHi?: string;
   media: MediaItem[];
   locale?: string;
 }
-
-// Locale-specific fallback data
-const FALLBACK_DATA: Record<string, StoryData> = {
-  en: {
-    id: 'fallback',
-    title: 'Our Story',
-    content: `<article class="story-content">
-      <h2>The Beginning of Our Journey</h2>
-      <p>UPAY – Under Privileged Advancement by Youth started as a small initiative...</p>
-      </article>`,
-    media: [
-      {
-        type: "image",
-        url: "/images/fallback-center.jpg",
-        title: "Our first center"
-      }
-    ],
-    locale: 'en'
-  },
-  hi: {
-    id: 'fallback',
-    title: 'हमारी कहानी',
-    content: `<article class="story-content">
-      <h2>हमारी यात्रा की शुरुआत</h2>
-      <p>UPAY – अंडर प्रिविलेज्ड एडवांसमेंट बाय यूथ की शुरुआत एक छोटी पहल के रूप में हुई...</p>
-      </article>`,
-    media: [
-      {
-        type: "image",
-        url: "/images/fallback-center.jpg",
-        title: "हमारा पहला केंद्र"
-      }
-    ],
-    locale: 'hi'
-  }
-};
 
 interface OurStoryState {
   data: StoryData | null;
@@ -75,7 +41,7 @@ export const useOurStoryStore = create<OurStoryState>()(
           console.error('Failed to fetch story:', error);
           set({
             error: 'Failed to load content',
-            data: FALLBACK_DATA[locale] || FALLBACK_DATA.en,
+            data: null,
             loading: false
           });
         }

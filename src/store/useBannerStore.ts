@@ -8,13 +8,12 @@ export interface Banner {
   id: string;
   type: BannerType;
   title: string;
+  titleHi?: string;
   description: string;
+  descriptionHi?: string;
   backgroundImage: string;
-  ctaText?: string;
-  ctaLink?: string;
   createdAt: string;
   updatedAt: string;
-  locale?: string; // Add locale field for internationalization
 }
 
 interface BannerState {
@@ -22,7 +21,7 @@ interface BannerState {
   loading: boolean;
   error: Error | null;
   fetchBanners: (locale?: string) => Promise<void>;
-  getBannerByType: (type: BannerType | string, locale?: string) => Banner | null;
+  getBannerByType: (type: BannerType | string) => Banner | null;
 }
 
 export const useBannerStore = create<BannerState>()(
@@ -72,18 +71,9 @@ export const useBannerStore = create<BannerState>()(
         }
       },
 
-      getBannerByType: (type, locale) => {
+      getBannerByType: (type) => {
         const { banners } = get();
-
-        // First try to find a banner with matching type and locale
-        if (locale) {
-          const localizedBanner = banners.find(
-            banner => banner.type === type && banner.locale === locale
-          );
-          if (localizedBanner) return localizedBanner;
-        }
-
-        // Fall back to a banner with just matching type
+        // Return the first banner matching the type
         return banners.find(banner => banner.type === type) || null;
       }
     })

@@ -101,7 +101,7 @@ export default function TranslationTestPage({ params }: { params: { locale: stri
       <Title order={1} mb="lg">Translation Test Page</Title>
       
       <Paper withBorder p="md" mb="xl">
-        <Group mb="md" position="apart">
+        <Group mb="md" justify="apart">
           <Text fw={700} size="lg">
             Current language: <Badge size="lg" color={language === 'en' ? 'blue' : 'green'}>
               {language === 'en' ? 'English' : 'हिंदी'}
@@ -146,12 +146,10 @@ export default function TranslationTestPage({ params }: { params: { locale: stri
                 shadow="sm" 
                 p="md" 
                 radius="md"
-                sx={theme => ({
-                  backgroundColor: exists ? undefined : theme.colors.red[0]
-                })}
+                style={exists ? {} : { backgroundColor: '#fff0f0' }} // fallback color if missing
               >
                 <Stack>
-                  <Group position="apart">
+                  <Group justify="apart">
                     <Text fw={500} c="dimmed" size="sm">Key: {key}</Text>
                     <Badge color={exists ? 'green' : 'red'}>
                       {exists ? 'Found' : 'Missing'}
