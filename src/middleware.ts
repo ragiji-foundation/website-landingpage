@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 const locales = ['en', 'hi'];
-const defaultLocale = 'en';
+const defaultLocale = 'hi';
 
 function getLocale(request: NextRequest): string {
   // Check if any of the supported locales are in the pathname
