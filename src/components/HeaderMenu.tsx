@@ -245,10 +245,11 @@ export function HeaderMenu() {
       >
         <div className={classes.drawerHeader}>
           <Image
-            src="/logo.png"
+            src="/logo1.png"
             alt="Ragi Ji Foundation"
-            width={50}
-            height={50}
+            width={180}
+            height={80}
+            priority
             style={{ objectFit: 'contain' }}
           />
           <div className={classes.drawerTitle}>

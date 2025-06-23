@@ -16,7 +16,7 @@ import { GoogleAnalytics } from '@/components/GoogleAnalytics';
 import { JoinUs } from '@/components/JoinUs';
 import { AnalyticsProvider } from '@/components/AnalyticsProvider';
 import { WhatsAppButton } from '@/components/WhatsAppButton';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 // Fix the synchronous params issue by using client-side logic
 export default function LocaleLayout({
@@ -26,14 +26,26 @@ export default function LocaleLayout({
   children: React.ReactNode;
   params: { locale: string };
 }) {
-  const [locale, setLocale] = useState<string>('en'); // Default fallback
+  const [locale, setLocale] = useState<string>('hi'); // Default fallback
 
-  // Set the locale after component mounts to avoid the sync params issue
+  // Handle params properly for Next.js 15
+  const [resolvedParams, setResolvedParams] = useState<{ locale: string } | null>(null);
+  
   useEffect(() => {
-    if (params && params.locale) {
-      setLocale(params.locale);
-    }
+    // Resolve params Promise in useEffect for client components
+    const resolveParams = async () => {
+      const resolved = await Promise.resolve(params);
+      setResolvedParams(resolved);
+    };
+    resolveParams();
   }, [params]);
+  
+  // Set the locale after params are resolved
+  useEffect(() => {
+    if (resolvedParams && resolvedParams.locale) {
+      setLocale(resolvedParams.locale);
+    }
+  }, [resolvedParams]);
 
   return (
     <CookieProvider>
