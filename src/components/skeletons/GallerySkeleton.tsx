@@ -1,18 +1,25 @@
-import { SimpleGrid, Skeleton, Card } from '@mantine/core';
+'use client';
+
+import { Card, SimpleGrid, Skeleton } from '@mantine/core';
+import React from 'react';
 
 interface GallerySkeletonProps {
   count?: number;
 }
 
+/**
+ * Skeleton loading component for gallery items
+ */
 export function GallerySkeleton({ count = 6 }: GallerySkeletonProps) {
   return (
     <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="lg">
       {Array.from({ length: count }).map((_, index) => (
-        <Card key={index} padding="md" radius="md">
-          <Skeleton height={220} radius="md" mb="md" />
-          <Skeleton height={20} width={80} radius="xl" mb="md" />
-          <Skeleton height={24} radius="sm" mb="sm" />
-          <Skeleton height={16} width="60%" radius="sm" />
+        <Card key={index} shadow="sm" padding="md" radius="md">
+          <Card.Section>
+            <Skeleton height={220} radius="md" />
+          </Card.Section>
+          <Skeleton height={20} mt="md" width="80%" />
+          <Skeleton height={15} mt="sm" width="50%" />
         </Card>
       ))}
     </SimpleGrid>

@@ -1,164 +1,306 @@
+// 'use client';
+
+// import { Container, Title, Text, Grid, Paper, Group, Image, Stack, List, ThemeIcon } from '@mantine/core';
+// import { Banner } from '@/components/Banner';
+// import { useEffect } from 'react';
+// import { useParams } from 'next/navigation';
+// import { withLocalization } from '@/utils/localization';
+// import { useBannerStore } from '@/store/useBannerStore';
+// import { useTheNeedStore } from '@/store/useTheNeedStore';
+// import { LocalizedBanner } from '@/components/LocalizedBanner';
+// import { IconCheck } from '@tabler/icons-react';
+
+// export default function TheNeedPage() {
+//   const params = useParams();
+//   const locale = params.locale as string || 'en';
+//   const { fetchBanners, getBannerByType } = useBannerStore();
+//   const { needData, loading, error, fetchNeedData } = useTheNeedStore();
+  
+//   useEffect(() => {
+//     fetchBanners();
+//     fetchNeedData();
+//   }, [fetchBanners, fetchNeedData]);
+  
+//   // Get localized data
+//   const localizedNeed = needData ? withLocalization(needData, locale) : null;
+  
+//   // Get banner
+//   const banner = getBannerByType('the-need');
+  
+//   if (loading) return <div>Loading data...</div>;
+//   if (!localizedNeed) return <div>No data available</div>;
+  
+//   // Parse impact points if it's a string
+//   let impactPoints: string[] = [];
+//   try {
+//     if (typeof localizedNeed.impact === 'string') {
+//       // Try to parse as JSON if it's a JSON string
+//       if (localizedNeed.impact.startsWith('[')) {
+//         impactPoints = JSON.parse(localizedNeed.impact);
+//       } else {
+//         // Otherwise split by newlines or periods
+//         impactPoints = localizedNeed.impact.split(/[.\n]+/).filter((p: string) => p.trim());
+//       }
+//     }
+//   } catch (e) {
+//     impactPoints = [localizedNeed.impact];
+//   }
+  
+//   return (
+//     <main>
+//       {banner ? (
+//         <LocalizedBanner
+//           banner={banner}
+//           breadcrumbs={[
+//             { label: 'Home', link: '/' },
+//             { label: 'The Need' }
+//           ]}
+//         />
+//       ) : (
+//         <Banner
+//           type="the-need"
+//           title={locale === 'hi' ? 'आवश्यकता' : 'The Need'}
+//           backgroundImage="/banners/the-need-banner.jpg"
+//           breadcrumbs={[
+//             { label: 'Home', link: '/' },
+//             { label: 'The Need' }
+//           ]}
+//         />
+//       )}
+      
+//       <Container size="xl" py="xl">
+//         <Stack gap="xl">
+//           <Grid gutter="xl">
+//             <Grid.Col span={{ base: 12, md: 6 }}>
+//               <Title order={2} mb="md">
+//                 {locale === 'hi' ? 'हम क्यों हैं' : 'Why We Exist'}
+//               </Title>
+//               <Text size="lg">
+//                 {localizedNeed.mainText}
+//               </Text>
+//             </Grid.Col>
+//             <Grid.Col span={{ base: 12, md: 6 }}>
+//               <Image 
+//                 src={localizedNeed.imageUrl} 
+//                 alt="Children in need"
+//                 radius="md"
+//               />
+//             </Grid.Col>
+//           </Grid>
+          
+//           <Paper withBorder p="xl" radius="md" mt="xl">
+//             <Title order={3} mb="lg">
+//               {locale === 'hi' ? 'आंकड़े और तथ्य' : 'Statistics & Facts'}
+//             </Title>
+//             <Grid gutter="xl">
+//               <Grid.Col md={7}>
+//                 <Text>
+//                   {localizedNeed.statistics}
+//                 </Text>
+//               </Grid.Col>
+//               <Grid.Col md={5}>
+//                 <Image 
+//                   src={localizedNeed.statsImageUrl} 
+//                   alt="Statistics visualization"
+//                   radius="md"
+//                 />
+//               </Grid.Col>
+//             </Grid>
+//           </Paper>
+          
+//           <Paper withBorder p="xl" radius="md" mt="xl">
+//             <Title order={3} mb="lg">
+//               {locale === 'hi' ? 'हमारा प्रभाव' : 'Our Impact'}
+//             </Title>
+//             <List
+//               spacing="md"
+//               size="lg"
+//               center
+//               icon={
+//                 <ThemeIcon color="teal" size={24} radius="xl">
+//                   <IconCheck size={16} />
+//                 </ThemeIcon>
+//               }
+//             >
+//               {impactPoints.map((point, idx) => (
+//                 <List.Item key={idx}>{point.trim()}</List.Item>
+//               ))}
+//             </List>
+//           </Paper>
+//         </Stack>
+//       </Container>
+//     </main>
+//   );
+// }
+
 'use client';
-import React, { useEffect, useState } from 'react';
+
+import { Container, Title, Text, Stack, Image, Grid, Card, Group } from '@mantine/core';
 import { Banner } from '@/components/Banner';
-import { Box, Container, Grid, Image, Text, Title, Center, Loader, Alert, Divider } from '@mantine/core';
-import DOMPurify from 'isomorphic-dompurify';
-import classes from './the-need.module.css';
+import { useEffect } from 'react';
+import { useParams } from 'next/navigation';
+import { withLocalization } from '@/utils/localization';
 import { useBannerStore } from '@/store/useBannerStore';
-import { BannerType } from '@/types/banner';
-
-const API_URL = process.env.NEXT_PUBLIC_ADMIN_API_URL;
-
-// Interface that matches the exact API response structure
-interface ApiResponse {
-  id: string;
-  mainText: string;
-  statistics: string;
-  impact: string;
-  imageUrl: string;
-  statsImageUrl: string;
-  createdAt: string;
-  updatedAt: string;
-  isPublished: boolean;
-  version: number;
-}
-
-// Component to safely render HTML content with proper styling
-function HtmlContent({ html, className = '' }: { html: string; className?: string }) {
-  // Only sanitize if html exists
-  const sanitizedHtml = html ? DOMPurify.sanitize(html) : '';
-
-  return (
-    <div
-      className={`${classes.htmlContent} ${className}`}
-      dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
-    />
-  );
-}
+import { useTheNeedStore } from '@/store/useTheNeedStore';
+import { LocalizedBanner } from '@/components/LocalizedBanner';
+import { IconCheck } from '@tabler/icons-react';
+import { useDictionary } from '@/hooks/useDictionary';
+import { SimpleRichText } from '@/components/SimpleRichText';
 
 export default function TheNeedPage() {
-  const { fetchBanners, getBannerByType, loading: bannerLoading, error: bannerError } = useBannerStore();
-  const [data, setData] = useState<ApiResponse | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
+  const params = useParams();
+  const locale = params.locale as string || 'en';
+  const { fetchBanners, getBannerByType } = useBannerStore();
+  const { needData, loading, error, fetchNeedData } = useTheNeedStore();
+  
+  // Get translations from dictionary
+  const { dictionary } = useDictionary();
+  const t = dictionary?.theneed || {};
+  const common = dictionary?.common || {};
+  
   useEffect(() => {
     fetchBanners();
-  }, [fetchBanners]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (!API_URL) {
-          throw new Error('API URL is not configured');
-        }
-
-        const response = await fetch(`${API_URL}/api/the-need`);
-        if (!response.ok) throw new Error('Failed to fetch data');
-
-        const result = await response.json();
-        console.log('API response:', result); // Debug log
-        setData(result);
-      } catch (err) {
-        console.error('Error fetching the need data:', err);
-        setError(err instanceof Error ? err.message : 'An error occurred');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  if (loading || bannerLoading) {
+    fetchNeedData();
+  }, [fetchBanners, fetchNeedData]);
+  
+  // Process the fetched data
+  const localizedNeedData = needData ? withLocalization(needData, locale) : null;
+  
+  // Get banner
+  const banner = getBannerByType('the-need');
+  
+  if (loading) {
     return (
-      <Center h={400}>
-        <Loader size="lg" />
-      </Center>
+      <Container py="xl">
+        <Text ta="center">{common?.loading || 'Loading...'}</Text>
+      </Container>
     );
   }
-
-  const banner = getBannerByType('need');
-
+  
+  if (error || !localizedNeedData) {
+    return (
+      <Container py="xl">
+        <Text ta="center" c="red">
+          {common?.errorMessage || 'Error loading content. Please try again later.'}
+        </Text>
+      </Container>
+    );
+  }
+  
   return (
     <main>
-     <Banner
-        type={banner?.type as BannerType || 'need'}
-        title={banner?.title || "The Need"}
-        description={banner?.description || "Making a difference through sustainable development"}
-        backgroundImage={banner?.backgroundImage || "/banners/initiatives-banner.jpg"}
-        breadcrumbs={[
-          { label: 'Home', link: '/' },
-          { label: 'The Need' }
-        ]}
-      />
-
-      <Box bg="var(--mantine-color-gray-0)" py="xl">
-        <Container size="lg" py="xl">
-          <Title order={2} ta="center" mb="md">
-            ⭐ THE EDUCATION CRISIS
-          </Title>
-
-          {error && (
-            <Alert color="red" mb="xl">
-              Failed to load content: {error}. Please try refreshing the page.
-            </Alert>
-          )}
-
-          <Grid gutter="xl" align="center">
-            <Grid.Col span={{ base: 12, md: 7 }}>
-              {/* Main Text Section */}
-              <Box mb="xl">
-                <HtmlContent html={data?.mainText || ''} className={classes.mainText} />
-              </Box>
-
-              <Divider my="lg" variant="dashed" />
-
-              {/* Statistics Section */}
-              <Box mb="xl">
-                <Title order={4} mb="md">Statistics</Title>
-                <HtmlContent html={data?.statistics || ''} className={classes.statistics} />
-              </Box>
-
-              <Divider my="lg" variant="dashed" />
-
-              {/* Impact Section */}
-              <Box>
-                <Title order={4} mb="md">Impact</Title>
-                <HtmlContent html={data?.impact || ''} className={classes.impact} />
-              </Box>
+      {banner ? (
+        <LocalizedBanner
+          banner={banner}
+          breadcrumbs={[
+            { label: common?.home || 'Home', link: `/${locale}` },
+            { label: t?.title || 'The Need' }
+          ]}
+        />
+      ) : (
+        <Banner
+          type="the-need"
+          title={t?.title || 'The Need'}
+          backgroundImage="/banners/the-need-banner.svg"
+          breadcrumbs={[
+            { label: common?.home || 'Home', link: `/${locale}` },
+            { label: t?.title || 'The Need' }
+          ]}
+        />
+      )}
+      
+      <Container size="xl" py="xl">
+        <Stack gap="xl">
+          <Grid gutter="xl">
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <Title order={2} mb="md">
+                {locale === 'hi' ? 'हम क्यों हैं' : 'Why We Exist'}
+              </Title>
+              
+              <SimpleRichText content={localizedNeedData.mainText} />
             </Grid.Col>
-
-            <Grid.Col span={{ base: 12, md: 5 }}>
-              <Box className={classes.imageWrapper}>
-                <Image
-                  src={data?.imageUrl}
-                  alt="Education crisis illustration"
-                  className={classes.image}
-                  fallbackSrc="/images/placeholders/education-need.jpg"
-                />
-              </Box>
+            
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <Image
+                src={localizedNeedData?.imageUrl || '/images/placeholder.svg'}
+                alt={locale === 'hi' ? 'ज़रूरत' : 'The Need'}
+                radius="md"
+                maw={500}
+                mx="auto"
+              />
             </Grid.Col>
           </Grid>
-        </Container>
-
-        <Container size="lg" py="xl">
-          <Title order={2} ta="center" mb="md">
-            ⭐ EDUCATION STATISTICS – CRISIS DATA
+          
+          <Title order={2} ta="center" mt="xl">
+            {locale === 'hi' ? 'वर्तमान स्थिति' : 'Current Situation'}
           </Title>
-
-          <Center>
-            <Box className={classes.imageWrapper} style={{ maxWidth: '800px' }}>
+          
+          <Grid gutter="xl">
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <Card shadow="sm" padding="lg" radius="md" withBorder>
+                <Card.Section p="md" bg="blue.1">
+                  <Title order={3} ta="center">
+                    {locale === 'hi' ? 'आंकड़े' : 'Statistics'}
+                  </Title>
+                </Card.Section>
+                
+                <Stack mt="md">
+                  <SimpleRichText content={localizedNeedData.statistics} />
+                </Stack>
+              </Card>
+            </Grid.Col>
+            
+            <Grid.Col span={{ base: 12, md: 6 }}>
               <Image
-                src={data?.statsImageUrl}
-                alt="Education Statistics Data"
-                className={classes.image}
-                fallbackSrc="/images/placeholders/education-stats.jpg"
+                src={localizedNeedData?.statsImageUrl || '/images/placeholder.svg'}
+                alt={locale === 'hi' ? 'आंकड़े' : 'Statistics'}
+                radius="md"
+                maw={500}
+                mx="auto"
               />
-            </Box>
-          </Center>
-        </Container>
-      </Box>
+            </Grid.Col>
+          </Grid>
+          
+          <Title order={2} ta="center" mt="xl">
+            {locale === 'hi' ? 'हमारा प्रभाव' : 'Our Impact'}
+          </Title>
+          
+          <SimpleRichText content={localizedNeedData.impact} />
+          
+          <Grid gutter="xl">
+            {Array.from({ length: 3 }, (_, i) => (
+              <Grid.Col key={i} span={{ base: 12, sm: 6, md: 4 }}>
+                <Card shadow="sm" padding="lg" radius="md" withBorder>
+                  <Group>
+                    <IconCheck color="green" size={24} />
+                    <Text fw={500}>
+                      {locale === 'hi' 
+                        ? ['शिक्षा', 'स्वास्थ्य', 'सशक्तिकरण'][i] 
+                        : ['Education', 'Health', 'Empowerment'][i]
+                      }
+                    </Text>
+                  </Group>
+                  
+                  <Text size="sm" c="dimmed" mt="sm">
+                    {locale === 'hi'
+                      ? [
+                          'हमारे शिक्षा कार्यक्रम हजारों बच्चों को गुणवत्तापूर्ण शिक्षा प्रदान करते हैं।',
+                          'हमारे स्वास्थ्य पहल से परिवारों को सुधार मिलता है।',
+                          'हमारे सशक्तिकरण कार्यक्रम लोगों को स्वावलंबी बनाते हैं।'
+                        ][i]
+                      : [
+                          'Our education programs provide quality education to thousands of children.',
+                          'Our health initiatives help families improve well-being.',
+                          'Our empowerment programs help people become self-reliant.'
+                        ][i]
+                    }
+                  </Text>
+                </Card>
+              </Grid.Col>
+            ))}
+          </Grid>
+        </Stack>
+      </Container>
     </main>
   );
 }

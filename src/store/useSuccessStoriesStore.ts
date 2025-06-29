@@ -1,154 +1,132 @@
+/**
+ * SuccessStoriesStore - Manages success stories data with proper typing and fallbacks
+ */
 import { create } from 'zustand';
-import { devtools, persist } from 'zustand/middleware';
-import { SuccessStory as SuccessStoryType } from '@/types/success-story'; // Aliased import
+import { devtools } from 'zustand/middleware';
+import { safeFetch } from '@/utils/api-config';
 
-// Export the SuccessStory type from the store file itself
-export interface SuccessStoriesState {
-  stories: SuccessStoryType[];
-  selectedStory: SuccessStoryType | null;
-  loading: boolean;
-  error: Error | null;
-  fetchStories: (locale?: string) => Promise<void>;
-  setSelectedStory: (story: SuccessStoryType | null) => void;
-  fetchStoryBySlug: (slug: string, locale?: string) => Promise<void>;
-  fetchStoryById: (id: string, locale?: string) => Promise<void>;
-  retryCount: number;
-  lastFetched: number | null;
-  currentLocale: string;
+export interface SuccessStory {
+  id: string;
+  title: string;
+  titleHi: string | null;
+  content: string;
+  contentHi: string | null;
+  personName: string;
+  personNameHi: string | null;
+  location: string;
+  locationHi: string | null;
+  imageUrl: string;
+  featured: boolean;
+  order: number;
+  createdAt: string;
+  updatedAt: string;
+  // Generated fields
+  slug?: string;
 }
 
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
-const MAX_RETRIES = 3;
+interface SuccessStoriesState {
+  stories: SuccessStory[];
+  currentStory: SuccessStory | null;
+  loading: boolean;
+  error: Error | null;
+  fetchStories: () => Promise<void>;
+  getStoryBySlug: (slug: string) => SuccessStory | undefined;
+  fetchStoryBySlug: (slug: string, locale: string) => Promise<SuccessStory | null>;
+  getFeaturedStories: () => SuccessStory[];
+}
 
 export const useSuccessStoriesStore = create<SuccessStoriesState>()(
   devtools(
-    persist(
-      (set, get) => ({
-        stories: [],
-        selectedStory: null,
-        loading: false,
-        error: null,
-        retryCount: 0,
-        lastFetched: null,
-        currentLocale: 'en',
+    (set, get) => ({
+      stories: [],
+      currentStory: null,
+      loading: false,
+      error: null,
 
-        fetchStories: async (locale = 'en') => {
-          const state = get();
-          
-          // Return cached data if within cache duration and same locale
-          if (
-            state.lastFetched && 
-            Date.now() - state.lastFetched < CACHE_DURATION && 
-            locale === state.currentLocale
-          ) {
+      fetchStories: async () => {
+        set({ loading: true, error: null });
+        
+        try {
+          const { data, error } = await safeFetch<SuccessStory[]>(
+            'https://admin.ragijifoundation.com/api/success-stories',
+            [],
+            { method: 'GET' }
+          );
+
+          if (error) {
+            set({ error, loading: false });
             return;
           }
 
-          try {
-            set({ loading: true, error: null });
-            const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/api/success-stories?locale=${locale}`);
+          // Process stories to add slugs
+          const processedStories = data.map(story => ({
+            ...story,
+            slug: story.title
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, '-')
+              .replace(/^-+|-+$/g, '')
+          }));
 
-            if (!response.ok) throw new Error('Failed to fetch success stories');
+          // Sort stories: featured first, then by order, then by date
+          const sortedStories = processedStories.sort((a, b) => {
+            if (a.featured !== b.featured) return a.featured ? -1 : 1;
+            if (a.order !== b.order) return a.order - b.order;
+            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+          });
 
-            const data = await response.json();
-            set({
-              stories: data.sort((a: SuccessStoryType, b: SuccessStoryType) => {
-                if (a.featured === b.featured) return a.order - b.order;
-                return a.featured ? -1 : 1;
-              }),
-              loading: false,
-              lastFetched: Date.now(),
-              retryCount: 0,
-              currentLocale: locale
-            });
-          } catch (error) {
-            console.error('Error fetching success stories:', error);
+          set({ stories: sortedStories, loading: false });
+        } catch (error) {
+          console.error('Error fetching success stories:', error);
+          set({ 
+            error: error instanceof Error ? error : new Error(String(error)), 
+            loading: false 
+          });
+        }
+      },
 
-            // If we have no stories and haven't exceeded retry limit
-            if (get().stories.length === 0 && get().retryCount < MAX_RETRIES) {
-              set(state => ({ retryCount: state.retryCount + 1 }));
-              setTimeout(() => get().fetchStories(locale), 1000 * get().retryCount);
-            } else {
-              set({
-                error: error as Error,
-                loading: false
-              });
-            }
+      getStoryBySlug: (slug: string) => {
+        return get().stories.find(story => story.slug === slug);
+      },
+
+      fetchStoryBySlug: async (slug: string, locale: string) => {
+        set({ loading: true, error: null });
+        
+        try {
+          // First try to find the story in our existing stories
+          const existingStory = get().stories.find(s => s.slug === slug);
+          if (existingStory) {
+            set({ currentStory: existingStory, loading: false });
+            return existingStory;
           }
-        },
-
-        setSelectedStory: (story: SuccessStoryType | null) => set({ selectedStory: story }),
-
-        fetchStoryBySlug: async (slug: string, locale = 'en') => {
-          try {
-            set({ loading: true, error: null });
-
-            // First check if we already have this story in our cache
-            const existingStory = get().stories.find(s => s.slug === slug);
-            
-            if (existingStory) {
-              set({
-                selectedStory: existingStory,
-                loading: false
-              });
-              return;
-            }
-
-            const response = await fetch(
-              `${process.env.NEXT_PUBLIC_ADMIN_API_URL}/api/success-stories/slug/${slug}?locale=${locale}`
-            );
-
-            if (!response.ok) throw new Error(`Failed to fetch story with slug: ${slug}`);
-
-            const data = await response.json();
-            set(state => ({
-              stories: [...state.stories.filter(s => s.slug !== slug), data],
-              selectedStory: data,
-              loading: false
-            }));
-          } catch (error) {
-            console.error(`Error fetching story with slug ${slug}:`, error);
-                set({
-                  error: new Error(`Story with slug ${slug} not found`),
-                  loading: false
-                });
+          
+          // If not found, fetch all stories (they will be cached for future use)
+          await get().fetchStories();
+          
+          // Try to find the story again after fetching
+          const story = get().stories.find(s => s.slug === slug);
+          if (story) {
+            set({ currentStory: story, loading: false });
+            return story;
           }
-        },
+          
+          // If still not found, return null
+          set({ currentStory: null, loading: false });
+          return null;
+        } catch (error) {
+          console.error('Error fetching story by slug:', error);
+          set({ 
+            error: error instanceof Error ? error : new Error(String(error)), 
+            loading: false,
+            currentStory: null
+          });
+          return null;
+        }
+      },
 
-        fetchStoryById: async (id: string, locale = 'en') => {
-          try {
-            set({ loading: true, error: null });
-            const response = await fetch(
-              `${process.env.NEXT_PUBLIC_ADMIN_API_URL}/api/success-stories/${id}?locale=${locale}`
-            );
-
-            if (!response.ok) throw new Error('Failed to fetch story');
-
-            const data = await response.json();
-            set(state => ({
-              stories: [...state.stories.filter(s => s.id !== id), data],
-              loading: false
-            }));
-          } catch (error) {
-            console.error('Error fetching story:', error);
-                set({
-                  error: new Error(`Story with ID ${id} not found`),
-                  loading: false
-                });
-          }
-        },
-      }),
-      {
-        name: 'success-stories-storage',
-        partialize: (state) => ({
-          stories: state.stories,
-          lastFetched: state.lastFetched,
-          currentLocale: state.currentLocale
-        })
+      getFeaturedStories: () => {
+        return get().stories.filter(story => story.featured);
       }
-    )
+    }),
+    { name: 'success-stories-store' }
   )
 );
-
-// Export the SuccessStoriesState interface under a shorter alias.
-export type SuccessStory = SuccessStoryType;

@@ -1,201 +1,184 @@
 'use client';
-import { useState, useEffect } from 'react';
-import {
-  Container,
-  Title,
-  Text,
-  Box,
-  Skeleton,
-  Alert,
-  Group,
-  SegmentedControl,
-  TextInput,
-  Select,
-  Tabs,
-  Paper,
-  Grid,
-  Divider,
-  ActionIcon,
-  Transition
-} from '@mantine/core';
-import { notifications } from '@mantine/notifications';
-import { IconInfoCircle, IconSearch, IconFilter, IconArrowUp, IconCategory, IconGridDots } from '@tabler/icons-react';
+
+import { Container, Title, Grid, Image, Stack, Group, Badge, Select, Text } from '@mantine/core';
 import { Banner } from '@/components/Banner';
-import { PhotoLibrary } from '@/components/Pages/PhotoLibrary';
-import { useBanner } from '@/hooks/useBanner';
-import { ErrorBoundary } from '@/components/error-boundary';
-import classes from './gallery.module.css';
+import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
+import { useGalleryStore } from '@/store/useGalleryStore';
+import { useBannerStore } from '@/store/useBannerStore';
+import { LocalizedBanner } from '@/components/LocalizedBanner';
+import { withLocalizedArray } from '@/utils/localization';
+import { useDictionary } from '@/hooks/useDictionary';
+import { IconPhoto, IconVideo, IconCalendar } from '@tabler/icons-react';
+import { Lightbox } from '@/components/Lightbox';
+
+export interface GalleryItem {
+  id: string | number;
+  title: string;
+  titleHi?: string | null;
+  description?: string | null;
+  descriptionHi?: string | null;
+  imageUrl: string;
+  thumbnailUrl?: string;
+  category: string;
+  categoryHi?: string | null;
+  tags?: string[];
+  date?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  type?: 'image' | 'video';
+}
 
 export default function GalleryPage() {
-  const { banner, loading: bannerLoading, error: bannerError, fetchBanners } = useBanner('gallery');
-  const [activeTab, setActiveTab] = useState('all');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortOption, setSortOption] = useState('newest');
-  const [viewMode, setViewMode] = useState<'grid' | 'masonry'>('grid');
-  const [showScrollTop, setShowScrollTop] = useState(false);
-
-  // This would come from your PhotoLibrary component or a store
-  // Adding mock categories for demonstration
-  const categories = [
-    { value: 'all', label: 'All Photos' },
-    { value: 'events', label: 'Events' },
-    { value: 'projects', label: 'Projects' },
-    { value: 'people', label: 'People' },
-    { value: 'facilities', label: 'Facilities' }
-  ];
-
+  const params = useParams();
+  const locale = params.locale as string || 'en';
+  const { fetchBanners, getBannerByType } = useBannerStore();
+  const { galleryItems, loading, error, fetchGalleryItems } = useGalleryStore();
+  const [selectedCategory, setSelectedCategory] = useState<string | null>('all');
+  const [lightboxOpened, setLightboxOpened] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  
+  // Get translations
+  const { dictionary } = useDictionary();
+  const t = dictionary?.gallery || {};
+  const common = dictionary?.common || {};
+  
+  // We don't need fallback images as we're using the fallbackSrc prop directly
+  
   useEffect(() => {
-    // Add scroll listener for the back to top button
-    const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 300);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Loading state for the entire page
-  if (bannerLoading) {
-    return (
-      <Box>
-        <Skeleton height={400} radius={0} />
-        <Container size="xl" py="xl">
-          <Skeleton height={50} width="30%" mb="xl" />
-          <Skeleton height={40} width="80%" mb="lg" />
-
-          <Grid>
-            {[...Array(6)].map((_, i) => (
-              <Grid.Col key={i} span={{ base: 12, sm: 6, md: 4 }}>
-                <Skeleton height={200} radius="md" mb="md" />
-                <Skeleton height={20} width="60%" mb="xs" />
-                <Skeleton height={15} width="40%" />
-              </Grid.Col>
-            ))}
-          </Grid>
-        </Container>
-      </Box>
-    );
-  }
-
-  // Error handling with better UI
-  if (bannerError || !banner) {
-    notifications.show({
-      title: 'Error loading banner',
-      message: 'Using fallback banner information.',
-      color: 'orange',
-      autoClose: 5000
-    });
-  }
-
+    fetchBanners();
+    fetchGalleryItems();
+  }, [fetchBanners, fetchGalleryItems]);
+  
+  // Get banner
+  const banner = getBannerByType('gallery');
+  
+  // Get localized gallery items
+  const localizedGalleryItems = withLocalizedArray(galleryItems, locale);
+  
+  // Filter gallery items by selected category
+  const filteredGallery = selectedCategory === 'all' 
+    ? localizedGalleryItems 
+    : localizedGalleryItems.filter(item => item.category === selectedCategory);
+  
+  // Get unique categories for the filter
+  const categories = Array.from(
+    new Set(['all', ...localizedGalleryItems.map(item => item.category)])
+  );
+  
+  const handleImageClick = (imageUrl: string) => {
+    setSelectedImage(imageUrl);
+    setLightboxOpened(true);
+  };
+  
   return (
-    <ErrorBoundary>
-      <main>
-        <Banner
-          type="gallery"
-          title={banner?.title || "Photo Gallery"}
-          description={banner?.description || "Explore our journey through images"}
-          backgroundImage={banner?.backgroundImage || "/banners/gallery-banner.jpg"}
+    <main>
+      {banner ? (
+        <LocalizedBanner
+          banner={banner}
           breadcrumbs={[
-            { label: 'Home', link: '/' },
-            { label: 'Gallery' }
+            { label: common?.home || 'Home', link: `/${locale}` },
+            { label: t?.title || 'Gallery' }
           ]}
         />
-
-        <Container size="xl" py="xl">
-          <Title order={2} className={classes.pageTitle} mb="xl">Our Photo Gallery</Title>
-
-          {/* Filters & Controls */}
-          <Paper shadow="xs" p="md" mb="xl">
-            <Group justify="apart" mb="md" align="flex-end">
-              <TextInput
-                placeholder="Search photos..."
-                leftSection={<IconSearch size={16} />}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.currentTarget.value)}
-                style={{ width: '50%' }}
-              />
-
-              <Group gap="sm">
-                <Select
-                  placeholder="Sort by"
-                  value={sortOption}
-                  onChange={(value) => setSortOption(value || 'newest')}
-                  data={[
-                    { value: 'newest', label: 'Newest First' },
-                    { value: 'oldest', label: 'Oldest First' },
-                    { value: 'popular', label: 'Most Popular' }
-                  ]}
-                  leftSection={<IconFilter size={16} />}
-                  style={{ width: '150px' }}
-                />
-
-                <SegmentedControl
-                  value={viewMode}
-                  onChange={(value: string) => setViewMode(value as 'grid' | 'masonry')}
-                  data={[
-                    {
-                      value: 'grid',
-                      label: (
-                        <Group gap={4}>
-                          <IconGridDots size={16} />
-                          <Box ml={4}>Grid</Box>
-                        </Group>
-                      ),
-                    },
-                    {
-                      value: 'masonry',
-                      label: (
-                        <Group gap={4}>
-                          <IconCategory size={16} />
-                          <Box ml={4}>Masonry</Box>
-                        </Group>
-                      ),
-                    },
-                  ]}
-                />
-              </Group>
-            </Group>
-
-            <Divider my="sm" />
-
-            <Tabs value={activeTab} onChange={(value) => setActiveTab(value || 'all')}>
-              <Tabs.List>
-                {categories.map(category => (
-                  <Tabs.Tab key={category.value} value={category.value}>
-                    {category.label}
-                  </Tabs.Tab>
-                ))}
-              </Tabs.List>
-            </Tabs>
-          </Paper>
-
-          {/* Photo Library Component */}
-          <PhotoLibrary
-            category={activeTab !== 'all' ? activeTab : undefined}
-            searchTerm={searchTerm}
-            sortBy={sortOption}
-            viewMode={viewMode}
-          />
-
-          {/* Scroll to Top Button */}
-          <Transition transition="slide-up" mounted={showScrollTop}>
-            {(transitionStyles) => (
-              <ActionIcon
-                size="lg"
-                radius="xl"
-                variant="filled"
-                color="blue"
-                className={classes.scrollTopButton}
-                style={transitionStyles}
-                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                aria-label="Scroll to top"
-              >
-                <IconArrowUp size={16} />
-              </ActionIcon>
-            )}
-          </Transition>
-        </Container>
-      </main>
-    </ErrorBoundary>
+      ) : (
+        <Banner
+          type="gallery"
+          title={t?.title || 'Gallery'}
+          backgroundImage="/banners/gallery-banner.svg"
+          breadcrumbs={[
+            { label: common?.home || 'Home', link: `/${locale}` },
+            { label: t?.title || 'Gallery' }
+          ]}
+        />
+      )}
+      
+      <Container size="xl" py="xl">
+        <Stack gap="xl">
+          {/* Category filter */}
+          <Group justify="apart">
+            <Title order={2}>{t?.pageHeading || 'Our Gallery'}</Title>
+            <Select
+              value={selectedCategory}
+              onChange={setSelectedCategory}
+              data={categories.map(category => ({
+                value: category,
+                label: category === 'all' 
+                  ? (t?.allCategories || 'All Categories')
+                  : category.charAt(0).toUpperCase() + category.slice(1)
+              }))}
+              placeholder={t?.selectCategory || 'Select Category'}
+              style={{ minWidth: 200 }}
+            />
+          </Group>
+          
+          {loading ? (
+            <Text ta="center">{common?.loading || 'Loading gallery...'}</Text>
+          ) : error ? (
+            <Text ta="center" c="red">
+              {common?.errorMessage || 'Error loading content. Please try again later.'}
+            </Text>
+          ) : filteredGallery.length === 0 ? (
+            <Text ta="center">{t?.noItems || 'No gallery items available yet.'}</Text>
+          ) : (
+            <Grid gutter="md">
+              {filteredGallery.map((item) => (
+                <Grid.Col key={item.id} span={{ base: 12, sm: 6, md: 4 }}>
+                  <div style={{ position: 'relative', cursor: 'pointer' }} onClick={() => handleImageClick(item.imageUrl)}>
+                  <Image 
+                    src={item.imageUrl} 
+                    height={300}
+                    fit="cover"
+                    radius="md"
+                    alt={item.title}
+                    fallbackSrc="/images/fallbacks/gallery-image.svg"
+                  />
+                  <div style={{ 
+                    position: 'absolute', 
+                    bottom: 0, 
+                    left: 0, 
+                    right: 0, 
+                    background: 'linear-gradient(transparent, rgba(0,0,0,0.7))',
+                    padding: '1rem',
+                    borderBottomLeftRadius: 'var(--mantine-radius-md)',
+                    borderBottomRightRadius: 'var(--mantine-radius-md)'
+                  }}>
+                    <Group justify="apart">
+                      <Text 
+                        c="white" 
+                        fw={500}
+                        style={{ fontFamily: locale === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit' }}
+                      >
+                        {locale === 'hi' && item.titleHi ? item.titleHi : item.title}
+                      </Text>
+                      <Badge 
+                        leftSection={item.type === 'image' ? <IconPhoto size={14} /> : <IconVideo size={14} />}
+                        style={{ fontFamily: locale === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit' }}
+                      >
+                        {item.type === 'image' ? (locale === 'hi' ? 'छवि' : 'Image') : (locale === 'hi' ? 'वीडियो' : 'Video')}
+                      </Badge>
+                    </Group>
+                    <Group gap="xs" mt="xs">
+                      <IconCalendar size={14} color="white" />
+                      <Text size="xs" c="white">
+                        {new Date(item.date || item.createdAt || item.updatedAt || Date.now()).toLocaleDateString(locale === 'hi' ? 'hi-IN' : 'en-US')}
+                      </Text>
+                    </Group>
+                  </div>
+                  </div>
+                </Grid.Col>
+              ))}
+            </Grid>
+          )}
+        </Stack>
+      </Container>
+      
+      {/* Lightbox for viewing images */}
+      <Lightbox
+        opened={lightboxOpened}
+        onClose={() => setLightboxOpened(false)}
+        imageUrl={selectedImage || ''}
+      />
+    </main>
   );
 }

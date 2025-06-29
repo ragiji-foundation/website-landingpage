@@ -1,355 +1,204 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import {
-  Container,
-  Grid,
-  Card,
-  Image,
-  Text,
-  Title,
-  Group,
-  Badge,
-  Button,
-  TextInput,
-  Select,
-  Box,
-  Pagination,
-  Tabs,
-  LoadingOverlay,
-  Divider,
-  SimpleGrid,
-  Skeleton,
-  Alert,
-  Paper,
-  AspectRatio,
-  Center
-} from '@mantine/core';
-import { useRouter } from 'next/navigation';
-import { IconSearch, IconFilter, IconGridDots, IconList, IconArrowUp, IconInfoCircle } from '@tabler/icons-react';
-import { useSuccessStoriesStore, SuccessStory } from '@/store/useSuccessStoriesStore';
-import { useBanner } from '@/hooks/useBanner';
+import React from 'react';
+import { Container, Title, SimpleGrid, Card, Image, Text, Stack, Grid, Paper, Group, Badge } from '@mantine/core';
 import { Banner } from '@/components/Banner';
-import { RichTextContent } from '@/components/RichTextContent';
-import classes from './success-stories.module.css';
+import { useParams } from 'next/navigation';
+import { useSuccessStoriesStore, type SuccessStory } from '@/store/useSuccessStoriesStore';
+import { useDictionary } from '@/hooks/useDictionary';
+import { useBannerStore } from '@/store/useBannerStore';
+import { LocalizedBanner } from '@/components/LocalizedBanner';
+import Link from 'next/link';
+import { IconQuote } from '@tabler/icons-react';
+import classes from './page.module.css';
 
-export default function SuccessStoriesPage() {
-  const { stories, loading: storiesLoading, error: storiesError, fetchStories } = useSuccessStoriesStore();
-  const { banner, loading: bannerLoading, error: bannerError } = useBanner('successstories');
-  const [filteredStories, setFilteredStories] = useState<SuccessStory[]>([]); //Added type annotation here
-  const [searchTerm, setSearchTerm] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [viewMode, setViewMode] = useState('grid');
-  const [sortOption, setSortOption] = useState('newest');
-  const [filterCategory, setFilterCategory] = useState('all');
-  const router = useRouter();
+function FeaturedStory({ story, locale }: { story: SuccessStory; locale: string }) {
+  const title = locale === 'hi' && story.titleHi ? story.titleHi : story.title;
+  const content = locale === 'hi' && story.contentHi ? story.contentHi : story.content;
+  const personName = locale === 'hi' && story.personNameHi ? story.personNameHi : story.personName;
+  const location = locale === 'hi' && story.locationHi ? story.locationHi : story.location;
 
-  const ITEMS_PER_PAGE = 9;
-  const loading = storiesLoading || bannerLoading;
-
-  useEffect(() => {
-    fetchStories();
-  }, [fetchStories]);
-
-  // Filter and sort stories whenever dependencies change
-  useEffect(() => {
-    if (!stories.length) return;
-
-    let result = [...stories];
-
-    // Apply search filter
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase();
-      result = result.filter(story =>
-        story.title.toLowerCase().includes(term) ||
-        story.personName.toLowerCase().includes(term) ||
-        story.location.toLowerCase().includes(term) ||
-        extractPlainText(story.content).toLowerCase().includes(term)
-      );
-    }
-
-    // Apply category filter (using location as proxy)
-    if (filterCategory !== 'all') {
-      result = result.filter(story => story.location.toLowerCase() === filterCategory.toLowerCase());
-    }
-
-    // Apply sorting
-    result = sortStories(result, sortOption);
-
-    setFilteredStories(result);
-    setCurrentPage(1); // Reset to first page when filters change
-  }, [stories, searchTerm, sortOption, filterCategory]);
-
-  // Helper function to extract plain text from rich text content
-  const extractPlainText = (content: any) => { // Added type annotation
-    if (typeof content === 'string') return content;
-
-    if (content.type === 'doc' && Array.isArray(content.content)) {
-      interface RichTextNode {
-        type: string;
-        content?: RichTextNode[];
-        text?: string;
-      }
-
-      const extractPlainText = (content: RichTextNode): string => {
-        if (typeof content === 'string') return content;
-
-        if (content.type === 'doc' && Array.isArray(content.content)) {
-          return content.content.map(node => {
-            if (node.content) {
-              return node.content.map(child => (child as RichTextNode).text || '').join(' ');
-            }
-            return '';
-          }).join(' ');
-        }
-
-        return '';
-      };
-    }
-
-    return '';
-  };
-
-  // Sort stories based on selected option
-  const sortStories = (storiesToSort: SuccessStory[], option: string) => { // Added type annotations
-    switch (option) {
-      case 'newest':
-        return [...storiesToSort].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());//used getTime method as well
-      case 'oldest':
-        return [...storiesToSort].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()); //used getTime method as well
-      case 'alphabetical':
-        return [...storiesToSort].sort((a, b) => a.title.localeCompare(b.title));
-      default:
-        return storiesToSort;
-    }
-  };
-
-  // Get location options for filtering
-  const locationOptions = [{ value: 'all', label: 'All Locations' }];
-  if (stories.length) {
-    const locations = [...new Set(stories.map(s => s.location))];
-    locations.forEach(loc => {
-      locationOptions.push({
-        value: loc.toLowerCase(),
-        label: loc
-      });
-    });
-  }
-
-  // Get featured stories for the top section
-  const featuredStories = stories.filter(story => story.featured).slice(0, 3);
-
-  // Get paginated stories
-  const paginatedStories = filteredStories.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
-
-  // Total pages for pagination
-  const totalPages = Math.ceil(filteredStories.length / ITEMS_PER_PAGE);
-
-  // Handle card click to navigate to the story detail page
-  const handleCardClick = (storyId: string) => {  // Added type annotation
-    const story = stories.find(s => s.id === storyId);
-    if (story) {
-      router.push(`/success-stories/${story.slug}`);
-    }
-  };
-
-  // Loading skeleton
-  if (loading) {
-    return (
-      <main>
-        <Skeleton height={400} radius={0} />
-        <Container size="lg" py="xl">
-          <Skeleton height={60} width="50%" mx="auto" mb="xl" />
-
-          <Grid>
-            {[...Array(6)].map((_, i) => (
-              <Grid.Col key={i} span={{ base: 12, sm: 6, md: 4 }}>
-                <Card padding="lg" radius="md" withBorder>
-                  <Skeleton height={180} mb="md" />
-                  <Skeleton height={28} width="80%" mb="sm" />
-                  <Skeleton height={60} mb="md" />
-                  <Skeleton height={36} />
-                </Card>
-              </Grid.Col>
-            ))}
-          </Grid>
-        </Container>
-      </main>
-    );
-  }
-
-  // Error state
-  if ((storiesError || bannerError) && !stories.length) {
-    return (
-      <Container size="md" py="xl">
-        <Alert
-          icon={<IconInfoCircle />}
-          title="Unable to load content"
-          color="red"
-        >
-          {storiesError?.message || bannerError?.message || 'An error occurred. Please try again.'}
-        </Alert>
-      </Container>
-    );
-  }
+  // Extract first paragraph for summary
+  const summary = content.replace(/<[^>]*>/g, ' ').substring(0, 200) + '...';
 
   return (
-    <main>
-      <Banner
-        type="successstories"
-        title={banner?.title}
-        description={banner?.description}
-        backgroundImage={banner?.backgroundImage}
-        breadcrumbs={[
-          { label: 'Home', link: '/' },
-          { label: 'Success Stories' }
-        ]}
-      />
+    <Paper withBorder radius="md" className={classes.featuredStory}>
+      <Grid gutter={0}>
+        <Grid.Col span={{ base: 12, md: 6 }}>
+          <div className={classes.featuredImageWrapper}>
+            <Image
+              src={story.imageUrl}
+              height={400}
+              alt={title}
+              className={classes.featuredImage}
+            />
+            <div className={classes.featuredOverlay} />
+          </div>
+        </Grid.Col>
+        <Grid.Col span={{ base: 12, md: 6 }}>
+          <div className={classes.featuredContent}>
+            <Badge variant="filled" color="pink" mb="md">Featured Story</Badge>
+            <Title order={2} className={classes.featuredTitle}>{title}</Title>
+            <Text size="lg" mt="md" className={classes.summary}>
+              {summary}
+            </Text>
+            <Group mt="xl">
+              <div>
+                <Text fw={500} size="lg">{personName}</Text>
+                <Text size="sm" c="dimmed">{location}</Text>
+              </div>
+            </Group>
+            <Link href={`/${locale}/success-stories/${story.slug}`} className={classes.readMore}>
+              Read Full Story →
+            </Link>
+          </div>
+        </Grid.Col>
+      </Grid>
+    </Paper>
+  );
+}
 
-      {/* Move search and filter section outside the regular container */}
-      <Container size="lg" py="xl">
-        {/* Error Alert */}
-        {(storiesError || bannerError) && (
-          <Alert
-            icon={<IconInfoCircle />}
-            title="Note"
-            color="yellow"
-            mb="lg"
-          >
-            We're experiencing some issues connecting to our servers. Some content might be limited or outdated.
-          </Alert>
-        )}
+function StoryCard({ story, locale }: { story: SuccessStory; locale: string }) {
+  const title = locale === 'hi' && story.titleHi ? story.titleHi : story.title;
+  const content = locale === 'hi' && story.contentHi ? story.contentHi : story.content;
+  const personName = locale === 'hi' && story.personNameHi ? story.personNameHi : story.personName;
+  const location = locale === 'hi' && story.locationHi ? story.locationHi : story.location;
 
-        {/* Search and Filter Section */}
-        <Group justify="apart" mb="xl">
-          <TextInput
-            placeholder="Search stories..."
-            leftSection={<IconSearch size={14} />}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.currentTarget.value)}
-            style={{ width: '40%' }}
+  return (
+    <Card shadow="sm" padding="xl" radius="md" withBorder className={classes.card}>
+      <Card.Section>
+        <div className={classes.imageWrapper}>
+          <Image
+            src={story.imageUrl}
+            height={240}
+            alt={title}
+            className={classes.image}
           />
+          <div className={classes.overlay} />
+        </div>
+      </Card.Section>
 
-          <Group>
-            <Select
-              placeholder="Filter by location"
-              value={filterCategory}
-              onChange={(value) => setFilterCategory(value || 'all')}
-              data={locationOptions}
-              style={{ width: '150px' }}
-            />
-
-            <Select
-              placeholder="Sort by"
-              value={sortOption}
-              onChange={(value) => setSortOption(value || 'newest')}
-              data={[
-                { value: 'newest', label: 'Newest First' },
-                { value: 'oldest', label: 'Oldest First' },
-                { value: 'alphabetical', label: 'A-Z' }
-              ]}
-              style={{ width: '150px' }}
-            />
-          </Group>
+      <Stack gap="xs" mt="md">
+        <IconQuote size={30} className={classes.quoteIcon} />
+        <Title order={3} lineClamp={2} className={classes.title}>
+          {title}
+        </Title>
+        <Text size="sm" lineClamp={3} mt="sm" className={classes.excerpt}>
+          {content.replace(/<[^>]*>/g, ' ').substring(0, 150)}...
+        </Text>
+        <Group mt="md" className={classes.footer}>
+          <div>
+            <Text fw={500}>{personName}</Text>
+            <Text size="sm" c="dimmed">{location}</Text>
+          </div>
+          <Link href={`/${locale}/success-stories/${story.slug}`} className={classes.readMore}>
+            Read More →
+          </Link>
         </Group>
-      </Container>
+      </Stack>
+    </Card>
+  );
+}
 
-      {/* Stories List - No container wrapper needed as cards are full width */}
-      <Box pos="relative">
-        {filteredStories.length === 0 && !loading ? (
-          <Text ta="center" c="dimmed" py="xl">
-            {searchTerm
-              ? 'No stories found for your search criteria.'
-              : 'No stories available at the moment.'}
+export default function SuccessStoriesPage() {
+  const params = useParams();
+  const locale = Array.isArray(params.locale) ? params.locale[0] : params.locale || 'en';
+  
+  const { fetchBanners, getBannerByType } = useBannerStore();
+  const { stories, loading, error, fetchStories } = useSuccessStoriesStore();
+  
+  const { dictionary } = useDictionary();
+  const t = dictionary?.successstories || {};
+  const common = dictionary?.common || {};
+  
+  React.useEffect(() => {
+    fetchBanners();
+    fetchStories();
+  }, [fetchBanners, fetchStories]);
+  
+  const banner = getBannerByType('success-stories');    const renderContent = () => {
+      if (loading) {
+        return <Text ta="center">{common?.loading || 'Loading stories...'}</Text>;
+      }
+      
+      if (error) {
+        return (
+          <Text ta="center" c="red">
+            {common?.errorMessage || 'Error loading content. Please try again later.'}
           </Text>
-        ) : (
-          <>
-            {paginatedStories.map((story, index) => (
-              <Paper key={story.id} className={classes.storyCard}>
-                <Container size="l" className={classes.storyContainer}>
-                  {index % 2 === 0 ? (
-                    <>
-                      <div className={classes.contentContainer}>
-                        <Title order={3} className={classes.storyTitle}>{story.title}</Title>
-                        <div
-                          className={`${classes.description} ${classes.richText}`}
-                          dangerouslySetInnerHTML={{
-                            __html: story.content.slice(0, 280) + (story.content.length > 280 ? '...' : '')
-                          }}
-                        />
-                        <Button
-                          variant="light"
-                          color="blue"
-                          onClick={() => handleCardClick(story.id)}
-                          mt="md"
-                        >
-                          Read Story
-                        </Button>
-                      </div>
-                      <div className={classes.mediaContainer}>
-                        <AspectRatio ratio={16 / 9}>
-                          <Image
-                            src={story.imageUrl}
-                            alt={story.title}
-                            radius="md"
-                            fit="cover"
-                          />
-                        </AspectRatio>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <div className={classes.mediaContainer}>
-                        <AspectRatio ratio={16 / 9}>
-                          <Image
-                            src={story.imageUrl}
-                            alt={story.title}
-                            radius="md"
-                            fit="cover"
-                          />
-                        </AspectRatio>
-                      </div>
-                      <div className={classes.contentContainer}>
-                        <Title order={3} className={classes.storyTitle}>{story.title}</Title>
-                        <div
-                          className={`${classes.description} ${classes.richText}`}
-                          dangerouslySetInnerHTML={{
-                            __html: story.content.slice(0, 280) + (story.content.length > 280 ? '...' : '')
-                          }}
-                        />
-                        <Button
-                          variant="light"
-                          color="blue"
-                          onClick={() => handleCardClick(story.id)}
-                          mt="md"
-                        >
-                          Read Story
-                        </Button>
-                      </div>
-                    </>
-                  )}
-                </Container>
-              </Paper>
-            ))}
+        );
+      }
+      
+      if (!stories.length) {
+        return <Text ta="center">{t?.noStories || 'No success stories available yet.'}</Text>;
+      }
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <Container size="lg" py="xl">
-                <Group justify="center">
-                  <Pagination
-                    total={totalPages}
-                    value={currentPage}
-                    onChange={setCurrentPage}
-                  />
-                </Group>
-              </Container>
-            )}
-          </>
+      const featuredStories = stories.filter(story => story.featured);
+      const otherStories = stories.filter(story => !story.featured);      return (
+      <Stack gap={50}>
+        {featuredStories.length > 0 && (
+          <div>
+            <Title order={2} className={classes.sectionTitle}>
+              {t?.featuredStories || 'Featured Stories'}
+            </Title>
+            <SimpleGrid cols={1} spacing="xl">
+              {featuredStories.map(story => (
+                <FeaturedStory key={story.id} story={story} locale={locale} />
+              ))}
+            </SimpleGrid>
+          </div>
         )}
-      </Box>
+
+        <div>
+          <Title order={2} className={classes.sectionTitle}>
+            {t?.moreStories || 'More Success Stories'}
+          </Title>
+          <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="xl">
+            {otherStories.map((story) => (
+              <StoryCard key={story.id} story={story} locale={locale} />
+            ))}
+          </SimpleGrid>
+        </div>
+      </Stack>
+    );
+  };
+  
+  return (
+    <main>
+      {banner ? (
+        <LocalizedBanner
+          banner={banner}
+          breadcrumbs={[
+            { label: common?.home || 'Home', link: `/${locale}` },
+            { label: t?.title || 'Success Stories' }
+          ]}
+        />
+      ) : (
+        <Banner
+          type="success-stories"
+          title={t?.title || 'Success Stories'}
+          backgroundImage="/banners/success-stories-banner.svg"
+          breadcrumbs={[
+            { label: common?.home || 'Home', link: `/${locale}` },
+            { label: t?.title || 'Success Stories' }
+          ]}
+        />
+      )}
+      
+      <Container size="xl" py="xl">
+        <Stack gap={50}>
+          <div className={classes.intro}>
+            <Title order={1} className={classes.mainTitle}>
+              {t?.pageHeading || 'Stories of Impact and Transformation'}
+            </Title>
+            <Text size="xl" c="dimmed" maw={800} mx="auto" ta="center">
+              {t?.pageDescription || 'Discover how our initiatives are changing lives and creating lasting impact in communities across Madhya Pradesh.'}
+            </Text>
+          </div>
+          
+          {renderContent()}
+        </Stack>
+      </Container>
     </main>
   );
 }

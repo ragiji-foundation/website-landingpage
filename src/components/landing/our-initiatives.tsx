@@ -19,13 +19,16 @@ import {
   IconTool,
   IconHeart
 } from "@tabler/icons-react";
+import { useLanguage } from '@/context/LanguageContext';
 import styles from './our-initiatives.module.css';
 import { JSX } from "react";
 
 interface Initiative {
   id: string;
   title: string;
+  titleHi?: string;
   description: string;
+  descriptionHi?: string;
   icon: JSX.Element;
   image: string;
   link: string;
@@ -35,7 +38,9 @@ const initiatives: Initiative[] = [
   {
     id: 'education',
     title: "Education",
+    titleHi: "शिक्षा",
     description: "Providing quality education to underprivileged children through our learning centers and digital literacy programs.",
+    descriptionHi: "हमारे शिक्षण केंद्रों और डिजिटल साक्षरता कार्यक्रमों के माध्यम से वंचित बच्चों को गुणवत्तापूर्ण शिक्षा प्रदान करना।",
     icon: <IconBook size={24} />,
     image: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b",
     link: "/initiatives/education"
@@ -75,6 +80,8 @@ const initiatives: Initiative[] = [
 ];
 
 export default function OurInitiatives() {
+  const { language } = useLanguage();
+
   return (
     <Container size="xl" py="xl">
       <Stack align="center" mb="xl">
@@ -83,11 +90,19 @@ export default function OurInitiatives() {
           size="h1"
           ta="center"
           mb="sm"
+          style={{ fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit' }}
         >
-          Our Initiatives
+          {language === 'hi' ? 'हमारी पहल' : 'Our Initiatives'}
         </Title>
-        <Text c="dimmed" ta="center" maw={600}>
-          Working together to create positive change in communities through various sustainable development programs.
+        <Text 
+          c="dimmed" 
+          ta="center" 
+          maw={600}
+          style={{ fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit' }}
+        >
+          {language === 'hi' 
+            ? 'विभिन्न सतत विकास कार्यक्रमों के माध्यम से समुदायों में सकारात्मक परिवर्तन लाने के लिए मिलकर काम करना।'
+            : 'Working together to create positive change in communities through various sustainable development programs.'}
         </Text>
       </Stack>
 
@@ -109,17 +124,33 @@ export default function OurInitiatives() {
             <Stack gap="md">
               <Group>
                 {initiative.icon}
-                <Title order={3} size="h4">
-                  {initiative.title}
+                <Title 
+                  order={3} 
+                  size="h4"
+                  style={{ fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit' }}
+                >
+                  {language === 'hi' && initiative.titleHi ? initiative.titleHi : initiative.title}
                 </Title>
               </Group>
 
-              <Text size="sm" lineClamp={3}>
-                {initiative.description}
+              <Text 
+                size="sm" 
+                lineClamp={3}
+                style={{ fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit' }}
+              >
+                {language === 'hi' && initiative.descriptionHi ? initiative.descriptionHi : initiative.description}
               </Text>
 
               <Group gap="xs" mt="auto">
-                <Text size="sm" style={{ textDecoration: 'underline' }}>Learn More</Text>
+                <Text 
+                  size="sm" 
+                  style={{ 
+                    textDecoration: 'underline',
+                    fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit'
+                  }}
+                >
+                  {language === 'hi' ? 'और जानें' : 'Learn More'}
+                </Text>
                 <IconArrowRight size={16} />
               </Group>
             </Stack>

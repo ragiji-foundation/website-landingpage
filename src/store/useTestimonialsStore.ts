@@ -44,3 +44,12 @@ export const useTestimonialsStore = create<TestimonialsState>((set) => ({
     }
   },
 }));
+
+// Listen for locale changes
+if (typeof window !== 'undefined') {
+  window.addEventListener('locale-changed', (event) => {
+    const customEvent = event as CustomEvent;
+    const { locale } = customEvent.detail;
+    useTestimonialsStore.getState().fetchTestimonials(locale);
+  });
+}

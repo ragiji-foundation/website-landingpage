@@ -1,6 +1,7 @@
 import { Box, Grid, Title, AspectRatio, Image, Text, Overlay, Center, Paper, Container, Button } from '@mantine/core';
 import { IconPlayerPlay } from '@tabler/icons-react';
 import { useState, useEffect } from 'react';
+import { useLanguage } from '@/context/LanguageContext';
 import classes from './features-section.module.css';
 
 interface MediaItem {
@@ -12,7 +13,9 @@ interface MediaItem {
 interface Feature {
   id: string;
   title: string;
+  titleHi?: string;
   description: string;
+  descriptionHi?: string;
   slug: string;
   category: string;
   order: number;
@@ -42,6 +45,7 @@ interface FeaturesSectionProps {
 function FeaturesSection({ heading, ctaButton }: FeaturesSectionProps) {
   const [features, setFeatures] = useState<Feature[]>([]);
   const [loading, setLoading] = useState(true);
+  const { language } = useLanguage();
 
   useEffect(() => {
     const fetchFeatures = async () => {
@@ -60,18 +64,21 @@ function FeaturesSection({ heading, ctaButton }: FeaturesSectionProps) {
   }, []);
 
   const renderFeatureContent = (feature: Feature, index: number) => {
+    const title = language === 'hi' && feature.titleHi ? feature.titleHi : feature.title;
+    const description = language === 'hi' && feature.descriptionHi ? feature.descriptionHi : feature.description;
+    const fontFamily = language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit';
+
     // Desktop Layout
     const DesktopLayout = () => (
       <Container size="l" className={classes.desktopLayout}>
         {index % 2 === 0 ? (
           <>
             <div className={classes.contentContainer}>
-              <Title order={3} className={classes.featureTitle}>
-                {feature.title}
-              </Title>
+              <Title order={3} className={classes.featureTitle} style={{ fontFamily }}>{title}</Title>
               <div
-                dangerouslySetInnerHTML={{ __html: feature.description }}
+                dangerouslySetInnerHTML={{ __html: description }}
                 className={classes.description}
+                style={{ fontFamily }}
               />
             </div>
             <div className={classes.mediaContainer}>
@@ -79,7 +86,7 @@ function FeaturesSection({ heading, ctaButton }: FeaturesSectionProps) {
                 <AspectRatio ratio={16 / 9} pos="relative">
                   <Image
                     src={feature.mediaItem.thumbnail || `/api/thumbnail?url=${feature.mediaItem.url}`}
-                    alt={feature.title}
+                    alt={title}
                     radius="md"
                     fit="cover"
                   />
@@ -96,7 +103,7 @@ function FeaturesSection({ heading, ctaButton }: FeaturesSectionProps) {
               ) : (
                 <Image
                   src={feature.mediaItem.url}
-                  alt={feature.title}
+                  alt={title}
                   radius="md"
                   fit="cover"
                 />
@@ -110,7 +117,7 @@ function FeaturesSection({ heading, ctaButton }: FeaturesSectionProps) {
                 <AspectRatio ratio={16 / 9} pos="relative">
                   <Image
                     src={feature.mediaItem.thumbnail || `/api/thumbnail?url=${feature.mediaItem.url}`}
-                    alt={feature.title}
+                    alt={title}
                     radius="md"
                     fit="cover"
                   />
@@ -127,19 +134,18 @@ function FeaturesSection({ heading, ctaButton }: FeaturesSectionProps) {
               ) : (
                 <Image
                   src={feature.mediaItem.url}
-                  alt={feature.title}
+                  alt={title}
                   radius="md"
                   fit="cover"
                 />
               )}
             </div>
             <div className={classes.contentContainer}>
-              <Title order={3} className={classes.featureTitle}>
-                {feature.title}
-              </Title>
+              <Title order={3} className={classes.featureTitle} style={{ fontFamily }}>{title}</Title>
               <div
-                dangerouslySetInnerHTML={{ __html: feature.description }}
+                dangerouslySetInnerHTML={{ __html: description }}
                 className={classes.description}
+                style={{ fontFamily }}
               />
             </div>
           </>
@@ -155,7 +161,7 @@ function FeaturesSection({ heading, ctaButton }: FeaturesSectionProps) {
             <AspectRatio ratio={16 / 9} pos="relative">
               <Image
                 src={feature.mediaItem.thumbnail || `/api/thumbnail?url=${feature.mediaItem.url}`}
-                alt={feature.title}
+                alt={title}
                 radius="md"
                 fit="cover"
               />
@@ -172,19 +178,18 @@ function FeaturesSection({ heading, ctaButton }: FeaturesSectionProps) {
           ) : (
             <Image
               src={feature.mediaItem.url}
-              alt={feature.title}
+              alt={title}
               radius="md"
               fit="cover"
             />
           )}
         </div>
         <div className={classes.contentContainer}>
-          <Title order={3} className={classes.featureTitle}>
-            {feature.title}
-          </Title>
+          <Title order={3} className={classes.featureTitle} style={{ fontFamily }}>{title}</Title>
           <div
-            dangerouslySetInnerHTML={{ __html: feature.description }}
+            dangerouslySetInnerHTML={{ __html: description }}
             className={classes.description}
+            style={{ fontFamily }}
           />
         </div>
       </Container>
@@ -213,19 +218,19 @@ function FeaturesSection({ heading, ctaButton }: FeaturesSectionProps) {
         mb={20}
         className={classes.sectionTitle}
         style={{
-          fontSize: 'clamp(2rem, 5vw, 4rem)', // Adjusted for better mobile scaling
+          fontSize: 'clamp(2rem, 5vw, 4rem)',
           fontWeight: 500,
           background: 'linear-gradient(45deg, #FF4B2B, #FF416C)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           padding: '0.5rem 0',
           letterSpacing: '-0.02em',
-          lineHeight: 1.1
+          lineHeight: 1.1,
+          fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit',
         }}
       >
-        {heading}
+        {language === 'hi' && features[0]?.category === 'feature' && features[0]?.titleHi ? features[0].titleHi : heading}
       </Title>
-      
       {features.map((feature, index) => renderFeatureContent(feature, index))}
       <Center mb={40}>
         <Button
@@ -236,6 +241,7 @@ function FeaturesSection({ heading, ctaButton }: FeaturesSectionProps) {
           size={ctaButton.size}
           className={ctaButton.className}
           leftSection={ctaButton.leftIcon}
+          style={{ fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit' }}
         >
           {ctaButton.text}
         </Button>

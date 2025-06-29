@@ -1,5 +1,10 @@
 import { create } from 'zustand';
-import { Initiative } from '@/types/initiative';
+import { Initiative as InitiativeBase } from '@/types/initiative';
+
+export interface Initiative extends InitiativeBase {
+  titleHi?: string;
+  descriptionHi?: string;
+}
 
 interface InitiativesState {
   items: Initiative[];
@@ -20,6 +25,7 @@ export const useInitiativesStore = create<InitiativesState>((set) => ({
       if (!response.ok) throw new Error('Failed to fetch initiatives');
 
       const data = await response.json();
+      // Ensure items have Hindi fields if locale is hi
       set({ items: data.sort((a: Initiative, b: Initiative) => a.order - b.order) });
     } catch (error) {
       console.error('Error fetching initiatives:', error);
@@ -29,3 +35,12 @@ export const useInitiativesStore = create<InitiativesState>((set) => ({
     }
   },
 }));
+
+// Listen for locale changes
+if (typeof window !== 'undefined') {
+  window.addEventListener('locale-changed', (event) => {
+    const customEvent = event as CustomEvent;
+    const { locale } = customEvent.detail;
+    useInitiativesStore.getState().fetchInitiatives(locale);
+  });
+}

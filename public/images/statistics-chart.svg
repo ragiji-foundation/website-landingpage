@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <rect width="800" height="600" fill="#f8f9fa"/>
+  <rect x="0" y="0" width="800" height="600" fill="#e9ecef" opacity="0.8"/>
+  
+  <!-- Chart axes -->
+  <line x1="100" y1="500" x2="700" y2="500" stroke="#212529" stroke-width="3"/>
+  <line x1="100" y1="100" x2="100" y2="500" stroke="#212529" stroke-width="3"/>
+  
+  <!-- Chart title -->
+  <text x="400" y="50" font-family="Arial" font-size="24" font-weight="bold" text-anchor="middle" fill="#212529">Education Statistics</text>
+  
+  <!-- Y-axis labels -->
+  <text x="80" y="500" font-family="Arial" font-size="12" text-anchor="end" fill="#495057">0%</text>
+  <text x="80" y="400" font-family="Arial" font-size="12" text-anchor="end" fill="#495057">25%</text>
+  <text x="80" y="300" font-family="Arial" font-size="12" text-anchor="end" fill="#495057">50%</text>
+  <text x="80" y="200" font-family="Arial" font-size="12" text-anchor="end" fill="#495057">75%</text>
+  <text x="80" y="100" font-family="Arial" font-size="12" text-anchor="end" fill="#495057">100%</text>
+  
+  <!-- Bar chart -->
+  <rect x="150" y="350" width="80" height="150" fill="#4263eb"/>
+  <rect x="300" y="400" width="80" height="100" fill="#f03e3e"/>
+  <rect x="450" y="200" width="80" height="300" fill="#40c057"/>
+  <rect x="600" y="300" width="80" height="200" fill="#fab005"/>
+  
+  <!-- X-axis labels -->
+  <text x="190" y="520" font-family="Arial" font-size="12" text-anchor="middle" fill="#495057">Enrollment</text>
+  <text x="340" y="520" font-family="Arial" font-size="12" text-anchor="middle" fill="#495057">Completion</text>
+  <text x="490" y="520" font-family="Arial" font-size="12" text-anchor="middle" fill="#495057">Literacy</text>
+  <text x="640" y="520" font-family="Arial" font-size="12" text-anchor="middle" fill="#495057">Resources</text>
+  
+  <!-- Legend -->
+  <rect x="600" y="50" width="15" height="15" fill="#4263eb"/>
+  <text x="620" y="63" font-family="Arial" font-size="12" fill="#495057">Current</text>
+  <rect x="600" y="75" width="15" height="15" fill="#f03e3e"/>
+  <text x="620" y="88" font-family="Arial" font-size="12" fill="#495057">Goal</text>
+</svg>

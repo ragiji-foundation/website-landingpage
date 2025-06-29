@@ -12,15 +12,20 @@ export default function HeroSection() {
       <Container size="lg">
         <div className={classes.inner}>
           <div className={classes.content}>
-            <Title className={classes.title}>
+            <Title className={classes.title} 
+              style={{ fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit' }}>
               {t('home.hero.heading')}
             </Title>
-            <Text className={classes.description}>
+            <Text className={classes.description}
+              style={{ fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit' }}>
               {t('home.hero.subheading')}
             </Text>
             <Group className={classes.buttons}>
               <Link href={`/${language}/contact-us`}>
-                <Button size="lg" className={classes.control}>
+                <Button 
+                  size="lg" 
+                  className={classes.control}
+                  style={{ fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit' }}>
                   {t('home.hero.ctaButton')}
                 </Button>
               </Link>

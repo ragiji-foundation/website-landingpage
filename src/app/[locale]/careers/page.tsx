@@ -1,266 +1,131 @@
 'use client';
-import { Container, Card, Text, Grid, Badge, Button, Group, Stack, Title } from '@mantine/core';
-import { BannerType } from '@/types/banner'; // Adjust the import path as necessary
+
+import { Container, Title, Grid, Card, Text, Stack, Group, Badge, Button } from '@mantine/core';
 import { Banner } from '@/components/Banner';
+import { useEffect } from 'react';
+import { useParams } from 'next/navigation';
+import { useCareerStore } from '@/store/useCareerStore';
 import { useBannerStore } from '@/store/useBannerStore';
-import { ErrorBoundary } from '@/components/error-boundary';
-import { useState, useEffect } from 'react';
-import { IconMapPin, IconClock, IconBriefcase } from '@tabler/icons-react';
-import styles from './careers.module.css';
-import { CareersSkeleton } from '@/components/skeletons/CareersSkeleton';
+import { LocalizedBanner } from '@/components/LocalizedBanner';
+import { withLocalizedArray } from '@/utils/localization';
+import { IconClock, IconMapPin, IconBriefcase } from '@tabler/icons-react';
 import Link from 'next/link';
-
-interface Career {
-  id: number;
-  title: string;
-  slug: string;
-  location: string;
-  type: string;
-  description: string;
-  requirements: string;
-  isActive: boolean;
-  createdAt: string;
-  formattedDate: string;
-}
-
-function parseLexicalContent(jsonString: string): string {
-  try {
-    const content = JSON.parse(jsonString);
-    if (!content.root?.children) return '';
-
-    // Combine all paragraphs with proper spacing
-    return content.root.children
-      .map((paragraph: any) => {
-        // Get text from each paragraph's children
-        const paragraphText = paragraph.children
-          .map((child: any) => child.text || '')
-          .join(' ')
-          .trim();
-
-        return paragraphText;
-      })
-      .filter(Boolean) // Remove empty paragraphs
-      .join('\n'); // Join paragraphs with newlines
-  } catch (e) {
-    console.error('Error parsing Lexical content:', e);
-    return jsonString;
-  }
-}
+import { useDictionary } from '@/hooks/useDictionary';
 
 export default function CareersPage() {
-  const [careers, setCareers] = useState<Career[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const { fetchBanners, getBannerByType, banners, loading: bannerLoading, error: bannerError } = useBannerStore();
-
+  const params = useParams();
+  const locale = params.locale as string || 'en';
+  const { fetchBanners, getBannerByType } = useBannerStore();
+  const { jobs, loading, error, fetchJobs } = useCareerStore();
+  
+  // Get translations from dictionary
+  const { dictionary } = useDictionary();
+  const t = dictionary?.careers || {};
+  const common = dictionary?.common || {};
+  
   useEffect(() => {
     fetchBanners();
-    console.log('Fetching banners for careers page');
-  }, [fetchBanners]);
-
-  const processCareerData = (career: any) => ({
-    ...career,
-    description: parseLexicalContent(career.description),
-    requirements: parseLexicalContent(career.requirements),
-    formattedDate: new Date(career.createdAt).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })
-  });
-
-  const fetchCareers = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/api/careers`, {
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
-
-      if (!response.ok) throw new Error('Failed to fetch careers');
-
-      const data = await response.json();
-      const processedCareers = data
-        .filter((career: Career) => career.isActive)
-        .map(processCareerData)
-        .sort((a: Career, b: Career) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
-
-      setCareers(processedCareers);
-    } catch (error) {
-      console.error('Error fetching careers:', error);
-      setError('Failed to load careers');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchCareers();
-  }, []);
-
-  // Add better debugging
+    fetchJobs();
+  }, [fetchBanners, fetchJobs]);
+  
+  // Get localized jobs
+  const localizedJobs = withLocalizedArray(jobs, locale);
+  
+  // Get banner
   const banner = getBannerByType('careers');
-  console.log('Careers banner:', banner);
-  console.log('All banners:', banners);
-
-  if (loading || bannerLoading) return <CareersSkeleton />;
-
-  if (error || bannerError) {
-    return (
-      <Stack align="center" py="xl">
-        <Title order={3}>Unable to load page</Title>
-        <Text c="dimmed">{error || bannerError?.message}</Text>
-        <Text>Available banner types: {banners.map(b => b.type).join(', ')}</Text>
-        <Button onClick={fetchCareers}>Retry</Button>
-      </Stack>
-    );
-  }
-
-  // Use fallback if banner not found
-  if (!banner) {
-    console.warn('Career banner not found, using fallback');
-    return (
-      <ErrorBoundary>
-        <main>
-          <Banner
-            type="careers"
-            title="Join Our Team"
-            description="Be part of our mission to create positive change."
-            backgroundImage="/banners/careers-banner.jpg"
-            breadcrumbs={[
-              { label: 'Home', link: '/' },
-              { label: 'Careers' }
-            ]}
-          />
-
-          <Container size="xl" py="xl">
-            <Grid gutter="lg">
-              {careers.map((career) => (
-                <Grid.Col key={career.id} span={{ base: 12, md: 6 }}>
-                  <Card shadow="sm" padding="lg" radius="md" className={styles.careerCard}>
-                    <Stack>
-                      <Title order={3}>{career.title}</Title>
-
+  
+  return (
+    <main>
+      {banner ? (
+        <LocalizedBanner
+          banner={banner}
+          breadcrumbs={[
+            { label: common?.home || 'Home', link: `/${locale}` },
+            { label: t?.careers || 'Careers' }
+          ]}
+        />
+      ) : (
+        <Banner
+          type="careers"
+          title={t?.careers || 'Careers'}
+          backgroundImage="/banners/careers-banner.svg"
+          breadcrumbs={[
+            { label: common?.home || 'Home', link: `/${locale}` },
+            { label: t?.careers || 'Careers' }
+          ]}
+        />
+      )}
+      
+      <Container size="xl" py="xl">
+        <Stack gap="xl">
+          <Title ta="center" order={2}>
+            {t?.joinOurTeam || 'Join Our Team'}
+          </Title>
+          
+          <Text size="lg" ta="center" maw={800} mx="auto">
+            {t?.careersDescription || 'Join our passionate team and make a difference in the lives of children. Explore our current openings below to find your opportunity to contribute to our mission.'}
+          </Text>
+          
+          {loading ? (
+            <Text ta="center">{common?.loading || 'Loading job listings...'}</Text>
+          ) : error ? (
+            <Text ta="center" c="red">
+              {common?.errorMessage || 'Error loading content. Please try again later.'}
+            </Text>
+          ) : localizedJobs.length === 0 ? (
+            <Text ta="center">{t?.noJobs || 'No job openings available at this time. Please check back later.'}</Text>
+          ) : (
+            <Grid gutter="xl">
+              {localizedJobs.map((job) => (
+                <Grid.Col key={job.id} span={{ base: 12, md: 6 }}>
+                  <Card shadow="sm" padding="lg" radius="md" withBorder>
+                    <Stack gap="md">
+                      <Group justify="apart" align="start">
+                        <div>
+                          <Title order={3}>{job.title}</Title>
+                          <Text c="dimmed">{job.department}</Text>
+                        </div>
+                        <Badge size="lg" color={job.jobType === 'Full-time' ? 'blue' : 'green'}>
+                          {job.jobType}
+                        </Badge>
+                      </Group>
+                      
                       <Group gap="lg">
                         <Group gap="xs">
-                          <IconMapPin size={16} />
-                          <Text size="sm">{career.location}</Text>
+                          <IconMapPin size={18} color="#868e96" />
+                          <Text size="sm">{job.location}</Text>
                         </Group>
                         <Group gap="xs">
-                          <IconBriefcase size={16} />
-                          <Badge variant="light">{career.type}</Badge>
-                        </Group>
-                        <Group gap="xs">
-                          <IconClock size={16} />
-                          <Text size="sm" c="dimmed">
-                            {career.formattedDate}
+                          <IconClock size={18} color="#868e96" />
+                          <Text size="sm">
+                            {new Date(job.postedDate).toLocaleDateString(locale === 'hi' ? 'hi-IN' : 'en-US')}
                           </Text>
                         </Group>
+                        <Group gap="xs">
+                          <IconBriefcase size={18} color="#868e96" />
+                          <Text size="sm">{job.department}</Text>
+                        </Group>
                       </Group>
-
-                      <Text lineClamp={3} style={{ whiteSpace: 'pre-line' }}>
-                        {career.description}
+                      
+                      <Text lineClamp={3}>
+                        {job.description?.replace(/<[^>]*>/g, ' ').substring(0, 150)}...
                       </Text>
-
-                      <Group justify="flex-end" gap="md">
-                        <Button
-                          variant="outline"
-                          component={Link}
-                          href={`/careers/${career.slug}`}
-                        >
-                          View Details
-                        </Button>
-                        <Button
-                          variant="filled"
-                          component={Link}
-                          href={`/careers/${career.slug}/apply`}
-                        >
-                          Apply Now
-                        </Button>
-                      </Group>
+                      
+                      <Button 
+                        component={Link}
+                        href={`/${locale}/careers/${job.slug}`}
+                        variant="light"
+                      >
+                        {t?.viewDetails || 'View Details'}
+                      </Button>
                     </Stack>
                   </Card>
                 </Grid.Col>
               ))}
             </Grid>
-          </Container>
-        </main>
-      </ErrorBoundary>
-    );
-  }
-
-  // Use actual banner
-  return (
-    <ErrorBoundary>
-      <main>
-        <Banner
-          type={banner.type as BannerType}
-          title={banner.title}
-          description={banner.description ?? "Be part of our mission to create positive change."}
-          backgroundImage={banner.backgroundImage || "/banners/careers-banner.jpg"}
-          breadcrumbs={[
-            { label: 'Home', link: '/' },
-            { label: 'Careers' }
-          ]}
-        />
-
-        <Container size="xl" py="xl">
-          <Grid gutter="lg">
-            {careers.map((career) => (
-              <Grid.Col key={career.id} span={{ base: 12, md: 6 }}>
-                <Card shadow="sm" padding="lg" radius="md" className={styles.careerCard}>
-                  <Stack>
-                    <Title order={3}>{career.title}</Title>
-
-                    <Group gap="lg">
-                      <Group gap="xs">
-                        <IconMapPin size={16} />
-                        <Text size="sm">{career.location}</Text>
-                      </Group>
-                      <Group gap="xs">
-                        <IconBriefcase size={16} />
-                        <Badge variant="light">{career.type}</Badge>
-                      </Group>
-                      <Group gap="xs">
-                        <IconClock size={16} />
-                        <Text size="sm" c="dimmed">
-                          {career.formattedDate}
-                        </Text>
-                      </Group>
-                    </Group>
-
-                    <Text lineClamp={3} style={{ whiteSpace: 'pre-line' }}>
-                      {career.description}
-                    </Text>
-
-                    <Group justify="flex-end" gap="md">
-                      <Button
-                        variant="outline"
-                        component={Link}
-                        href={`/careers/${career.slug}`}
-                      >
-                        View Details
-                      </Button>
-                      <Button
-                        variant="filled"
-                        component={Link}
-                        href={`/careers/${career.slug}/apply`}
-                      >
-                        Apply Now
-                      </Button>
-                    </Group>
-                  </Stack>
-                </Card>
-              </Grid.Col>
-            ))}
-          </Grid>
-        </Container>
-      </main>
-    </ErrorBoundary>
+          )}
+        </Stack>
+      </Container>
+    </main>
   );
 }

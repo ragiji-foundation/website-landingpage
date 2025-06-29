@@ -3,22 +3,27 @@ import { Box, Container, Title, Text, Button, Group, Paper, Stack } from '@manti
 import { IconArrowRight } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/context/LanguageContext';
+import { useEffect, useState } from 'react';
 import classes from './CardsCarousel.module.css';
 
 interface CarouselItem {
-  id: string;
+  id: string | number;
   imageUrl?: string;
-  videoUrl?: string;
+  videoUrl?: string | null;
   title: string;
+  titleHi?: string | null;
   type?: 'image' | 'video';
   link?: string;
   active: boolean;
   order: number;
 }
 
-function Card({ imageUrl, videoUrl, title, type = 'image', link = '#' }: Omit<CarouselItem, 'id' | 'active' | 'order'>) {
-  const isMobile = window.innerWidth <= 768;
+function Card({ imageUrl, videoUrl, title, titleHi, type = 'image', link = '#', language, t }: Omit<CarouselItem, 'id' | 'active' | 'order'> & { language: string, t: any }) {
+  const isMobile = typeof window !== 'undefined' ? window.innerWidth <= 768 : false;
   const defaultImage = '/placeholder-image.jpg';
+  const displayTitle = language === 'hi' && titleHi ? titleHi : title;
+  const fontFamily = language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit';
+  console.log('Rendering Card:', { language, title, titleHi, displayTitle });
 
   return (
     <Paper
@@ -60,17 +65,25 @@ function Card({ imageUrl, videoUrl, title, type = 'image', link = '#' }: Omit<Ca
 
       <div className={classes.contentWrapper}>
         <Stack align="center" gap={isMobile ? "md" : "xl"}>
-          <Title className={classes.title} ta="center">
-            {title}
+          <Title className={classes.title} ta="center" style={{ fontFamily }}>
+            {displayTitle}
           </Title>
+          <Text
+            className={classes.description}
+            size="xl"
+            style={{ fontFamily }}
+          >
+            {t('home.hero.subheading')}
+          </Text>
           <Button
             variant="outline"
             color="white"
             size={isMobile ? "sm" : "lg"}
             radius="xl"
             className={classes.ctaButton}
+            style={{ fontFamily }}
           >
-            Learn More
+            {t('home.hero.ctaButton')}
           </Button>
         </Stack>
       </div>
@@ -79,7 +92,21 @@ function Card({ imageUrl, videoUrl, title, type = 'image', link = '#' }: Omit<Ca
 }
 
 export function CardsCarousel() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const [carouselItems, setCarouselItems] = useState<CarouselItem[]>([]);
+
+  useEffect(() => {
+    const fetchCarousel = async () => {
+      try {
+        const res = await fetch('https://admin.ragijifoundation.com/api/carousel');
+        const data = await res.json();
+        setCarouselItems(data.filter((item: CarouselItem) => item.active));
+      } catch (e) {
+        setCarouselItems([]);
+      }
+    };
+    fetchCarousel();
+  }, [language]);
 
   return (
     <Box className={classes.wrapper}>
@@ -103,31 +130,46 @@ export function CardsCarousel() {
           transition={{ duration: 0.8 }}
           className={classes.content}
         >
-          <Title className={classes.title}>
-            {t('home.hero.heading')}
-          </Title>
-          <Text className={classes.description} size="xl">
-            {t('home.hero.subheading')}
-          </Text>
-          <Group mt={40}>
-            <Button
-              size="lg"
-              variant="filled"
-              color="var(--color-primary)"
-              rightSection={<IconArrowRight size={20} />}
-              className={classes.primaryButton}
-            >
-              {t('home.hero.ctaButton')}
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              color="white"
-              className={classes.secondaryButton}
-            >
-              {t('common.readMore')}
-            </Button>
-          </Group>
+          {carouselItems.length > 0 ? (
+            <Card {...carouselItems[0]} language={language} t={t} />
+          ) : (
+            <>
+              <Title 
+                className={classes.title}
+                style={{ fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit' }}
+              >
+                {t('home.hero.heading')}
+              </Title>
+              <Text 
+                className={classes.description} 
+                size="xl"
+                style={{ fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit' }}
+              >
+                {t('home.hero.subheading')}
+              </Text>
+              <Group mt={40}>
+                <Button
+                  size="lg"
+                  variant="filled"
+                  color="var(--color-primary)"
+                  rightSection={<IconArrowRight size={20} />}
+                  className={classes.primaryButton}
+                  style={{ fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit' }}
+                >
+                  {t('home.hero.ctaButton')}
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  color="white"
+                  className={classes.secondaryButton}
+                  style={{ fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit' }}
+                >
+                  {t('common.readMore')}
+                </Button>
+              </Group>
+            </>
+          )}
         </motion.div>
       </Container>
     </Box>

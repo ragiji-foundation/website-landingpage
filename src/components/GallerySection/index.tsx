@@ -7,9 +7,11 @@ import { useGalleryStore } from '@/store/useGalleryStore';
 import { GallerySkeleton } from '../skeletons/GallerySkeleton';
 import classes from './GallerySection.module.css';
 import { useDisclosure } from '@mantine/hooks';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function GallerySection() {
-  const { items, loading, error, fetchGallery } = useGalleryStore();
+  const { language } = useLanguage();
+  const { galleryItems: items = [], loading, fetchGalleryItems } = useGalleryStore();
   const [opened, { open, close }] = useDisclosure(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
@@ -17,8 +19,8 @@ export default function GallerySection() {
 
   // Fetch gallery items
   useEffect(() => {
-    fetchGallery();
-  }, [fetchGallery]);
+    fetchGalleryItems();
+  }, [fetchGalleryItems]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -66,21 +68,27 @@ export default function GallerySection() {
     });
   };
 
-  // Take only the latest 6 items
-  const recentItems = items.slice(0, 6);
+  // Take only the latest 6 items or return empty array if items is undefined
+  const recentItems = items?.slice(0, 6) || [];
 
   return (
     <Box className={classes.wrapper}>
       <Container size="xl">
         <div className={classes.header}>
-          <Title className={classes.title}>Our Gallery</Title>
+          <Title 
+            className={classes.title}
+            style={{ fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit' }}
+          >
+            {language === 'hi' ? 'हमारा गैलरी' : 'Our Gallery'}
+          </Title>
           <Button
             component={Link}
-            href="/gallery"
+            href={`/${language}/gallery`}
             variant="light"
             rightSection={<IconPhoto size={16} />}
+            style={{ fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit' }}
           >
-            View All Photos
+            {language === 'hi' ? 'सभी फ़ोटो देखें' : 'View All Photos'}
           </Button>
         </div>
 
@@ -100,7 +108,7 @@ export default function GallerySection() {
                   <Card.Section className={classes.imageSection}>
                     <Image
                       src={item.imageUrl || '/placeholder.jpg'}
-                      alt={item.title}
+                      alt={language === 'hi' && item.titleHi ? item.titleHi : item.title}
                       height={220}
                       className={classes.image}
                     />
@@ -110,12 +118,20 @@ export default function GallerySection() {
                       role="button"
                       tabIndex={0}
                     >
-                      <div className={classes.viewButton}>View Image</div>
+                      <div className={classes.viewButton} style={{ fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit' }}>
+                        {language === 'hi' ? 'छवि देखें' : 'View Image'}
+                      </div>
                     </div>
                   </Card.Section>
 
-                  <Text fw={500} size="lg" mt="md" lineClamp={2}>
-                    {item.title}
+                  <Text 
+                    fw={500} 
+                    size="lg" 
+                    mt="md" 
+                    lineClamp={2}
+                    style={{ fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit' }}
+                  >
+                    {language === 'hi' && item.titleHi ? item.titleHi : item.title}
                   </Text>
                 </Card>
               ))}

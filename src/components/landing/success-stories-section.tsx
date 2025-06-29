@@ -6,10 +6,12 @@ import { useSuccessStoriesStore } from '@/store/useSuccessStoriesStore';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { SuccessStoriesSkeleton } from '../skeletons/SuccessStoriesSkeleton';
+import { useLanguage } from '@/context/LanguageContext';
 // Removed RichTextContent import as we'll use dangerouslySetInnerHTML instead
 import classes from './success-stories-section.module.css';
 
 export default function SuccessStoriesSection() {
+  const { language } = useLanguage();
   const { stories, loading, error, fetchStories } = useSuccessStoriesStore();
   const router = useRouter();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -99,77 +101,91 @@ export default function SuccessStoriesSection() {
     <Box className={classes.wrapper}>
       <Container size="lg" py={{ base: 'md', sm: 'xl' }}>
         <Box mb={{ base: 20, sm: 30 }}>
-          <Title className={classes.sectionTitle} ta="center">Success Stories</Title>
+          <Title 
+            className={classes.sectionTitle} 
+            ta="center"
+            style={{ fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit' }}
+          >
+            {language === 'hi' ? 'सफलता की कहानियां' : 'Success Stories'}
+          </Title>
         </Box>
 
         <Group justify="flex-end" mb={{ base: 'md', sm: 'lg' }}>
           <Button
             component={Link}
-            href="/success-stories"
+            href={`/${language}/success-stories`}
             variant="outline"
             rightSection={<IconArrowNarrowRight size={16} />}
             className={classes.viewAllButton}
             size="sm"
+            style={{ fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit' }}
           >
-            View All Stories
+            {language === 'hi' ? 'सभी कहानियां देखें' : 'View All Stories'}
           </Button>
         </Group>
 
         <Box className={classes.scrollContainer} ref={scrollRef}>
-          {latestStories.map((story) => (
-            <Card
-              key={story.id}
-              shadow="sm"
-              padding={0}
-              radius="md"
-              className={classes.card}
-              onClick={() => handleCardClick(story)}
-            >
-              <div className={classes.cardInner}>
-                {story.imageUrl && (
-                  <div className={classes.imageWrapper}>
-                    <Card.Section className={classes.imageSection}>
-                      <Image
-                        src={story.imageUrl}
-                        alt={story.title}
-                        className={classes.image}
-                        height={200}
-                        width="100%"
-                        fit="cover"
+          {latestStories.filter(story => !!story.slug).map((story) => {
+            // Hindi support for title/content
+            const displayTitle = language === 'hi' && story.titleHi ? story.titleHi : story.title;
+            const displayContent = language === 'hi' && story.contentHi ? story.contentHi : story.content;
+            return (
+              <Card
+                key={story.id}
+                shadow="sm"
+                padding={0}
+                radius="md"
+                className={classes.card}
+                onClick={() => handleCardClick(story as Story)}
+              >
+                <div className={classes.cardInner}>
+                  {story.imageUrl && (
+                    <div className={classes.imageWrapper}>
+                      <Card.Section className={classes.imageSection}>
+                        <Image
+                          src={story.imageUrl}
+                          alt={displayTitle}
+                          className={classes.image}
+                          height={200}
+                          width="100%"
+                          fit="cover"
+                        />
+                        <div className={classes.overlay} />
+                      </Card.Section>
+                    </div>
+                  )}
+
+                  <div className={classes.cardContent}>
+                    <div className={classes.contentWrapper}>
+                      <Title order={3} className={classes.title} style={{ fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit' }}>{displayTitle}</Title>
+                      <div
+                        className={classes.content}
+                        style={{ fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit' }}
+                        dangerouslySetInnerHTML={{
+                          __html: truncateHTML(displayContent, typeof window !== 'undefined' && window.innerWidth <= 768 ? 80 : 120)
+                        }}
                       />
-                      <div className={classes.overlay} />
-                    </Card.Section>
-                  </div>
-                )}
+                    </div>
 
-                <div className={classes.cardContent}>
-                  <div className={classes.contentWrapper}>
-                    <Title order={3} className={classes.title}>{story.title}</Title>
-                    <div
-                      className={classes.content}
-                      dangerouslySetInnerHTML={{
-                        __html: truncateHTML(story.content, window.innerWidth <= 768 ? 80 : 120)
-                      }}
-                    />
-                  </div>
-
-                  <div className={classes.footer}>
-                    <Text size="sm" c="dimmed">
-                      {formatDate(story.createdAt)}
-                    </Text>
-                    <Button
-                      variant="subtle"
-                      color="blue"
-                      size="sm"
-                      rightSection={<IconArrowRight size={14} />}
-                    >
-                      Read More
-                    </Button>
+                    <div className={classes.footer}>
+                      <Text size="sm" c="dimmed">
+                        {formatDate(story.createdAt)}
+                      </Text>
+                      <Button
+                        variant="subtle"
+                        color="blue"
+                        size="sm"
+                        rightSection={<IconArrowRight size={14} />}
+                        style={{ fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit' }}
+                      >
+                        {language === 'hi' ? 'और पढ़ें' : 'Read More'}
+                      </Button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </Card>
-          ))}
+              </Card>
+            );
+          })}
         </Box>
       </Container>
     </Box>

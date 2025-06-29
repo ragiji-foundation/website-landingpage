@@ -24,7 +24,7 @@ export default function LocaleLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }) {
   const [locale, setLocale] = useState<string>('hi'); // Default fallback
 

@@ -191,36 +191,106 @@
 }
 
 .statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 2.5rem;
+  justify-items: center;
+  align-items: stretch;
+}
+
+.statCard {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 1.5rem;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 2.5rem 2rem 2rem 2rem;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  gap: 4rem;
-  max-width: 1000px;
+  min-height: 220px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  animation: fadeInUp 0.7s cubic-bezier(.22, 1, .36, 1) both;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.iconWrapper {
+  margin-bottom: 1.2rem;
+  color: var(--mantine-color-pink-6);
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  padding: 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.value {
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.03em;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.label {
+  font-size: 1.2rem;
+  color: #fff;
+  opacity: 0.92;
+  text-align: center;
+  font-weight: 500;
+  margin-top: 0.2rem;
+}
+
+.skeletonIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 0 auto 1.2rem auto;
+}
+
+.skeletonValue {
+  width: 80px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 0 auto 0.5rem auto;
+}
+
+.skeletonLabel {
+  width: 60px;
+  height: 18px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.2);
   margin: 0 auto;
-  padding: 0 1rem;
 }
 
-@media (max-width: 992px) {
-  .statsGrid {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
+@media (max-width: 600px) {
   .statCard {
-    flex: 0 1 calc(50% - 1rem);
-    min-width: 180px;
-  }
-}
-
-@media (max-width: 576px) {
-  .statsGrid {
-    gap: 1rem;
+    padding: 1.5rem 1rem 1rem 1rem;
+    min-height: 160px;
   }
 
-  .statCard {
-    flex: 1 1 100%;
-    max-width: none;
-    padding: 1.5rem;
+  .value {
+    font-size: 2rem;
+  }
+
+  .label {
+    font-size: 1rem;
   }
 }
 

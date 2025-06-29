@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="400" viewBox="0 0 1200 400">
+  <rect width="1200" height="400" fill="#f5f5f5"/>
+  <rect x="0" y="0" width="1200" height="400" fill="#3a6ea5" opacity="0.8"/>
+  <text x="600" y="200" font-family="Arial" font-size="48" font-weight="bold" text-anchor="middle" fill="#ffffff">Success Stories</text>
+  <text x="600" y="250" font-family="Arial" font-size="24" text-anchor="middle" fill="#ffffff">Inspiring Stories of Change</text>
+</svg>

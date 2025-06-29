@@ -15,7 +15,7 @@
   width: 100vw;
   margin-left: calc(-50vw + 50%);
   margin-right: calc(-50vw + 50%);
-  padding: 5rem 0;
+  padding: var(--mantine-spacing-xl) 0;
   background: linear-gradient(135deg, rgba(42, 139, 82, 0.05), rgba(42, 139, 82, 0.1));
   position: relative;
   overflow: hidden;
@@ -32,16 +32,23 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 3rem;
+  margin-bottom: var(--mantine-spacing-xl);
+  flex-wrap: wrap;
+  gap: var(--mantine-spacing-md);
 }
 
 .title {
-  font-size: 2.5rem;
+  font-family: var(--mantine-font-family);
   font-weight: 800;
-  background: linear-gradient(135deg, var(--color-primary), #1a5934);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-size: 2rem;
+  color: var(--mantine-color-dark-8);
+}
+
+.description {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto;
+  color: var(--mantine-color-gray-6);
 }
 
 .title {
@@ -56,30 +63,29 @@
 }
 
 .card {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 75, 43, 0.1);
+  transition: transform 200ms ease-in-out, box-shadow 200ms ease-in-out;
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 20px 40px rgba(255, 75, 43, 0.15);
+  box-shadow: var(--mantine-shadow-md);
 }
 
 .imageSection {
   position: relative;
-  height: 280px;
+  height: 220px;
   overflow: hidden;
-  border-radius: 8px;
 }
 
 .image {
+  transition: transform 300ms ease-in-out;
   height: 100%;
   width: 100%;
   object-fit: cover;
-  transition: transform 0.5s ease;
 }
 
 .card:hover .image {
@@ -88,226 +94,71 @@
 
 .overlay {
   position: absolute;
-  inset: 0;
-  background: linear-gradient(to top,
-      rgba(42, 139, 82, 0.9),
-      /* Use primary color */
-      rgba(42, 139, 82, 0.7));
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
   opacity: 0;
-  transition: all 0.3s ease;
+  transition: opacity 300ms ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   cursor: pointer;
-  z-index: 100000;
 }
 
-.card:hover .overlay {
+.imageSection:hover .overlay {
   opacity: 1;
 }
 
+.imageSection:hover .image {
+  transform: scale(1.05);
+}
+
 .viewButton {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  border: 2px solid white;
-  padding: 0.8rem 2rem;
-  border-radius: 25px;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(4px);
-  cursor: pointer;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--mantine-color-dark-8);
+  padding: 0.5rem 1rem;
+  border-radius: var(--mantine-radius-md);
+  font-weight: 500;
+  transform: translateY(20px);
+  transition: transform 300ms ease;
 }
 
-.viewButton:hover {
-  background: white;
-  color: var(--color-primary-second);
-  transform: scale(1.05);
+.imageSection:hover .viewButton {
+  transform: translateY(0);
 }
 
-.overlay:hover .viewButton {
-  transform: scale(1.05);
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.modal {
-  backdrop-filter: blur(8px);
-  padding: 1rem;
-  z-index: 1000000;
-
-  [dataActive] {
-    background-color: var(--color-primary);
-  }
-}
-
-.modal {
-  padding: 0;
-  z-index: 1000000;
-  background: rgba(0, 0, 0, 0.95);
-}
-
-.modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.95);
-  z-index: 1000000 !important;
-}
-
-.modalContent {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.95);
-  z-index: 1000000;
-}
-
-.modalContent {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000001 !important;
-}
-
-.modalImageContainer {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-}
-
-.modalImageContainer {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-  z-index: 1000002 !important;
-}
-
-.modalImage {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  user-select: none;
-  z-index: 10000000;
-}
-
-.navButton {
-  position: fixed;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  z-index: 2000;
-  margin: 0 1rem;
-  transition: all 0.2s ease;
-}
-
-.navButton:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-50%) scale(1.1);
-}
-
-.closeButton {
-  position: fixed;
-  top: 1rem;
-  right: 1rem;
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  z-index: 2000;
-  font-size: 1.5rem;
-}
-
-.closeButton:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.modalImageContainer {
-  width: 100%;
-  height: 85vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.modalImage {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  border-radius: 8px;
-}
-
-.modalImage {
-  width: 100%;
-  height: auto;
-  max-height: 80vh;
-  object-fit: contain;
-  border-radius: 8px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-}
-
-.modalContent {
-  position: relative;
-  width: 100%;
-  height: 85vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.navButton {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
-  transition: all 0.3s ease;
-  z-index: 10;
-}
-
-.navButton:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-50%) scale(1.1);
-}
-
-.modalOverlay {
+/* Modal Styles */
+.modalBackdrop {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.95);
+  background-color: rgba(0, 0, 0, 0.8);
   display: flex;
-  align-items: center;
   justify-content: center;
-  z-index: 9999;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 200ms ease;
 }
 
-.modalContent {
+.modalContainer {
   position: relative;
+  width: 90vw;
+  height: 90vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modalImageWrapper {
   width: 100%;
   height: 100%;
   display: flex;
-  align-items: center;
   justify-content: center;
-}
-
-.modalImageContainer {
-  position: relative;
-  width: 90%;
-  height: 90%;
-  display: flex;
   align-items: center;
-  justify-content: center;
 }
 
 .modalImage {
@@ -318,14 +169,20 @@
 
 .navButton {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.15);
-  color: white;
-  width: 48px;
-  height: 48px;
+  background-color: rgba(255, 255, 255, 0.15);
   border-radius: 50%;
-  z-index: 10000;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  transition: background-color 200ms ease;
+  z-index: 10;
+}
+
+.navButton:hover {
+  background-color: rgba(255, 255, 255, 0.3);
 }
 
 .prevButton {
@@ -340,164 +197,27 @@
   position: absolute;
   top: 20px;
   right: 20px;
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  width: 48px;
-  height: 48px;
+  background-color: rgba(255, 255, 255, 0.15);
   border-radius: 50%;
-  z-index: 10000;
+  width: 40px;
+  height: 40px;
   display: flex;
-  align-items: center;
   justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(4px);
+  align-items: center;
+  color: white;
+  transition: background-color 200ms ease;
+  z-index: 10;
 }
 
 .closeButton:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: scale(1.1);
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-}
-
-.navButton:hover,
-.closeButton:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.modalBackdrop {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.9);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  backdrop-filter: blur(8px);
-  animation: fadeIn 0.3s ease;
-}
-
-.modalContainer {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-}
-
-.modalImageWrapper {
-  width: 90%;
-  height: 90%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: zoomIn 0.3s ease;
-}
-
-.modalImage {
-  max-width: 100%;
-  max-height: 90vh;
-  object-fit: contain;
-  border-radius: 4px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-}
-
-.navButton {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.1);
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  color: white;
-  transition: all 0.2s ease;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(4px);
-}
-
-.prevButton {
-  left: 20px;
-}
-
-.nextButton {
-  right: 20px;
-}
-
-.closeButton {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: rgba(255, 255, 255, 0.1);
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  color: white;
-  transition: all 0.2s ease;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(4px);
-}
-
-.closeButton {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(4px);
-  z-index: 1000010;
-}
-
-.closeButton:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: scale(1.1);
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-}
-
-.navButton:hover,
-.closeButton:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: scale(1.1);
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  background-color: rgba(255, 255, 255, 0.3);
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
   }
-
   to {
     opacity: 1;
-  }
-}
-
-@keyframes zoomIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@media (max-width: 768px) {
-  .container {
-    padding-left: var(--mantine-spacing-md);
-    padding-right: var(--mantine-spacing-md);
   }
 }

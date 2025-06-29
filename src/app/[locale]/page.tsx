@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 import { Box, Container } from '@mantine/core';
 import { CardsCarousel } from '@/components/CardsCarousel';
 import SuccessStoriesSection from '@/components/landing/success-stories-section';
@@ -27,6 +28,8 @@ interface PageProps {
 
 export default function App({ params }: PageProps) {
   const { language, setLanguage, t } = useLanguage();
+  
+  // Use React.use to unwrap the params object (Next.js 15+ requirement)
   const locale = params.locale;
 
   // Add debugging
@@ -42,6 +45,16 @@ export default function App({ params }: PageProps) {
       setLanguage(locale as 'en' | 'hi');
     }
   }, [locale, language, setLanguage]);
+  
+  // Add additional effect for fetching localized content
+  useEffect(() => {
+    // This is where you'd fetch homepage-specific content with localization
+    // For example: fetchHomePageContent(locale);
+    console.log('Language changed, refreshing content for:', locale);
+    
+    // You might want to refetch carousel, features, initiatives, etc.
+    // Or you could do this in the respective components
+  }, [locale]);
 
   // Add this hook to detect mobile/tablet screens
   const isMobile = useMediaQuery('(max-width: 768px)');
@@ -120,7 +133,28 @@ export default function App({ params }: PageProps) {
             </ErrorBoundary>
           </Box>
         </AnimatedSection>
-
+        
+        {/* 8. Stats Section */}
+        <AnimatedSection>
+          <Box
+            component="section"
+            style={{
+              width: '100vw',
+              maxWidth: '100vw',
+              marginLeft: 'calc(-50vw + 50%)',
+              marginRight: 'calc(-50vw + 50%)',
+              background: 'linear-gradient(135deg, #FF4B2B 0%, #FF416C 100%)',
+              position: 'relative',
+              padding: 0,
+              overflow: 'hidden'
+            }}
+          >
+            <ErrorBoundary>
+              <StatsSection />
+            </ErrorBoundary>
+          </Box>
+        </AnimatedSection> 
+        
         {/* 3. Our Initiatives Section */}
         <AnimatedSection>
           <Box
@@ -238,26 +272,7 @@ export default function App({ params }: PageProps) {
           </Box>
         </AnimatedSection>
 
-        {/* 8. Stats Section */}
-        <AnimatedSection>
-          <Box
-            component="section"
-            style={{
-              width: '100vw',
-              maxWidth: '100vw',
-              marginLeft: 'calc(-50vw + 50%)',
-              marginRight: 'calc(-50vw + 50%)',
-              background: 'linear-gradient(135deg, #FF4B2B 0%, #FF416C 100%)',
-              position: 'relative',
-              padding: 0,
-              overflow: 'hidden'
-            }}
-          >
-            <ErrorBoundary>
-              <StatsSection />
-            </ErrorBoundary>
-          </Box>
-        </AnimatedSection>
+        
       </main>
     </PageTransition>
   );

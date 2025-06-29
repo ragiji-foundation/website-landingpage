@@ -26,14 +26,15 @@ interface PhotoLibraryProps {
 }
 
 export function PhotoLibrary({ category, searchTerm, sortBy = 'newest', viewMode = 'grid' }: PhotoLibraryProps) {
-  const { items, loading, error, fetchGallery, selectedImage, setSelectedImage } = useGalleryStore();
+  const { galleryItems: items, loading, error, fetchGalleryItems } = useGalleryStore();
   const [currentPage, setCurrentPage] = useState(1);
   const [opened, { open, close }] = useDisclosure(false);
+  const [selectedImage, setSelectedImage] = useState<GalleryItem | null>(null);
   const itemsPerPage = 9;
 
   useEffect(() => {
-    fetchGallery();
-  }, [fetchGallery]);
+    fetchGalleryItems();
+  }, [fetchGalleryItems]);
 
   // Filter and sort photos
   const filteredPhotos = items.filter(photo => {
@@ -41,15 +42,15 @@ export function PhotoLibrary({ category, searchTerm, sortBy = 'newest', viewMode
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
       return photo.title.toLowerCase().includes(term) ||
-        photo.description.toLowerCase().includes(term);
+        (photo.description ? photo.description.toLowerCase().includes(term) : false);
     }
     return true;
   }).sort((a, b) => {
     switch (sortBy) {
       case 'newest':
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        return new Date(b.createdAt || '').getTime() - new Date(a.createdAt || '').getTime();
       case 'oldest':
-        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        return new Date(a.createdAt || '').getTime() - new Date(b.createdAt || '').getTime();
       default:
         return 0;
     }
@@ -86,7 +87,7 @@ export function PhotoLibrary({ category, searchTerm, sortBy = 'newest', viewMode
     return (
       <Stack align="center" py="xl">
         <Text size="lg" fw={500} color="red">Error loading gallery</Text>
-        <Button variant="light" onClick={() => fetchGallery()}>
+        <Button variant="light" onClick={() => fetchGalleryItems()}>
           Retry
         </Button>
       </Stack>
@@ -114,13 +115,19 @@ export function PhotoLibrary({ category, searchTerm, sortBy = 'newest', viewMode
       >
         {paginatedPhotos.map((photo) => (
           <Card
-            key={photo.id}
+            key={String(photo.id)}
             shadow="sm"
             padding="lg"
             radius="md"
             withBorder
             style={{ cursor: 'pointer' }}
-            onClick={() => handlePhotoClick(photo)}
+            onClick={() => handlePhotoClick({ 
+              ...photo, 
+              id: String(photo.id), 
+              description: photo.description ?? '', 
+              createdAt: photo.createdAt ?? '',
+              updatedAt: photo.updatedAt ?? ''
+            })}
           >
             <Card.Section>
               <Image
@@ -173,7 +180,7 @@ export function PhotoLibrary({ category, searchTerm, sortBy = 'newest', viewMode
             />
             <Text mt="md" size="lg">{selectedImage.title}</Text>
             <Text color="dimmed" size="sm">
-              {new Date(selectedImage.createdAt).toLocaleDateString('en-US', {
+              {new Date(selectedImage.createdAt || '').toLocaleDateString('en-US', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric'

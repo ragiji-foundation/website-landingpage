@@ -1,258 +1,180 @@
 'use client';
 
+import { Container, Title, Grid, Card, Text, Image, Box, Stack, Paper } from '@mantine/core';
+import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import {
-  Container,
-  Title,
-  Image,
-  Text,
-  Group,
-  Avatar,
-  Button,
-  Divider,
-  Card,
-  SimpleGrid,
-  Box,
-  Breadcrumbs,
-  Anchor,
-  LoadingOverlay,
-  Skeleton,
-  Alert
-} from '@mantine/core';
-import { useRouter, useParams } from 'next/navigation';
-import { IconArrowLeft, IconCalendar, IconMapPin, IconShare, IconInfoCircle } from '@tabler/icons-react';
-import { useSuccessStoriesStore, SuccessStory } from '@/store/useSuccessStoriesStore';
-import { useBanner } from '@/hooks/useBanner';
 import { Banner } from '@/components/Banner';
-import { RichTextContent } from '@/components/RichTextContent';
-import classes from './story-detail.module.css';
+import { useSuccessStoriesStore, SuccessStory } from '@/store/useSuccessStoriesStore';
+import Link from 'next/link';
+import { useBanner } from '@/hooks/useBanner';
+import { withLocalization } from '@/utils/localization';
+import { SimpleRichText } from '@/components/SimpleRichText';
+import { useFallbackImages } from '@/hooks/useFallbackImages';
+import { useDictionary } from '@/hooks/useDictionary';
+
+function getRelatedSlug(params: { slug?: string | string[] }): string {
+  // Extract slug from params and ensure it's a string
+  if (Array.isArray(params.slug)) {
+    return params.slug[0] || '';
+  }
+  return params.slug || '';
+}
+
+interface RelatedStoriesProps {
+  stories: SuccessStory[];
+  locale: string;
+  title: string;
+}
+
+function RelatedStories({ stories, locale, title }: RelatedStoriesProps) {
+  const { getPlaceholderImage } = useFallbackImages();
+  
+  if (stories.length === 0) return null;
+  
+  return (
+    <Stack mt="xl">
+      <Title order={3}>{title}</Title>
+      <Grid>
+        {stories.map(story => (
+          <Grid.Col key={story.id} span={{ base: 12, sm: 6, md: 4 }}>
+            <Card shadow="sm" padding="lg" radius="md" withBorder>
+              {story.imageUrl && (
+                <Card.Section>
+                  <Image
+                    src={story.imageUrl}
+                    height={200}
+                    alt={story.title}
+                    fallbackSrc={getPlaceholderImage('story')}
+                  />
+                </Card.Section>
+              )}
+              <Stack mt="md">
+                <Title order={4}>{story.title}</Title>
+                <Text size="sm" c="dimmed">{story.personName}, {story.location}</Text>
+                <Link href={`/${locale}/success-stories/${story.slug}`}>Read more</Link>
+              </Stack>
+            </Card>
+          </Grid.Col>
+        ))}
+      </Grid>
+    </Stack>
+  );
+}
 
 export default function SuccessStoryDetail() {
-  const { stories, loading: storyLoading, error: storyError, selectedStory, fetchStoryBySlug } = useSuccessStoriesStore();
+  const { stories, loading: storyLoading, error: storyError, currentStory, fetchStoryBySlug } = useSuccessStoriesStore();
   const { banner, loading: bannerLoading, error: bannerError } = useBanner('successstories');
   const [relatedStories, setRelatedStories] = useState<SuccessStory[]>([]);
   const router = useRouter();
   const params = useParams();
-  const { slug } = params;
-
-  const loading = storyLoading || bannerLoading;
-
+  const slug = getRelatedSlug(params);
+  const locale = (params.locale as string) || 'en';
+  
+  // Get translations
+  const { dictionary } = useDictionary();
+  const t = dictionary?.successstories || {};
+  const common = dictionary?.common || {};
+  
+  // Get fallback images
+  const { getPlaceholderImage } = useFallbackImages();
+  
   useEffect(() => {
     // Fetch the story by slug
+    const loadStory = async () => {
+      const story = await fetchStoryBySlug(slug, locale);
+      if (!story) {
+        // If story not found, redirect to 404 page
+        router.push(`/${locale}/404`);
+      }
+    };
+    
     if (slug) {
-      fetchStoryBySlug(slug as string);
+      loadStory();
     }
-  }, [fetchStoryBySlug, slug]);
-
-  // Find related stories when we have the selected story
+  }, [slug, locale, fetchStoryBySlug, router]);
+  
+  // Find related stories whenever the current story changes
   useEffect(() => {
-    if (selectedStory && stories.length > 0) {
-      // Find stories with the same location
+    if (currentStory && stories.length > 0) {
+      // Get 2-3 related stories that are not the current one
       const related = stories
-        .filter(s => s.id !== selectedStory.id && s.location === selectedStory.location)
+        .filter(s => s.id !== currentStory.id)
+        .sort(() => Math.random() - 0.5) // Simple randomization
         .slice(0, 3);
       setRelatedStories(related);
     }
-  }, [selectedStory, stories]);
-
-  const formatDate = (dateString: string) => { // Added type annotation
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
-
-  // Display loading skeleton
-  if (loading) {
+  }, [currentStory, stories]);
+  
+  // Show loading state
+  if (storyLoading) {
     return (
-      <main>
-        <Skeleton height={400} radius={0} />
-        <Container size="md" py="xl">
-          <Skeleton height={50} width="80%" mb="xl" />
-          <Group mb="xl">
-            <Skeleton height={40} width={40} radius="xl" />
-            <Skeleton height={40} width={200} />
-            <Skeleton height={20} width={100} ml="auto" />
-          </Group>
-          <Skeleton height={350} mb="xl" />
-          <Skeleton height={25} mb="md" />
-          <Skeleton height={25} width="90%" mb="md" />
-          <Skeleton height={25} width="95%" mb="md" />
-          <Skeleton height={25} width="85%" mb="md" />
-        </Container>
-      </main>
+      <Container>
+        <Box py="xl">
+          <Text ta="center">{common?.loading || 'Loading story...'}</Text>
+        </Box>
+      </Container>
     );
   }
-
-  // Handle errors and missing story
-  if (storyError || !selectedStory) {
+  
+  // Show error state
+  if (storyError || !currentStory) {
     return (
-      <main>
-        <Banner
-          type="error"
-          title="Story Not Found"
-          description="We couldn't find the story you're looking for."
-          backgroundImage="/banners/error-banner.jpg"
-          breadcrumbs={[
-            { label: 'Home', link: '/' },
-            { label: 'Success Stories', link: '/success-stories' },
-            { label: 'Story Not Found' }
-          ]}
-        />
-
-        <Container size="md" py="xl">
-          <Alert
-            icon={<IconInfoCircle size={16} />}
-            title="Story Not Found"
-            color="red"
-            mb="lg"
-          >
-            The story you&lsquo;re looking for may have been moved or deleted.
-          </Alert>
-
-          <Button
-            mt="md"
-            variant="light"
-            leftSection={<IconArrowLeft size={16} />}
-            onClick={() => router.push('/success-stories')}
-          >
-            Back to All Stories
-          </Button>
-        </Container>
-      </main>
+      <Container>
+        <Box py="xl">
+          <Text ta="center" c="red">
+            {storyError?.message || common?.errorMessage || 'Story not found or error loading details.'}
+          </Text>
+        </Box>
+      </Container>
     );
   }
-
+  
+  // Get localized story
+  const localizedStory = withLocalization(currentStory, locale);
+  
   return (
     <main>
       <Banner
-        type="successstories"
-        title={selectedStory.title}
-        description={`A story about ${selectedStory.personName} from ${selectedStory.location}`}
-        backgroundImage={selectedStory.imageUrl || banner?.backgroundImage}
+        type="story"
+        title={localizedStory.title}
+        backgroundImage={localizedStory.imageUrl || '/banners/story-banner.svg'}
         breadcrumbs={[
-          { label: 'Home', link: '/' },
-          { label: 'Success Stories', link: '/success-stories' },
-          { label: selectedStory.title }
+          { label: common.home || 'Home', link: `/${locale}` },
+          { label: t.title || 'Success Stories', link: `/${locale}/success-stories` },
+          { label: localizedStory.title }
         ]}
       />
-
-      <Container size="md" py="xl">
-        {/* Show error banner if API had an error but we're using cached data */}
-        {(storyError || bannerError) && (
-          <Alert
-            icon={<IconInfoCircle />}
-            title="Note"
-            color="yellow"
-            mb="lg"
-          >
-            We&lsquo;re experiencing some issues connecting to our servers. Some content might be limited or outdated.
-          </Alert>
-        )}
-
-        {/* Meta Information */}
-        <Group justify="apart" mb="lg">
-          <Group>
-            <Avatar color="blue" radius="xl">{selectedStory.personName.charAt(0)}</Avatar>
-            <div>
-              <Text fw={500}>{selectedStory.personName}</Text>
-              <Group gap="xs">
-                <IconMapPin size={14} stroke={1.5} />
-                <Text size="sm" c="dimmed">{selectedStory.location}</Text>
-              </Group>
-            </div>
-          </Group>
-          <Group>
-            <IconCalendar size={14} stroke={1.5} />
-            <Text size="sm" c="dimmed">{formatDate(selectedStory.createdAt)}</Text>
-          </Group>
-        </Group>
-
-        {/* Featured Image */}
-        {selectedStory.imageUrl && (
-          <Image
-            src={selectedStory.imageUrl}
-            height={400}
-            alt={selectedStory.title}
-            radius="md"
-            className={classes.featuredImage}
-            mb="xl"
+      
+      <Container size="lg" py="xl">
+        <Paper shadow="xs" p="xl" withBorder>
+          <Grid gutter="xl">
+            <Grid.Col span={{ base: 12, md: 4 }}>
+              <Image
+                src={localizedStory.imageUrl || getPlaceholderImage('story')}
+                alt={localizedStory.title}
+                radius="md"
+              />
+              <Box mt="md">
+                <Title order={4}>{localizedStory.personName}</Title>
+                <Text size="sm" c="dimmed">{localizedStory.location}</Text>
+              </Box>
+            </Grid.Col>
+            
+            <Grid.Col span={{ base: 12, md: 8 }}>
+              <Title order={2} mb="lg">{localizedStory.title}</Title>
+              
+              <SimpleRichText content={localizedStory.content} />
+            </Grid.Col>
+          </Grid>
+        </Paper>
+        
+        {relatedStories.length > 0 && (
+          <RelatedStories 
+            stories={relatedStories.map(story => withLocalization(story, locale))} 
+            locale={locale}
+            title={t.relatedStories || 'Related Stories'}
           />
         )}
-
-        {/* Content */}
-        <div className={classes.storyContent}>
-          <RichTextContent content={selectedStory.content} />
-        </div>
-
-        {/* Share Buttons */}
-        <Group mt="xl" justify="center">
-          <Button
-            variant="light"
-            leftSection={<IconShare size={16} />}
-            onClick={() => {
-              if (navigator.share) {
-                navigator.share({
-                  title: selectedStory.title,
-                  text: `Read ${selectedStory.title} - A success story`,
-                  url: window.location.href,
-                });
-              } else {
-                navigator.clipboard.writeText(window.location.href);
-                alert('URL copied to clipboard!');
-              }
-            }}
-          >
-            Share this story
-          </Button>
-        </Group>
-
-        <Divider my="xl" />
-
-        {/* Related Stories */}
-        {relatedStories.length > 0 && (
-          <Box mb="xl">
-            <Title order={2} size="h3" mb="md">More Stories from {selectedStory.location}</Title>
-            <SimpleGrid cols={{ base: 1, sm: 3 }}>
-              {relatedStories.map(relatedStory => (
-                <Card
-                  key={relatedStory.id}
-                  shadow="sm"
-                  p="md"
-                  radius="md"
-                  withBorder
-                  className={classes.relatedCard}
-                  onClick={() => router.push(`/success-stories/${relatedStory.slug}`)}
-                >
-                  {relatedStory.imageUrl && (
-                    <Card.Section>
-                      <Image
-                        src={relatedStory.imageUrl}
-                        height={120}
-                        alt={relatedStory.title}
-                      />
-                    </Card.Section>
-                  )}
-                  <Text fw={500} mt="sm" lineClamp={2}>
-                    {relatedStory.title}
-                  </Text>
-                </Card>
-              ))}
-            </SimpleGrid>
-          </Box>
-        )}
-
-        {/* Back Button */}
-        <Group justify="center" mt="xl">
-          <Button
-            variant="outline"
-            leftSection={<IconArrowLeft size={16} />}
-            onClick={() => router.push('/success-stories')}
-          >
-            Back to All Stories
-          </Button>
-        </Group>
       </Container>
     </main>
   );

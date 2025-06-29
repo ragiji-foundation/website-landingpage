@@ -1,32 +1,64 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { Container, SimpleGrid, Text, Title, Skeleton, rem, Center } from '@mantine/core';
+import { Container } from '@mantine/core';
 import { motion, useScroll, useTransform } from 'framer-motion';
+import { useLanguage } from '@/context/LanguageContext';
+import { IconUsers, IconAward, IconBuildingBank, IconHeartHandshake } from '@tabler/icons-react';
 import classes from './stats-section.module.css';
 
 interface Stat {
-  id: number;
+  id: string;
   value: string;
   label: string;
+  labelHi?: string | null;
+  icon?: string;
   order: number;
+}
+
+const statIcons: Record<string, React.ReactNode> = {
+  users: <IconUsers size={40} stroke={1.5} />,
+  award: <IconAward size={40} stroke={1.5} />,
+  community: <IconBuildingBank size={40} stroke={1.5} />,
+  impact: <IconHeartHandshake size={40} stroke={1.5} />,
+};
+
+function AnimatedNumber({ value }: { value: string }) {
+  const [display, setDisplay] = useState('0');
+  useEffect(() => {
+    const start = 0;
+    const end = parseInt(value.replace(/\D/g, '')) || 0;
+    if (isNaN(end) || end === 0) {
+      setDisplay(value);
+      return;
+    }
+    let current = start;
+    const duration = 1200;
+    const step = Math.ceil(end / (duration / 16));
+    const interval = setInterval(() => {
+      current += step;
+      if (current >= end) {
+        setDisplay(value);
+        clearInterval(interval);
+      } else {
+        setDisplay(current.toLocaleString() + value.replace(/\d/g, ''));
+      }
+    }, 16);
+    return () => clearInterval(interval);
+  }, [value]);
+  return <span>{display}</span>;
 }
 
 export default function StatsSection() {
   const [stats, setStats] = useState<Stat[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const { scrollYProgress } = useScroll();
-  const opacity = useTransform(scrollYProgress, [0, 0.5], [0, 1]);
+  const { language } = useLanguage();
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        setError(null);
-
-        // Add timeout to fetch
+        setLoading(true);
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
-
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
         const response = await fetch('https://admin.ragijifoundation.com/api/stats', {
           signal: controller.signal,
           headers: {
@@ -34,46 +66,21 @@ export default function StatsSection() {
             'Cache-Control': 'no-cache',
           },
         });
-
         clearTimeout(timeoutId);
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         setStats(data);
       } catch (error) {
-        console.error('Error fetching stats:', error);
-
-        // Fallback to default stats if API fails
         setStats([
-          { id: 1, value: '10K+', label: 'Lives Impacted', order: 0 },
-          { id: 2, value: '50+', label: 'Projects', order: 1 },
-          { id: 3, value: '20+', label: 'Communities', order: 2 },
+          { id: '1', value: '10K+', label: 'Lives Impacted', labelHi: 'प्रभावित जीवन', icon: 'impact', order: 0 },
+          { id: '2', value: '50+', label: 'Projects', labelHi: 'परियोजनाएं', icon: 'award', order: 1 },
+          { id: '3', value: '20+', label: 'Communities', labelHi: 'समुदाय', icon: 'community', order: 2 },
         ]);
-
-        // Only show error in console, don't break UI
-        console.error(error instanceof Error ? error.message : 'Failed to load stats');
       } finally {
         setLoading(false);
       }
     };
-
-    // Implement retry logic
-    const attemptFetch = async (retries = 3, delay = 1000) => {
-      for (let i = 0; i < retries; i++) {
-        try {
-          await fetchStats();
-          return;
-        } catch (error) {
-          if (i === retries - 1) throw error;
-          await new Promise(resolve => setTimeout(resolve, delay));
-        }
-      }
-    };
-
-    attemptFetch();
+    fetchStats();
   }, []);
 
   if (loading) {
@@ -82,8 +89,9 @@ export default function StatsSection() {
         <div className={classes.statsGrid}>
           {[...Array(3)].map((_, i) => (
             <div key={i} className={classes.statCard}>
-              <Skeleton height={60} mb="md" radius="md" />
-              <Skeleton height={24} width="70%" radius="md" />
+              <div className={classes.skeletonIcon} />
+              <div className={classes.skeletonValue} />
+              <div className={classes.skeletonLabel} />
             </div>
           ))}
         </div>
@@ -94,23 +102,20 @@ export default function StatsSection() {
   return (
     <Container size="lg" py={80}>
       <div className={classes.statsGrid}>
-        {stats.map((stat, index) => (
-          <motion.div
-            key={stat.id}
-            className={classes.statCard}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{
-              duration: 0.5,
-              delay: index * 0.1,
-              ease: [0.22, 1, 0.36, 1]
-            }}
-          >
-            <Text className={classes.value}>{stat.value}</Text>
-            <Text className={classes.label}>{stat.label}</Text>
-          </motion.div>
-        ))}
+        {stats.map((stat, index) => {
+          const label = language === 'hi' && stat.labelHi ? stat.labelHi : stat.label;
+          const fontFamily = language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit';
+          const icon = stat.icon && statIcons[stat.icon] ? statIcons[stat.icon] : <IconAward size={40} stroke={1.5} />;
+          return (
+            <div key={stat.id} className={classes.statCard} style={{ animationDelay: `${index * 0.1}s` }}>
+              <div className={classes.iconWrapper}>{icon}</div>
+              <div className={classes.value} style={{ fontFamily }}>
+                <AnimatedNumber value={stat.value} />
+              </div>
+              <div className={classes.label} style={{ fontFamily }}>{label}</div>
+            </div>
+          );
+        })}
       </div>
     </Container>
   );

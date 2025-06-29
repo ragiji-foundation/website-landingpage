@@ -1,28 +1,35 @@
 'use client';
-import { useEffect } from 'react';
-import { useBannerStore, BannerType } from '@/store/useBannerStore';
 
-/**
- * Custom hook to fetch and retrieve banner data
- * This abstracts the banner fetching logic to prevent infinite re-renders
- * @param type The banner type to retrieve
- * @param autoFetch Whether to automatically fetch banners
- */
-export function useBanner(type: BannerType | string, autoFetch = true) {
-  const { fetchBanners, getBannerByType, loading, error } = useBannerStore();
+import { useEffect, useState } from 'react';
+import { useBannerStore } from '@/store/useBannerStore';
+import { BannerType } from '@/types/banner';
 
+export function useBanner(type: BannerType | string) {
+  const { getBannerByType, fetchBanners } = useBannerStore();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  
   useEffect(() => {
-    if (autoFetch) {
-      fetchBanners();
-    }
-  }, [fetchBanners, autoFetch]);
-
-  const banner = getBannerByType(type);
-
+    const loadBanner = async () => {
+      try {
+        setLoading(true);
+        await fetchBanners();
+        setLoading(false);
+      } catch (err) {
+        console.error(`Error loading ${type} banner:`, err);
+        setError(err instanceof Error ? err : new Error(String(err)));
+        setLoading(false);
+      }
+    };
+    
+    loadBanner();
+  }, [fetchBanners, type]);
+  
+  const banner = getBannerByType(type as BannerType);
+  
   return {
     banner,
     loading,
-    error,
-    fetchBanners
+    error
   };
 }

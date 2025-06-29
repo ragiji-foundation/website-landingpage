@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <rect width="800" height="600" fill="#f8f9fa"/>
+  <rect x="0" y="0" width="800" height="600" fill="#e9ecef" opacity="0.8"/>
+  
+  <!-- School building -->
+  <rect x="100" y="200" width="300" height="250" fill="#adb5bd"/>
+  <rect x="150" y="300" width="70" height="150" fill="#6c757d"/>
+  <rect x="280" y="300" width="70" height="100" fill="#6c757d"/>
+  <rect x="140" y="150" width="220" height="50" fill="#6c757d"/>
+  
+  <!-- Children -->
+  <circle cx="500" cy="350" r="30" fill="#ff6b6b"/>
+  <circle cx="550" cy="380" r="30" fill="#339af0"/>
+  <circle cx="600" cy="350" r="30" fill="#20c997"/>
+  <circle cx="650" cy="380" r="30" fill="#fcc419"/>
+  
+  <!-- Books -->
+  <rect x="500" cy="450" width="150" height="30" fill="#cc5de8"/>
+  <rect x="520" cy="480" width="150" height="30" fill="#51cf66"/>
+  <rect x="540" cy="510" width="150" height="30" fill="#339af0"/>
+  
+  <!-- Title -->
+  <text x="400" y="80" font-family="Arial" font-size="32" font-weight="bold" text-anchor="middle" fill="#343a40">Education For All</text>
+  <text x="400" y="120" font-family="Arial" font-size="20" text-anchor="middle" fill="#495057">Bridging the educational divide</text>
+</svg>

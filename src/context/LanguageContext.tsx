@@ -111,6 +111,12 @@ export function LanguageProvider({ children, initialLocale = 'en' }: { children:
     console.log(`Setting language to: ${lang}`);
     setLanguage(lang);
     
+    // Trigger re-fetch of data for all stores with new locale
+    if (typeof window !== 'undefined') {
+      // Force refresh of store data with new locale
+      window.dispatchEvent(new CustomEvent('locale-changed', { detail: { locale: lang } }));
+    }
+    
     // Don't navigate here - let the component handle navigation
     // This prevents double navigation issues
   };
