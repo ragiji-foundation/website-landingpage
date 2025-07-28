@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { Feature } from '@/types/features';
+import { Feature } from '@/types/feature';
+import { apiClient, safeApiCall } from '@/utils/api-client';
 
 interface FeaturesState {
   features: Feature[];
@@ -9,27 +10,45 @@ interface FeaturesState {
   fetchFeatures: (locale?: string) => Promise<void>;
 }
 
+// Fallback data
+const fallbackFeatures: Feature[] = [
+  {
+    id: '1',
+    title: 'Quality Education',
+    description: 'Providing quality education to all children.',
+    slug: 'quality-education',
+    category: 'education',
+    order: 1,
+    mediaItem: {
+      type: 'image',
+      url: '/images/education-feature.jpg',
+      thumbnail: '/images/education-feature-thumb.jpg'
+    },
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  }
+];
+
 export const useFeaturesStore = create<FeaturesState>()(
   devtools((set) => ({
     features: [],
     loading: false,
     error: null,
     fetchFeatures: async (locale = 'en') => {
-      try {
-        set({ loading: true, error: null });
-        const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/api/features?locale=${locale}`);
-        if (!response.ok) throw new Error('Failed to fetch features');
-
-        const data = await response.json();
-        set({ features: data, loading: false });
-      } catch (error) {
-        console.error('Error fetching features:', error);
-        set({
-          features: [],
-          error: error as Error,
-          loading: false
-        });
-      }
+      set({ loading: true, error: null });
+      
+      const features = await safeApiCall(
+        () => apiClient.get<Feature[]>('/features', fallbackFeatures, { locale }),
+        fallbackFeatures,
+        'features'
+      );
+      
+      set({ 
+        features: features.filter(f => f.isPublished).sort((a, b) => a.order - b.order), 
+        loading: false,
+        error: null
+      });
     }
   }))
 );

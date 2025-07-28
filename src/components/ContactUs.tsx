@@ -11,9 +11,9 @@ import {
 } from '@mantine/core';
 import { ContactIconsList } from './ContactIcons';
 import { useLanguage } from '@/context/LanguageContext';
+import { apiClient, safeApiCall } from '@/utils/api-client';
 import classes from './ContactUs.module.css';
 import { useState } from 'react';
-import axios from 'axios';
 
 export function ContactUs() {
   const { t } = useLanguage();
@@ -37,7 +37,11 @@ export function ContactUs() {
     setSubmitStatus({ type: null, message: '' });
 
     try {
-      await axios.post('https://admin.ragijifoundation.com/api/contact', formData);
+      await safeApiCall(
+        () => apiClient.post('/contact', formData),
+        null,
+        'contact form'
+      );
 
       setSubmitStatus({
         type: 'success',

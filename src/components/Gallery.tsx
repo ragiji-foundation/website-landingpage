@@ -4,6 +4,7 @@ import { Container, Title, SimpleGrid, Card, Image, Text, Badge, Button, Group }
 import Link from 'next/link';
 import { IconPhoto } from '@tabler/icons-react';
 import { GallerySkeleton } from './skeletons/GallerySkeleton';
+import { apiClient, safeApiCall } from '@/utils/api-client';
 import classes from './Gallery.module.css';
 
 interface GalleryItem {
@@ -31,7 +32,7 @@ export  default function Gallery({ type = 'grid' }: GalleryProps) {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 5000);
 
-        const response = await fetch('https://admin.ragijifoundation.com/api/gallery', {
+        const response = await fetch('/api/gallery', {
           signal: controller.signal,
           headers: {
             'Accept': 'application/json',

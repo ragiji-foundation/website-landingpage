@@ -4,6 +4,7 @@ import { Container } from '@mantine/core';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useLanguage } from '@/context/LanguageContext';
 import { IconUsers, IconAward, IconBuildingBank, IconHeartHandshake } from '@tabler/icons-react';
+import { apiClient, safeApiCall } from '@/utils/api-client';
 import classes from './stats-section.module.css';
 
 interface Stat {
@@ -14,6 +15,13 @@ interface Stat {
   icon?: string;
   order: number;
 }
+
+// Fallback stats data
+const fallbackStats: Stat[] = [
+  { id: '1', value: '10K+', label: 'Lives Impacted', labelHi: 'प्रभावित जीवन', icon: 'impact', order: 0 },
+  { id: '2', value: '50+', label: 'Projects', labelHi: 'परियोजनाएं', icon: 'award', order: 1 },
+  { id: '3', value: '20+', label: 'Communities', labelHi: 'समुदाय', icon: 'community', order: 2 },
+];
 
 const statIcons: Record<string, React.ReactNode> = {
   users: <IconUsers size={40} stroke={1.5} />,
@@ -57,25 +65,17 @@ export default function StatsSection() {
     const fetchStats = async () => {
       try {
         setLoading(true);
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
-        const response = await fetch('https://admin.ragijifoundation.com/api/stats', {
-          signal: controller.signal,
-          headers: {
-            'Accept': 'application/json',
-            'Cache-Control': 'no-cache',
-          },
-        });
-        clearTimeout(timeoutId);
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        const data = await response.json();
-        setStats(data);
+        
+        const stats = await safeApiCall(
+          () => apiClient.get<Stat[]>('/stats', fallbackStats),
+          fallbackStats,
+          'stats'
+        );
+        
+        setStats(stats);
       } catch (error) {
-        setStats([
-          { id: '1', value: '10K+', label: 'Lives Impacted', labelHi: 'प्रभावित जीवन', icon: 'impact', order: 0 },
-          { id: '2', value: '50+', label: 'Projects', labelHi: 'परियोजनाएं', icon: 'award', order: 1 },
-          { id: '3', value: '20+', label: 'Communities', labelHi: 'समुदाय', icon: 'community', order: 2 },
-        ]);
+        console.error('Error fetching stats:', error);
+        setStats(fallbackStats);
       } finally {
         setLoading(false);
       }

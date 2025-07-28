@@ -3,7 +3,7 @@
  */
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { safeFetch } from '@/utils/api-config';
+import { apiClient, safeApiCall } from '@/utils/api-client';
 
 export interface GalleryItem {
   id: string | number;
@@ -118,25 +118,15 @@ export const useGalleryStore = create<GalleryStore>()(
       fetchGalleryItems: async () => {
         set({ loading: true, error: null });
         
-        const { data, error, fromFallback } = await safeFetch<GalleryItem[]>(
-          'https://admin.ragijifoundation.com/api/gallery',
+        const galleryData = await safeApiCall(
+          () => apiClient.get<GalleryItem[]>('/gallery', fallbackGalleryItems),
           fallbackGalleryItems,
-          { method: 'GET' }
+          'gallery'
         );
-        
-        if (error) {
-          console.warn(`Error fetching gallery items: ${error.message}`);
-          set({ 
-            galleryItems: data,
-            error,
-            loading: false 
-          });
-          return;
-        }
         
         try {
           // Process and transform the data if needed
-          const processedItems = data.map(item => ({
+          const processedItems = galleryData.map((item: GalleryItem) => ({
             ...item,
             // Ensure id is a string for consistency
             id: String(item.id),
@@ -147,19 +137,15 @@ export const useGalleryStore = create<GalleryStore>()(
           }));
           
           // Sort gallery items by date (newest first)
-          const sortedItems = [...processedItems].sort((a, b) => {
+          const sortedItems = [...processedItems].sort((a: GalleryItem, b: GalleryItem) => {
             const dateA = a.date || a.createdAt || '';
             const dateB = b.date || b.createdAt || '';
             return new Date(dateB).getTime() - new Date(dateA).getTime();
           });
           
-          if (fromFallback) {
-            console.log('Using fallback data for gallery items');
-          } else {
-            console.log(`Loaded ${sortedItems.length} gallery items from API`);
-          }
+          console.log(`Loaded ${sortedItems.length} gallery items`);
           
-          set({ galleryItems: sortedItems, loading: false });
+          set({ galleryItems: sortedItems, loading: false, error: null });
         } catch (processingError) {
           console.error('Error processing gallery items:', processingError);
           set({ 

@@ -33,7 +33,7 @@ export const useOurStoryStore = create<OurStoryState>()(
       fetchStory: async (locale = 'en') => {
         set({ loading: true, error: null });
         try {
-          const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/api/our-story?locale=${locale}`);
+          const response = await fetch(`/api/our-story?locale=${locale}`);
           if (!response.ok) throw new Error('Failed to fetch story');
           const data = await response.json();
           set({ data: { ...data, locale }, loading: false });

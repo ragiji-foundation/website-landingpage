@@ -2,8 +2,13 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
+    const ADMIN_API_URL = process.env.NEXT_PUBLIC_ADMIN_API_URL;
+    if (!ADMIN_API_URL) {
+      throw new Error('Admin API URL not configured');
+    }
+
     // Make the request from the server side
-    const response = await fetch('https://admin.ragijifoundation.com/api/features', {
+    const response = await fetch(`${ADMIN_API_URL}/api/features`, {
       headers: {
         'Content-Type': 'application/json',
       },

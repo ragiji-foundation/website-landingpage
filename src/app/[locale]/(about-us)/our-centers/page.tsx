@@ -4,7 +4,6 @@ import { Container, Title, Grid, Card, Text, Group, Image, Badge, Button, Stack 
 import { Banner } from '@/components/Banner';
 import { useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { withLocalizedArray } from '@/utils/localization';
 import Link from 'next/link';
 import { useBannerStore } from '@/store/useBannerStore';
 import { useCentersStore } from '@/store/useCentersStore';
@@ -14,15 +13,17 @@ export default function OurCentersPage() {
   const params = useParams();
   const locale = params.locale as string || 'en';
   const { fetchBanners, getBannerByType } = useBannerStore();
-  const { centers, loading, error, fetchCenters } = useCentersStore();
+  const { centers, loading, error, fetchCenters, getLocalizedCenters } = useCentersStore();
   
   useEffect(() => {
     fetchBanners();
     fetchCenters();
   }, [fetchBanners, fetchCenters]);
   
-  // Get localized centers
-  const localizedCenters = withLocalizedArray(centers, locale);
+  // Get localized centers with proper error handling
+  const localizedCenters = centers && Array.isArray(centers) 
+    ? getLocalizedCenters(locale) 
+    : [];
   
   // Get banner
   const banner = getBannerByType('centers');

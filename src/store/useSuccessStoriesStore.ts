@@ -3,7 +3,7 @@
  */
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { safeFetch } from '@/utils/api-config';
+import { apiClient, safeApiCall } from '@/utils/api-client';
 
 export interface SuccessStory {
   id: string;
@@ -20,9 +20,32 @@ export interface SuccessStory {
   order: number;
   createdAt: string;
   updatedAt: string;
+  isPublished: boolean;
   // Generated fields
   slug?: string;
 }
+
+// Fallback data
+const fallbackStories: SuccessStory[] = [
+  {
+    id: '1',
+    title: 'From Streets to Success',
+    titleHi: 'सड़कों से सफलता तक',
+    content: 'A journey of transformation and hope.',
+    contentHi: 'परिवर्तन और आशा की यात्रा।',
+    personName: 'Rajesh Kumar',
+    personNameHi: 'राजेश कुमार',
+    location: 'Delhi',
+    locationHi: 'दिल्ली',
+    imageUrl: '/images/success-story-1.jpg',
+    featured: true,
+    order: 1,
+    slug: 'from-streets-to-success',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    isPublished: true
+  }
+];
 
 interface SuccessStoriesState {
   stories: SuccessStory[];
@@ -47,19 +70,14 @@ export const useSuccessStoriesStore = create<SuccessStoriesState>()(
         set({ loading: true, error: null });
         
         try {
-          const { data, error } = await safeFetch<SuccessStory[]>(
-            'https://admin.ragijifoundation.com/api/success-stories',
-            [],
-            { method: 'GET' }
+          const stories = await safeApiCall(
+            () => apiClient.get<SuccessStory[]>('/success-stories', fallbackStories),
+            fallbackStories,
+            'success-stories'
           );
 
-          if (error) {
-            set({ error, loading: false });
-            return;
-          }
-
           // Process stories to add slugs
-          const processedStories = data.map(story => ({
+          const processedStories = stories.map((story: SuccessStory) => ({
             ...story,
             slug: story.title
               .toLowerCase()
@@ -68,7 +86,7 @@ export const useSuccessStoriesStore = create<SuccessStoriesState>()(
           }));
 
           // Sort stories: featured first, then by order, then by date
-          const sortedStories = processedStories.sort((a, b) => {
+          const sortedStories = processedStories.sort((a: SuccessStory, b: SuccessStory) => {
             if (a.featured !== b.featured) return a.featured ? -1 : 1;
             if (a.order !== b.order) return a.order - b.order;
             return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();

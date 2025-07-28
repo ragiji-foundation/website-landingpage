@@ -153,21 +153,54 @@ export default function TheNeedPage() {
   const { fetchBanners, getBannerByType } = useBannerStore();
   const { needData, loading, error, fetchNeedData } = useTheNeedStore();
   
+  // Get banner for this page
+  const banner = getBannerByType('need');
+  
+  // Force debug output at render
+  console.log('COMPONENT RENDER DEBUG:', {
+    needData,
+    loading,
+    error,
+    banner,
+    locale
+  });
+  
   // Get translations from dictionary
   const { dictionary } = useDictionary();
   const t = dictionary?.theneed || {};
   const common = dictionary?.common || {};
   
   useEffect(() => {
-    fetchBanners();
-    fetchNeedData();
-  }, [fetchBanners, fetchNeedData]);
+    console.log('🔥 useEffect starting, calling fetchBanners and fetchNeedData');
+    
+    // Force fetch even if we have fallback data
+    const forceFetch = async () => {
+      await fetchBanners();
+      console.log('📞 About to call fetchNeedData...');
+      await fetchNeedData();
+      console.log('✅ fetchNeedData completed');
+    };
+    
+    forceFetch();
+    
+    console.log('useEffect triggered, stores state:', {
+      needData: needData,
+      loading: loading,
+      banner: banner
+    });
+  }, []);
   
   // Process the fetched data
   const localizedNeedData = needData ? withLocalization(needData, locale) : null;
   
-  // Get banner
-  const banner = getBannerByType('the-need');
+  // Debug logging
+  console.log('TheNeedPage Debug:', {
+    needData: !!needData,
+    localizedNeedData: !!localizedNeedData,
+    loading,
+    error: !!error,
+    banner: !!banner
+  });
   
   if (loading) {
     return (
@@ -177,13 +210,68 @@ export default function TheNeedPage() {
     );
   }
   
-  if (error || !localizedNeedData) {
+  // More defensive error checking - only show error if we have an actual error AND no data
+  if (error && !localizedNeedData) {
     return (
       <Container py="xl">
         <Text ta="center" c="red">
           {common?.errorMessage || 'Error loading content. Please try again later.'}
         </Text>
       </Container>
+    );
+  }
+  
+  // If we have no data at all (shouldn't happen with fallback), create minimal fallback
+  if (!localizedNeedData) {
+    const minimalFallback = {
+      id: '1',
+      title: locale === 'hi' ? 'आवश्यकता' : 'The Need',
+      mainText: locale === 'hi' 
+        ? 'रागिजी फाउंडेशन में, हमारा मिशन वंचित समुदायों में शैक्षिक असमानताओं को दूर करने की तत्काल आवश्यकता से प्रेरित है।'
+        : 'At RAGIJI Foundation, our mission is driven by the urgent need to address educational disparities in underserved communities.',
+      statistics: locale === 'hi'
+        ? 'वंचित समुदायों में 30% से अधिक बच्चों को बुनियादी शिक्षा तक पहुंच नहीं है।'
+        : 'Over 30% of children in underserved communities lack access to basic education.',
+      impact: locale === 'hi'
+        ? 'अपनी स्थापना के बाद से, रागिजी फाउंडेशन ने इन चुनौतियों का समाधान करने में महत्वपूर्ण प्रगति की है।'
+        : 'Since our founding, RAGIJI Foundation has made significant progress in addressing these challenges.',
+      imageUrl: '/images/the-need.svg',
+      statsImageUrl: '/images/statistics-chart.svg'
+    };
+    
+    return (
+      <main>
+        {banner ? (
+          <LocalizedBanner
+            banner={banner}
+            breadcrumbs={[
+              { label: common?.home || 'Home', link: `/${locale}` },
+              { label: t?.title || 'The Need' }
+            ]}
+          />
+        ) : (
+          <Banner
+            type="need"
+            title={locale === 'hi' ? 'आवश्यकता' : 'The Need'}
+            backgroundImage="/banners/need-banner.jpg"
+            breadcrumbs={[
+              { label: common?.home || 'Home', link: `/${locale}` },
+              { label: t?.title || 'The Need' }
+            ]}
+          />
+        )}
+        
+        <Container size="xl" py="xl">
+          <Stack gap="xl">
+            <Title order={2} ta="center">
+              {minimalFallback.title}
+            </Title>
+            <Text size="lg" ta="center">
+              {minimalFallback.mainText}
+            </Text>
+          </Stack>
+        </Container>
+      </main>
     );
   }
   

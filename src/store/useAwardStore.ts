@@ -15,7 +15,7 @@ export const useAwardStore = create<AwardState>((set) => ({
   fetchAwards: async (locale = 'en') => {
     try {
       set({ loading: true, error: null });
-      const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/api/awards?locale=${locale}`);
+      const response = await fetch(`/api/awards?locale=${locale}`);
       if (!response.ok) throw new Error('Failed to fetch awards');
       const data = await response.json();
       set({ awards: data, loading: false });

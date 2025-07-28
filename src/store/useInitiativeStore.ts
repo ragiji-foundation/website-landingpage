@@ -15,7 +15,7 @@ export const useInitiativeStore = create<InitiativeState>((set) => ({
   fetchInitiatives: async (locale = 'en') => {
     try {
       set({ loading: true, error: null });
-      const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/api/initiatives?locale=${locale}`);
+      const response = await fetch(`/api/initiatives?locale=${locale}`);
       if (!response.ok) throw new Error('Failed to fetch initiatives');
       const data = await response.json();
       set({ initiatives: data, loading: false });

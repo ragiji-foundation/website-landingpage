@@ -84,11 +84,12 @@ interface TheNeedStore {
 export const useTheNeedStore = create<TheNeedStore>()(
   devtools(
     (set, get) => ({
-      needData: null,
+      needData: fallbackNeedData, // Start with fallback data instead of null
       loading: false,
       error: null,
       
       fetchNeedData: async () => {
+        console.log('🚀 fetchNeedData called');
         set({ loading: true, error: null });
         
         const { data, error, fromFallback } = await safeFetch<TheNeedData>(
@@ -96,6 +97,8 @@ export const useTheNeedStore = create<TheNeedStore>()(
           fallbackNeedData,
           { method: 'GET' }
         );
+        
+        console.log('📦 fetchNeedData result:', { data, error, fromFallback });
         
         if (error) {
           console.warn(`Error fetching the-need data: ${error.message}`);
@@ -114,12 +117,19 @@ export const useTheNeedStore = create<TheNeedStore>()(
         }
         
         set({ needData: data, loading: false });
+        console.log('✅ Store updated with data');
       },
       
       getLocalizedNeedData: (locale: string) => {
         const { needData } = get();
-        if (!needData) return null;
-        return withLocalization(needData, locale) as TheNeedData;
+        console.log('🌐 getLocalizedNeedData called with:', { locale, needData });
+        if (!needData) {
+          console.log('❌ needData is null/undefined');
+          return null;
+        }
+        const localized = withLocalization(needData, locale) as TheNeedData;
+        console.log('🔄 Localized result:', localized);
+        return localized;
       }
     }),
     { name: 'the-need-store' }

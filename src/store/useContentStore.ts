@@ -3,6 +3,7 @@ import { devtools } from 'zustand/middleware';
 import { Initiative } from '@/types/initiative';
 import { Testimonial } from '@/types/testimonial';
 import { GalleryItem } from '@/types/gallery';
+import { apiClient, safeApiCall } from '@/utils/api-client';
 
 interface NewsArticle {
   id: number;
@@ -27,8 +28,65 @@ interface ElectronicMedia {
   order: number;
 }
 
+// Fallback data
+const fallbackInitiatives: Initiative[] = [
+  {
+    id: '1',
+    title: 'Education for All',
+    description: 'Providing quality education to underprivileged children.',
+    imageUrl: '/images/education.jpg',
+    order: 1,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  }
+];
 
+const fallbackTestimonials: Testimonial[] = [
+  {
+    id: '1',
+    name: 'Rahul Kumar',
+    role: 'Parent',
+    content: 'Ragiji Foundation has transformed my child\'s future.',
+    imageUrl: '/images/testimonial1.jpg',
+    order: 1
+  }
+];
 
+const fallbackGallery: GalleryItem[] = [
+  {
+    id: '1',
+    title: 'Education Program',
+    description: 'Students in our education program',
+    imageUrl: '/images/gallery1.jpg',
+    category: 'education',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  }
+];
+
+const fallbackNews: NewsArticle[] = [
+  {
+    id: 1,
+    title: 'Foundation Launches New Education Initiative',
+    titleHi: 'फाउंडेशन ने नई शिक्षा पहल शुरू की',
+    source: 'Local News',
+    date: new Date().toISOString(),
+    description: 'A new education program for rural children.',
+    descriptionHi: 'ग्रामीण बच्चों के लिए एक नया शिक्षा कार्यक्रम।'
+  }
+];
+
+const fallbackElectronicMedia: ElectronicMedia[] = [
+  {
+    id: 1,
+    title: 'Foundation Impact Video',
+    titleHi: 'फाउंडेशन प्रभाव वीडियो',
+    description: 'See our impact in the community',
+    descriptionHi: 'समुदाय में हमारा प्रभाव देखें',
+    videoUrl: '/videos/impact.mp4',
+    order: 1
+  }
+];
 
 interface ContentState {
   initiatives: Initiative[];
@@ -62,72 +120,86 @@ export const useContentStore = create<ContentState>()(
 
     fetchInitiatives: async () => {
       const locale = get().locale;
+      set({ loading: true, error: null });
+      
       try {
-        set({ loading: true });
-        const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/api/initiatives?locale=${locale}`);
-        if (!response.ok) throw new Error('Failed to fetch initiatives');
-        const data = await response.json();
-        set((state) => ({ ...state, initiatives: data, loading: false }));
+        const initiatives = await safeApiCall(
+          () => apiClient.get<Initiative[]>('/initiatives', fallbackInitiatives, { locale }),
+          fallbackInitiatives,
+          'initiatives'
+        );
+        set({ initiatives, loading: false });
       } catch (error) {
         console.error('Error fetching initiatives:', error);
-        // Use locale-specific data if available, otherwise use English data
-        set({ initiatives: [], loading: false });
+        set({ initiatives: fallbackInitiatives, loading: false });
       }
     },
 
     fetchTestimonials: async () => {
       const locale = get().locale;
+      set({ loading: true, error: null });
+      
       try {
-        set({ loading: true });
-        const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/testimonials?locale=${locale}`);
-        if (!response.ok) throw new Error('Failed to fetch testimonials');
-        const data = await response.json();
-        set((state) => ({ ...state, testimonials: data, loading: false }));
+        const testimonials = await safeApiCall(
+          () => apiClient.get<Testimonial[]>('/testimonials', fallbackTestimonials, { locale }),
+          fallbackTestimonials,
+          'testimonials'
+        );
+        set({ testimonials, loading: false });
       } catch (error) {
         console.error('Error fetching testimonials:', error);
-        set({ testimonials: [], loading: false });
+        set({ testimonials: fallbackTestimonials, loading: false });
       }
     },
 
     fetchGallery: async () => {
       const locale = get().locale;
+      set({ loading: true, error: null });
+      
       try {
-        set({ loading: true });
-        const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/gallery?locale=${locale}`);
-        if (!response.ok) throw new Error('Failed to fetch gallery');
-        const data = await response.json();
-        set((state) => ({ ...state, gallery: data, loading: false }));
+        const gallery = await safeApiCall(
+          () => apiClient.get<GalleryItem[]>('/gallery', fallbackGallery, { locale }),
+          fallbackGallery,
+          'gallery'
+        );
+        set({ gallery, loading: false });
       } catch (error) {
         console.error('Error fetching gallery:', error);
-        set({ gallery: [], loading: false });
+        set({ gallery: fallbackGallery, loading: false });
       }
     },
 
     fetchNews: async () => {
       const locale = get().locale;
+      set({ loading: true, error: null });
+      
       try {
-        set({ loading: true });
-        const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/news?locale=${locale}`);
-        if (!response.ok) throw new Error('Failed to fetch news');
-        const data = await response.json();
-        set((state) => ({ ...state, news: data, loading: false }));
+        const news = await safeApiCall(
+          () => apiClient.get<NewsArticle[]>('/news-articles', fallbackNews, { locale }),
+          fallbackNews,
+          'news'
+        );
+        set({ news, loading: false });
       } catch (error) {
         console.error('Error fetching news:', error);
-        set((state) => ({ ...state, loading: false }));
+        set({ news: fallbackNews, loading: false });
       }
     },
 
     fetchElectronicMedia: async () => {
       const locale = get().locale;
+      set({ loading: true, error: null });
+      
       try {
-        set({ loading: true });
-        const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/electronic-media?locale=${locale}`);
-        if (!response.ok) throw new Error('Failed to fetch electronic media');
-        const data = await response.json();
-        set((state) => ({ ...state, electronicMedia: data, loading: false }));
+        const electronicMedia = await safeApiCall(
+          () => apiClient.get<ElectronicMedia[]>('/electronic-media', fallbackElectronicMedia, { locale }),
+          fallbackElectronicMedia,
+          'electronic-media'
+        );
+        set({ electronicMedia, loading: false });
       } catch (error) {
         console.error('Error fetching electronic media:', error);
-        set((state) => ({ ...state, loading: false }));
+        set({ electronicMedia: fallbackElectronicMedia, loading: false });
       }
     }
   }))

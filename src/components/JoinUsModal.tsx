@@ -12,7 +12,7 @@ import {
 } from '@mantine/core';
 import { useState } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
-import axios from 'axios';
+import { apiClient, safeApiCall } from '@/utils/api-client';
 import classes from './JoinUsModal.module.css';
 
 interface JoinUsModalProps {
@@ -50,37 +50,33 @@ export function JoinUsModal({ opened, onClose }: JoinUsModalProps) {
     setStatus({ type: null, message: '' });
 
     try {
-      const response = await axios.post('https://admin.ragijifoundation.com/api/join-us', formData);
+      await safeApiCall(
+        () => apiClient.post('/join-us', formData),
+        null,
+        'join us form'
+      );
 
-      if (response.status === 201) { // Check for successful response
-        setStatus({
-          type: 'success',
-          message: t('joinus.form.success') || 'Thank you for your interest! We will contact you shortly.',
-        });
+      setStatus({
+        type: 'success',
+        message: t('joinus.form.success') || 'Thank you for your interest! We will contact you shortly.',
+      });
 
-        // Clear form after success
-        setFormData({
-          name: '',
-          email: '',
-          phone: '',
-          role: '',
-          message: '',
-        });
+      // Clear form after success
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        role: '',
+        message: '',
+      });
 
-        setTimeout(onClose, 2000); // Close modal after success
-      } else {
-        throw new Error('Unexpected response from server');
-      }
+      setTimeout(onClose, 2000); // Close modal after success
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error("Form submission error:", error.response?.data || error.message);
-      } else {
-        console.error("Form submission error:", error);
-      }
+      console.error("Form submission error:", error);
 
       setStatus({
         type: 'error',
-        message: axios.isAxiosError(error) && error.response?.data?.error ? error.response.data.error : t('joinus.form.error') || 'Failed to submit. Please try again.',
+        message: t('joinus.form.error') || 'Failed to submit. Please try again.',
       });
     } finally {
       setIsSubmitting(false);

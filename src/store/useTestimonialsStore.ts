@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { apiClient, safeApiCall } from '@/utils/api-client';
 
 interface Testimonial {
   id: number;
@@ -20,28 +21,40 @@ interface TestimonialsState {
   fetchTestimonials: (locale?: string) => Promise<void>;
 }
 
+// Fallback data
+const fallbackTestimonials: Testimonial[] = [
+  {
+    id: 1,
+    name: 'Rahul Kumar',
+    nameHi: 'राहुल कुमार',
+    role: 'Parent',
+    roleHi: 'अभिभावक',
+    content: 'Ragiji Foundation has transformed my child\'s future through quality education.',
+    contentHi: 'रागी जी फाउंडेशन ने गुणवत्तापूर्ण शिक्षा के माध्यम से मेरे बच्चे का भविष्य बदल दिया है।',
+    avatar: '/images/testimonial1.jpg',
+    isPublished: true,
+    createdAt: new Date().toISOString()
+  }
+];
+
 export const useTestimonialsStore = create<TestimonialsState>((set) => ({
   items: [],
   loading: false,
   error: null,
   fetchTestimonials: async (locale = 'en') => {
-    try {
-      set({ loading: true, error: null });
-      const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/api/testimonials?locale=${locale}`);
-
-      if (!response.ok) throw new Error('Failed to fetch testimonials');
-
-      const data = await response.json();
-      set({ items: data.filter((item: Testimonial) => item.isPublished) });
-    } catch (error) {
-      console.error('Error fetching testimonials:', error);
-      set({
-        items: [],
-        error: error as Error
-      });
-    } finally {
-      set({ loading: false });
-    }
+    set({ loading: true, error: null });
+    
+    const testimonials = await safeApiCall(
+      () => apiClient.get<Testimonial[]>('/testimonials', fallbackTestimonials, { locale }),
+      fallbackTestimonials,
+      'testimonials'
+    );
+    
+    set({ 
+      items: testimonials.filter((item: Testimonial) => item.isPublished), 
+      loading: false,
+      error: null
+    });
   },
 }));
 

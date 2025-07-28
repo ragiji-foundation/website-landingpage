@@ -15,7 +15,7 @@ export const useCenterStore = create<CenterState>((set) => ({
   fetchCenters: async (locale = 'en') => {
     try {
       set({ loading: true, error: null });
-      const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL}/api/centers?locale=${locale}`);
+      const response = await fetch(`/api/centers?locale=${locale}`);
       if (!response.ok) throw new Error('Failed to fetch centers');
       const data = await response.json();
       set({ centers: data, loading: false });

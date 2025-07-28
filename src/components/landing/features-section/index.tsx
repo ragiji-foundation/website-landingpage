@@ -42,6 +42,8 @@ interface FeaturesSectionProps {
   titleStyles?: React.CSSProperties;
 }
 
+import { apiClient, safeApiCall } from '@/utils/api-client';
+
 function FeaturesSection({ heading, ctaButton }: FeaturesSectionProps) {
   const [features, setFeatures] = useState<Feature[]>([]);
   const [loading, setLoading] = useState(true);
@@ -49,19 +51,41 @@ function FeaturesSection({ heading, ctaButton }: FeaturesSectionProps) {
 
   useEffect(() => {
     const fetchFeatures = async () => {
-      try {
-        const response = await fetch('https://admin.ragijifoundation.com/api/features');
-        const data = await response.json();
-        setFeatures(data.filter((f: Feature) => f.isPublished));
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        setLoading(false);
-      }
+      setLoading(true);
+      
+      const fallbackFeatures: Feature[] = [
+        {
+          id: '1',
+          title: 'Quality Education',
+          titleHi: 'गुणवत्तापूर्ण शिक्षा',
+          description: 'Providing quality education to all children.',
+          descriptionHi: 'सभी बच्चों को गुणवत्तापूर्ण शिक्षा प्रदान करना।',
+          slug: 'quality-education',
+          category: 'education',
+          order: 1,
+          mediaItem: {
+            type: 'image' as const,
+            url: '/images/education-feature.jpg',
+            thumbnail: '/images/education-feature-thumb.jpg'
+          },
+          isPublished: true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }
+      ];
+
+      const featuresData = await safeApiCall(
+        () => apiClient.get<Feature[]>('/features', fallbackFeatures, { locale: language }),
+        fallbackFeatures,
+        'features'
+      );
+
+      setFeatures(featuresData.filter((f: Feature) => f.isPublished));
+      setLoading(false);
     };
 
     fetchFeatures();
-  }, []);
+  }, [language]);
 
   const renderFeatureContent = (feature: Feature, index: number) => {
     const title = language === 'hi' && feature.titleHi ? feature.titleHi : feature.title;

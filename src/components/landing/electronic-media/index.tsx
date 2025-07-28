@@ -22,7 +22,7 @@ export default function ElectronicMediaSection() {
   useEffect(() => {
     const fetchMedia = async () => {
       try {
-        const response = await fetch("https://admin.ragijifoundation.com/api/electronic-media");
+        const response = await fetch("/api/electronic-media");
         const data = await response.json();
         setItems(data.sort((a: MediaItem, b: MediaItem) => a.order - b.order));
       } catch (error) {

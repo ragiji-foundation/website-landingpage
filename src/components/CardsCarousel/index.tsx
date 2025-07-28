@@ -4,6 +4,7 @@ import { IconArrowRight } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/context/LanguageContext';
 import { useEffect, useState } from 'react';
+import { apiClient, safeApiCall } from '@/utils/api-client';
 import classes from './CardsCarousel.module.css';
 
 interface CarouselItem {
@@ -18,7 +19,20 @@ interface CarouselItem {
   order: number;
 }
 
-function Card({ imageUrl, videoUrl, title, titleHi, type = 'image', link = '#', language, t }: Omit<CarouselItem, 'id' | 'active' | 'order'> & { language: string, t: any }) {
+// Fallback data
+const fallbackCarouselItems: CarouselItem[] = [
+  {
+    id: '1',
+    imageUrl: '/images/carousel-default.jpg',
+    title: 'Welcome to Ragiji Foundation',
+    titleHi: 'रागी जी फाउंडेशन में आपका स्वागत है',
+    type: 'image',
+    active: true,
+    order: 1
+  }
+];
+
+function Card({ imageUrl, videoUrl, title, titleHi, type = 'image', link = '#', language, t }: Omit<CarouselItem, 'id' | 'active' | 'order'> & { language: string, t: (key: string) => string }) {
   const isMobile = typeof window !== 'undefined' ? window.innerWidth <= 768 : false;
   const defaultImage = '/placeholder-image.jpg';
   const displayTitle = language === 'hi' && titleHi ? titleHi : title;
@@ -98,11 +112,15 @@ export function CardsCarousel() {
   useEffect(() => {
     const fetchCarousel = async () => {
       try {
-        const res = await fetch('https://admin.ragijifoundation.com/api/carousel');
-        const data = await res.json();
-        setCarouselItems(data.filter((item: CarouselItem) => item.active));
-      } catch (e) {
-        setCarouselItems([]);
+        const carouselData = await safeApiCall(
+          () => apiClient.get<CarouselItem[]>('/carousel', fallbackCarouselItems, { locale: language }),
+          fallbackCarouselItems,
+          'carousel'
+        );
+        setCarouselItems(carouselData.filter((item: CarouselItem) => item.active));
+      } catch (error) {
+        console.error('Error fetching carousel:', error);
+        setCarouselItems(fallbackCarouselItems);
       }
     };
     fetchCarousel();
