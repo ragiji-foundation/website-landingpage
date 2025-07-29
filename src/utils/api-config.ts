@@ -6,9 +6,9 @@
  */
 
 // Base API configuration
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.ragijifoundation.com';
-export const USE_FALLBACKS = process.env.NEXT_PUBLIC_USE_FALLBACK_DATA === 'false';
-export const DISABLE_API = process.env.NEXT_PUBLIC_DISABLE_API === 'false';
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin.ragijifoundation.com';
+export const USE_FALLBACKS = process.env.NEXT_PUBLIC_USE_FALLBACK_DATA === 'true';
+export const DISABLE_API = process.env.NEXT_PUBLIC_DISABLE_API === 'true';
 
 // Determine if we're in development mode
 export const isDevelopment = process.env.NODE_ENV === 'development';

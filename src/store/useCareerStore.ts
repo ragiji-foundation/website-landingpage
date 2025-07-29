@@ -4,6 +4,7 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { safeFetch } from '@/utils/api-config';
+import { transformApiJobData } from '@/utils/lexicalParser';
 
 export interface JobListing {
   id: string;
@@ -12,20 +13,27 @@ export interface JobListing {
   titleHi?: string;
   description: string;
   descriptionHi?: string;
-  responsibilities: string;
+  responsibilities?: string;
   responsibilitiesHi?: string;
-  qualifications: string;
+  qualifications?: string;
   qualificationsHi?: string;
+  requirements?: string;
+  requirementsHi?: string;
   benefits?: string;
   benefitsHi?: string;
-  department: string;
+  department?: string;
   location: string;
+  locationHi?: string;
   salary?: string;
   jobType: 'Full-time' | 'Part-time' | 'Contract' | 'Volunteer';
+  type?: string;
+  typeHi?: string;
   applicationUrl?: string;
   postedDate: string;
   closingDate?: string;
   isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 // Fallback job listings
@@ -196,7 +204,33 @@ export const useCareerStore = create<CareerStore>()(
       
       fetchJobs: async (locale = 'en') => {
         set({ loading: true, error: null });
-        const { data, error, fromFallback } = await safeFetch<JobListing[]>(
+        
+        // Define the expected API response type
+        type ApiJobResponse = {
+          id: number;
+          slug: string;
+          title: string;
+          titleHi?: string;
+          description: string;
+          descriptionHi?: string;
+          requirements: string;
+          requirementsHi?: string;
+          location: string;
+          locationHi?: string;
+          type: string;
+          typeHi?: string;
+          isActive: boolean;
+          createdAt: string;
+          updatedAt: string;
+          department?: string;
+          salary?: string;
+          applicationUrl?: string;
+          closingDate?: string;
+          benefits?: string;
+          benefitsHi?: string;
+        };
+        
+        const { data, error, fromFallback } = await safeFetch<ApiJobResponse[] | JobListing[]>(
           `/api/careers?locale=${locale}`,
           fallbackJobs,
           { method: 'GET' }
@@ -205,7 +239,7 @@ export const useCareerStore = create<CareerStore>()(
         if (error) {
           console.warn(`Error fetching job listings: ${error.message}`);
           set({ 
-            jobs: data,
+            jobs: data as JobListing[],
             error,
             loading: false 
           });
@@ -213,8 +247,16 @@ export const useCareerStore = create<CareerStore>()(
         }
         
         try {
+          // Transform API data if it's not from fallback
+          let processedJobs: JobListing[];
+          if (fromFallback) {
+            processedJobs = data as JobListing[];
+          } else {
+            processedJobs = (data as ApiJobResponse[]).map(job => transformApiJobData(job));
+          }
+          
           // Filter out inactive jobs and sort by posted date (newest first)
-          const activeJobs = data.filter(job => job.isActive);
+          const activeJobs = processedJobs.filter(job => job.isActive);
           const sortedJobs = activeJobs.sort((a, b) => 
             new Date(b.postedDate).getTime() - new Date(a.postedDate).getTime()
           );

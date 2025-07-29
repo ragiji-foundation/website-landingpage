@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { transformApiJobData } from '@/utils/lexicalParser';
 
 export async function GET(request: NextRequest) {
   try {
@@ -21,8 +22,37 @@ export async function GET(request: NextRequest) {
       throw new Error(`Failed to fetch careers: ${response.status}`);
     }
 
-    const data = await response.json();
-    return NextResponse.json(data);
+    const rawData = await response.json();
+    
+    // Define the expected API response type
+    interface ApiCareerData {
+      id: number;
+      slug: string;
+      title: string;
+      titleHi?: string;
+      description: string;
+      descriptionHi?: string;
+      requirements: string;
+      requirementsHi?: string;
+      location: string;
+      locationHi?: string;
+      type: string;
+      typeHi?: string;
+      isActive: boolean;
+      createdAt: string;
+      updatedAt: string;
+      department?: string;
+      salary?: string;
+      applicationUrl?: string;
+      closingDate?: string;
+      benefits?: string;
+      benefitsHi?: string;
+    }
+    
+    // Transform the data to match our interface
+    const transformedData = (rawData as ApiCareerData[]).map(job => transformApiJobData(job));
+    
+    return NextResponse.json(transformedData);
   } catch (error) {
     console.error('Error fetching careers:', error);
     

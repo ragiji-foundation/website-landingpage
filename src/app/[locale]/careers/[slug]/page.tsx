@@ -7,6 +7,7 @@ import { useParams } from 'next/navigation';
 import { SimpleRichText } from '@/components/SimpleRichText';
 import { useCareerStore, JobListing } from '@/store/useCareerStore';
 import { useDictionary } from '@/hooks/useDictionary';
+import { withLocalization } from '@/utils/localization';
 
 export default function CareerDetailPage() {
   const params = useParams();
@@ -26,7 +27,9 @@ export default function CareerDetailPage() {
       if (slug) {
         const foundJob = await fetchJobById(slug, locale);
         if (foundJob) {
-          setJob(foundJob);
+          // Apply localization to the job data for the current locale
+          const localizedJob = withLocalization(foundJob, locale);
+          setJob(localizedJob);
         }
       }
     };
@@ -76,7 +79,7 @@ export default function CareerDetailPage() {
             <Group justify="apart" align="start">
               <div>
                 <Title order={2}>{job.title}</Title>
-                <Text c="dimmed">{job.department}</Text>
+                {job.department && <Text c="dimmed">{job.department}</Text>}
               </div>
               <Group>
                 <Badge size="lg" variant="filled" color={job.jobType === 'Full-time' ? 'blue' : 'green'}>
@@ -93,15 +96,23 @@ export default function CareerDetailPage() {
             </Text>
             <SimpleRichText content={job.description} />
 
-            <Text size="xl" fw={700}>
-              {t?.responsibilities || 'Responsibilities'}
-            </Text>
-            <SimpleRichText content={job.responsibilities} />
+            {(job.responsibilities || job.requirements) && (
+              <>
+                <Text size="xl" fw={700}>
+                  {t?.responsibilities || 'Responsibilities'}
+                </Text>
+                <SimpleRichText content={job.responsibilities || job.requirements || ''} />
+              </>
+            )}
 
-            <Text size="xl" fw={700}>
-              {t?.qualifications || 'Qualifications'}
-            </Text>
-            <SimpleRichText content={job.qualifications} />
+            {(job.qualifications || job.requirements) && (
+              <>
+                <Text size="xl" fw={700}>
+                  {t?.qualifications || 'Qualifications'}
+                </Text>
+                <SimpleRichText content={job.qualifications || job.requirements || ''} />
+              </>
+            )}
 
             {job.benefits && (
               <>

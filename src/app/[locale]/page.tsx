@@ -16,21 +16,23 @@ import { AnimatedSection } from '@/components/AnimatedSection';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import GallerySection from '@/components/GallerySection';
 import classes from './page.module.css';
+import sectionClasses from './page-sections.module.css';
 import { useEffect } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 
 // Define the proper type for page params in client component
 interface PageProps {
-  params: {
+  params: Promise<{
     locale: string;
-  };
+  }>;
 }
 
 export default function App({ params }: PageProps) {
   const { language, setLanguage, t } = useLanguage();
   
-  // Use React.use to unwrap the params object (Next.js 15+ requirement)
-  const locale = params.locale;
+  // Use React.use to unwrap the params Promise (Next.js 15+ requirement)
+  const resolvedParams = React.use(params);
+  const locale = resolvedParams.locale;
 
   // Add debugging
   useEffect(() => {
@@ -94,64 +96,61 @@ export default function App({ params }: PageProps) {
         <AnimatedSection>
           <Box
             component="section"
+            py={{ base: 'xl', md: 80 }}
+            className={sectionClasses.featuresSection}
             style={{
-              width: '100vw',
-              maxWidth: '100vw',
-              marginLeft: 'calc(-50vw + 50%)',
-              marginRight: 'calc(-50vw + 50%)',
-              background: 'var(--mantine-color-gray-0)',
               position: 'relative',
-              padding: 0,
-              overflow: 'hidden'
             }}
           >
-            <ErrorBoundary>
-              <FeaturesSection
-                heading={t('footer.organization.name')}
-                subheading={t('home.features.subheading')}
-                description={t('home.features.description')}
-                ctaButton={{
-                  text: t('joinus.downloadBrochure'),
-                  url: `/${language}/brochure`,
-                  variant: "gradient",
-                  gradient: { from: '#FF4B2B', to: '#FF416C' },
-                  size: "lg",
-                  leftIcon: "📄",
-                  className: classes.downloadButton
-                }}
-                sectionStyles={{
-                  backgroundColor: 'var(--mantine-color-gray-0)',
-                  paddingTop: '6rem',
-                  paddingBottom: '6rem'
-                }}
-                titleStyles={{
-                  fontSize: 'clamp(2.5rem, 5vw, 4rem)',
-                  lineHeight: 1.2,
-                  letterSpacing: '-0.02em'
-                }}
-              />
-            </ErrorBoundary>
+            <Container size="xl" className={sectionClasses.enhancedContainer}>
+              <ErrorBoundary>
+                <FeaturesSection
+                  heading={t('footer.organization.name')}
+                  subheading={t('home.features.subheading')}
+                  description={t('home.features.description')}
+                  ctaButton={{
+                    text: t('joinus.downloadBrochure'),
+                    url: `/${language}/brochure`,
+                    variant: "gradient",
+                    gradient: { from: '#FF4B2B', to: '#FF416C' },
+                    size: "lg",
+                    leftIcon: "📄",
+                    className: classes.downloadButton
+                  }}
+                  sectionStyles={{
+                    backgroundColor: 'transparent',
+                    paddingTop: 0,
+                    paddingBottom: 0
+                  }}
+                  titleStyles={{
+                    fontSize: 'clamp(2rem, 4vw, 3rem)',
+                    lineHeight: 1.3,
+                    letterSpacing: '-0.01em',
+                    textAlign: 'center',
+                    marginBottom: '3rem'
+                  }}
+                />
+              </ErrorBoundary>
+            </Container>
           </Box>
         </AnimatedSection>
         
-        {/* 8. Stats Section */}
+        {/* Stats Section */}
         <AnimatedSection>
           <Box
             component="section"
+            py={{ base: 60, md: 80 }}
+            className={sectionClasses.statsSection}
             style={{
-              width: '100vw',
-              maxWidth: '100vw',
-              marginLeft: 'calc(-50vw + 50%)',
-              marginRight: 'calc(-50vw + 50%)',
-              background: 'linear-gradient(135deg, #FF4B2B 0%, #FF416C 100%)',
               position: 'relative',
-              padding: 0,
-              overflow: 'hidden'
+              overflow: 'hidden',
             }}
           >
-            <ErrorBoundary>
-              <StatsSection />
-            </ErrorBoundary>
+            <Container size="xl" className={sectionClasses.enhancedContainer}>
+              <ErrorBoundary>
+                <StatsSection />
+              </ErrorBoundary>
+            </Container>
           </Box>
         </AnimatedSection> 
         
@@ -159,27 +158,22 @@ export default function App({ params }: PageProps) {
         <AnimatedSection>
           <Box
             component="section"
+            py={{ base: 60, md: 80 }}
+            className={sectionClasses.initiativesSection}
             style={{
-              width: '100vw',
-              maxWidth: '100vw',
-              marginLeft: 'calc(-50vw + 50%)',
-              marginRight: 'calc(-50vw + 50%)',
-              background: 'white',
               position: 'relative',
-              marginTop: '-4rem',
-              paddingTop: '8rem',
-              paddingBottom: '4rem',
-              clipPath: 'polygon(0 0, 100% 4rem, 100% 100%, 0 100%)'
             }}
           >
-            <Container size="xl">
-              <Initiatives
-                heading={t('initiatives.banner.title')}
-                ctaButton={{
-                  text: t('home.initiatives.viewAll'),
-                  url: `/${language}/our-initiatives`
-                }}
-              />
+            <Container size="xl" className={sectionClasses.enhancedContainer}>
+              <ErrorBoundary>
+                <Initiatives
+                  heading={t('initiatives.banner.title')}
+                  ctaButton={{
+                    text: t('home.initiatives.viewAll'),
+                    url: `/${language}/our-initiatives`
+                  }}
+                />
+              </ErrorBoundary>
             </Container>
           </Box>
         </AnimatedSection>
@@ -188,20 +182,17 @@ export default function App({ params }: PageProps) {
         <AnimatedSection>
           <Box
             component="section"
+            py={{ base: 60, md: 80 }}
+            className={sectionClasses.successStoriesSection}
             style={{
-              width: '100vw',
-              maxWidth: '100vw',
-              marginLeft: 'calc(-50vw + 50%)',
-              marginRight: 'calc(-50vw + 50%)',
-              background: 'linear-gradient(to right, rgba(255, 75, 43, 0.05), rgba(255, 65, 108, 0.05))',
               position: 'relative',
-              padding: 0,
-              overflow: 'hidden'
             }}
           >
-            <ErrorBoundary>
-              <SuccessStoriesSection />
-            </ErrorBoundary>
+            <Container size="xl" className={sectionClasses.enhancedContainer}>
+              <ErrorBoundary>
+                <SuccessStoriesSection />
+              </ErrorBoundary>
+            </Container>
           </Box>
         </AnimatedSection>
 
@@ -209,21 +200,16 @@ export default function App({ params }: PageProps) {
         <AnimatedSection>
           <Box
             component="section"
+            py={{ base: 60, md: 80 }}
+            className={sectionClasses.gallerySection}
             style={{
-              width: '100vw',
-              maxWidth: '100vw',
-              marginLeft: 'calc(-50vw + 50%)',
-              marginRight: 'calc(-50vw + 50%)',
-              background: 'white',
               position: 'relative',
-              marginTop: '-4rem',
-              paddingTop: '8rem',
-              paddingBottom: '4rem',
-              clipPath: 'polygon(0 0, 100% 4rem, 100% 100%, 0 100%)'
             }}
           >
-            <Container size="xl">
-              <GallerySection />
+            <Container size="xl" className={sectionClasses.enhancedContainer}>
+              <ErrorBoundary>
+                <GallerySection />
+              </ErrorBoundary>
             </Container>
           </Box>
         </AnimatedSection>

@@ -15,8 +15,8 @@ import { useDictionary } from '@/hooks/useDictionary';
 export default function CareersPage() {
   const params = useParams();
   const locale = params.locale as string || 'en';
-  const { fetchBanners, getBannerByType } = useBannerStore();
-  const { jobs, loading, error, fetchJobs } = useCareerStore();
+  const { getBannerByType } = useBannerStore();
+  const { jobs, loading, error } = useCareerStore();
   
   // Get translations from dictionary
   const { dictionary } = useDictionary();
@@ -24,9 +24,10 @@ export default function CareersPage() {
   const common = dictionary?.common || {};
   
   useEffect(() => {
-    fetchBanners();
-    fetchJobs();
-  }, [fetchBanners, fetchJobs]);
+    // Call store methods directly to avoid dependency issues
+    useBannerStore.getState().fetchBanners();
+    useCareerStore.getState().fetchJobs(locale);
+  }, [locale]); // Only depend on locale
   
   // Get localized jobs
   const localizedJobs = withLocalizedArray(jobs, locale);
@@ -83,7 +84,7 @@ export default function CareersPage() {
                       <Group justify="apart" align="start">
                         <div>
                           <Title order={3}>{job.title}</Title>
-                          <Text c="dimmed">{job.department}</Text>
+                          {job.department && <Text c="dimmed">{job.department}</Text>}
                         </div>
                         <Badge size="lg" color={job.jobType === 'Full-time' ? 'blue' : 'green'}>
                           {job.jobType}
@@ -103,7 +104,7 @@ export default function CareersPage() {
                         </Group>
                         <Group gap="xs">
                           <IconBriefcase size={18} color="#868e96" />
-                          <Text size="sm">{job.department}</Text>
+                          <Text size="sm">{job.department || 'General'}</Text>
                         </Group>
                       </Group>
                       
