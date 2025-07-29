@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "clean": "rm -rf .next && rm -rf node_modules/.cache",
+    "clean:cache": "rm -rf .next/cache",
+    "dev:clean": "npm run clean:cache && next dev"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -29,6 +32,9 @@
     "isomorphic-dompurify": "^1.13.0",
     "lexical": "^0.25.0",
     "next": "15.0.4",
+    "postcss": "^8.4.49",
+    "postcss-preset-mantine": "^1.17.0",
+    "postcss-simple-vars": "^7.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.54.2",
@@ -46,9 +52,6 @@
     "css-loader": "^7.1.2",
     "eslint": "^8.57.1",
     "eslint-config-next": "15.0.4",
-    "postcss": "^8.4.49",
-    "postcss-preset-mantine": "^1.17.0",
-    "postcss-simple-vars": "^7.0.1",
     "style-loader": "^4.0.0",
     "typescript": "^5"
   }
