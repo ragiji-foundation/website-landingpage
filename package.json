@@ -24,6 +24,8 @@
     "@mantinex/mantine-logo": "^1.0.1",
     "@tabler/icons-react": "^3.26.0",
     "@types/dompurify": "^3.0.5",
+    "@types/node": "^20",
+    "@types/react": "^19",
     "@types/react-dom": "^19",
     "axios": "^1.8.2",
     "dayjs": "^1.11.13",
@@ -41,18 +43,16 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.54.2",
     "sonner": "^1.7.1",
+    "typescript": "^5",
     "zod": "^3.24.1",
     "zustand": "^5.0.3"
   },
   "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^19",
     "@typescript-eslint/eslint-plugin": "^6.14.0",
     "@typescript-eslint/parser": "^6.14.0",
     "css-loader": "^7.1.2",
     "eslint": "^8.57.1",
     "eslint-config-next": "15.0.4",
-    "style-loader": "^4.0.0",
-    "typescript": "^5"
+    "style-loader": "^4.0.0"
   }
 }
