@@ -4,7 +4,7 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { safeFetch } from '@/utils/api-config';
-import { transformApiJobData } from '@/utils/lexicalParser';
+import { transformApiJobData } from '@/utils/richTextProcessor';
 
 export interface JobListing {
   id: string;

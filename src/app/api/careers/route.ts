@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { transformApiJobData } from '@/utils/lexicalParser';
+import { transformApiJobData } from '@/utils/richTextProcessor';
 
 export async function GET(request: NextRequest) {
   try {

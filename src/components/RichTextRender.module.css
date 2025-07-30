@@ -1,0 +1,96 @@
+.richTextContent p {
+  margin-bottom: 1rem;
+}
+
+.richTextContent ul,
+.richTextContent ol {
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
+
+.richTextContent li {
+  margin-bottom: 0.5rem;
+}
+
+.richTextContent h1,
+.richTextContent h2,
+.richTextContent h3,
+.richTextContent h4,
+.richTextContent h5,
+.richTextContent h6 {
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.richTextContent strong {
+  font-weight: 600;
+}
+
+.richTextContent em {
+  font-style: italic;
+}
+
+.richTextContent u {
+  text-decoration: underline;
+}
+
+.richTextContent blockquote {
+  margin: 1rem 0;
+  padding-left: 1rem;
+  border-left: 4px solid var(--mantine-color-gray-3);
+  font-style: italic;
+}
+
+.richTextContent code {
+  background-color: var(--mantine-color-gray-1);
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  font-family: 'Courier New', monospace;
+}
+
+.richTextContent pre {
+  background-color: var(--mantine-color-gray-1);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.richTextContent a {
+  color: var(--mantine-color-blue-6);
+  text-decoration: none;
+}
+
+.richTextContent a:hover {
+  text-decoration: underline;
+}
+
+.richTextContent table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.richTextContent th,
+.richTextContent td {
+  padding: 0.5rem;
+  border: 1px solid var(--mantine-color-gray-3);
+  text-align: left;
+}
+
+.richTextContent th {
+  background-color: var(--mantine-color-gray-1);
+  font-weight: 600;
+}
+
+.richTextContent img {
+  max-width: 100%;
+  height: auto;
+  margin: 1rem 0;
+}
+
+.richTextContent hr {
+  margin: 2rem 0;
+  border: none;
+  border-top: 1px solid var(--mantine-color-gray-3);
+}
