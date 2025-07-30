@@ -13,7 +13,11 @@ export async function GET() {
       }
     );
 
-    return NextResponse.json(response.data);
+    // Extract data array from admin API response {success: true, data: [...]}
+    const responseData = response.data;
+    const galleryData = responseData?.data || responseData || [];
+
+    return NextResponse.json(galleryData);
 
   } catch (error) {
     console.error('Gallery fetch error:', error);

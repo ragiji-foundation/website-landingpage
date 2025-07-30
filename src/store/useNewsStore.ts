@@ -5,15 +5,38 @@ import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { safeFetch } from '@/utils/api-config';
 
-export interface NewsArticle {
-  id: string;
+// Interface for the API response data
+interface NewsArticleApiResponse {
+  id: string | number;
   title: string;
   titleHi?: string;
-  summary: string;
+  description?: string;
+  descriptionHi?: string;
+  summary?: string;
   summaryHi?: string;
   source: string;
   date: string;
-  sourceUrl: string;
+  link?: string;
+  sourceUrl?: string;
+  imageUrl?: string;
+  featured?: boolean;
+  order?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface NewsArticle {
+  id: string | number;
+  title: string;
+  titleHi?: string;
+  summary?: string;
+  summaryHi?: string;
+  description?: string;
+  descriptionHi?: string;
+  source: string;
+  date: string;
+  sourceUrl?: string;
+  link?: string;
   imageUrl?: string;
   featured?: boolean;
   order?: number;
@@ -77,7 +100,7 @@ export const useNewsStore = create<NewsStore>()(
       fetchNewsArticles: async () => {
         set({ loading: true, error: null });
         
-        const { data, error, fromFallback } = await safeFetch<NewsArticle[]>(
+        const { data, error, fromFallback } = await safeFetch<NewsArticleApiResponse[]>(
           '/api/news-articles',
           fallbackNewsArticles,
           { method: 'GET' }
@@ -94,8 +117,17 @@ export const useNewsStore = create<NewsStore>()(
         }
         
         try {
+          // Transform API data to match our interface
+          const transformedData = data.map((item: NewsArticleApiResponse) => ({
+            ...item,
+            id: String(item.id),
+            summary: item.summary || item.description,
+            summaryHi: item.summaryHi || item.descriptionHi,
+            sourceUrl: item.sourceUrl || item.link,
+          }));
+          
           // Sort articles by featured status, order, and date
-          const sortedArticles = [...data].sort((a, b) => {
+          const sortedArticles = [...transformedData].sort((a, b) => {
             // Sort by featured status first
             if (a.featured !== b.featured) {
               return a.featured ? -1 : 1;
