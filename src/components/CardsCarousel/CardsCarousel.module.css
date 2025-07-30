@@ -6,7 +6,14 @@
 /* Mobile specific height */
 @media (max-width: 768px) {
   :root {
-    --carousel-height: 50vh;
+    --carousel-height: 40vh;
+  }
+}
+
+/* Extra small mobile devices */
+@media (max-width: 480px) {
+  :root {
+    --carousel-height: 35vh;
   }
 }
 
@@ -123,7 +130,7 @@
 /* Mobile styles */
 @media (max-width: 768px) {
   :root {
-    --carousel-height: 30vh !important;
+    --carousel-height: 40vh !important;
     --carousel-indicator-bottom: 10px;
   }
 
@@ -140,13 +147,14 @@
   /* Reset any max-height constraints */
   .wrapper,
   .carousel {
-    max-height: 30vh !important;
+    max-height: 40vh !important;
   }
+}
 
   .content {
     text-align: center;
     padding: 0 1rem;
-    max-height: 30vh !important;
+    max-height: 40vh !important;
     overflow: hidden;
   }
 
@@ -193,11 +201,50 @@
 
   .videoContainer video,
   .card [style*="background-image"] {
-    height: 30vh;
+    height: 40vh;
   }
 
   /* Ensure video maintains aspect ratio */
   .video {
     object-fit: cover !important;
+  }
+}
+
+/* Extra small mobile devices */
+@media (max-width: 480px) {
+  :root {
+    --carousel-height: 35vh !important;
+    --carousel-indicator-bottom: 8px;
+  }
+
+  .carousel,
+  .wrapper,
+  .container,
+  .videoBackground,
+  .video,
+  .overlay {
+    height: 35vh !important;
+    min-height: 35vh !important;
+    max-height: 35vh !important;
+  }
+
+  .content {
+    max-height: 35vh !important;
+    padding: 0 0.75rem;
+  }
+
+  .title {
+    font-size: clamp(1.1rem, 3.5vw, 1.5rem);
+    margin-bottom: 0.25rem;
+  }
+
+  .description {
+    font-size: clamp(0.8rem, 2vw, 0.9rem);
+    margin-bottom: 0.5rem;
+  }
+
+  .ctaButton {
+    font-size: 0.8rem;
+    padding: 0.4rem 1.2rem;
   }
 }
