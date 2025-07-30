@@ -72,3 +72,55 @@
   background: var(--color-tertiary);
   transform: translateX(5px);
 }
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .imageWrapper {
+    height: 180px;
+  }
+
+  .content {
+    padding: rem(16);
+  }
+
+  .title {
+    font-size: rem(20);
+    margin-bottom: rem(8);
+  }
+
+  .description {
+    margin-bottom: rem(16);
+    font-size: rem(14);
+  }
+
+  .initiativeCard:hover {
+    transform: translateY(-2px);
+  }
+
+  /* Remove hover effects on mobile for better performance */
+  .initiativeCard:hover .image {
+    transform: scale(1);
+  }
+
+  .button:hover {
+    transform: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .imageWrapper {
+    height: 160px;
+  }
+
+  .content {
+    padding: rem(12);
+  }
+
+  .title {
+    font-size: rem(18);
+  }
+
+  .description {
+    font-size: rem(13);
+  }
+}

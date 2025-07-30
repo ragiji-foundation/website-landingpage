@@ -1,4 +1,4 @@
-import { Box, Grid, Title, AspectRatio, Image, Text, Overlay, Center, Paper, Container, Button } from '@mantine/core';
+import { Box, Title, AspectRatio, Image, Text, Overlay, Center, Paper, Button } from '@mantine/core';
 import { IconPlayerPlay } from '@tabler/icons-react';
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
@@ -94,7 +94,7 @@ function FeaturesSection({ heading, ctaButton }: FeaturesSectionProps) {
 
     // Desktop Layout
     const DesktopLayout = () => (
-      <Container size="l" className={classes.desktopLayout}>
+      <div className={classes.desktopLayout}>
         {index % 2 === 0 ? (
           <>
             <div className={classes.contentContainer}>
@@ -174,12 +174,12 @@ function FeaturesSection({ heading, ctaButton }: FeaturesSectionProps) {
             </div>
           </>
         )}
-      </Container>
+      </div>
     );
 
     // Mobile Layout
     const MobileLayout = () => (
-      <Container size="l" className={classes.mobileLayout}>
+      <div className={classes.mobileLayout}>
         <div className={classes.mediaContainer}>
           {feature.mediaItem.type === 'video' ? (
             <AspectRatio ratio={16 / 9} pos="relative">
@@ -216,7 +216,7 @@ function FeaturesSection({ heading, ctaButton }: FeaturesSectionProps) {
             style={{ fontFamily }}
           />
         </div>
-      </Container>
+      </div>
     );
 
     return (

@@ -6,13 +6,11 @@ import { IconPhoto, IconArrowLeft, IconArrowRight, IconX } from '@tabler/icons-r
 import { useGalleryStore } from '@/store/useGalleryStore';
 import { GallerySkeleton } from '../skeletons/GallerySkeleton';
 import classes from './GallerySection.module.css';
-import { useDisclosure } from '@mantine/hooks';
 import { useLanguage } from '@/context/LanguageContext';
 
 export default function GallerySection() {
   const { language } = useLanguage();
   const { galleryItems: items = [], loading, fetchGalleryItems } = useGalleryStore();
-  const [opened, { open, close }] = useDisclosure(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   const [modalVisible, setModalVisible] = useState(false);
@@ -22,8 +20,32 @@ export default function GallerySection() {
     fetchGalleryItems();
   }, [fetchGalleryItems]);
 
-  // Keyboard navigation
+  // Keyboard navigation and body scroll lock
   useEffect(() => {
+    const handleClose = () => {
+      console.log('Closing modal');
+      setModalVisible(false);
+      setSelectedImage(null);
+    };
+
+    const handlePrevious = () => {
+      if (!items.length) return;
+      setCurrentImageIndex((prev) => {
+        const newIndex = prev > 0 ? prev - 1 : items.length - 1;
+        setSelectedImage(items[newIndex].imageUrl);
+        return newIndex;
+      });
+    };
+
+    const handleNext = () => {
+      if (!items.length) return;
+      setCurrentImageIndex((prev) => {
+        const newIndex = prev < items.length - 1 ? prev + 1 : 0;
+        setSelectedImage(items[newIndex].imageUrl);
+        return newIndex;
+      });
+    };
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!modalVisible) return;
       if (e.key === 'ArrowLeft') handlePrevious();
@@ -31,9 +53,25 @@ export default function GallerySection() {
       if (e.key === 'Escape') handleClose();
     };
 
+    // Lock body scroll when modal is open
+    if (modalVisible) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.paddingRight = '15px'; // Prevent layout shift from scrollbar
+    } else {
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+    }
+
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [modalVisible]);
+    
+    // Cleanup function
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      // Ensure body scroll is restored when component unmounts
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+    };
+  }, [modalVisible, items]);
 
   const handleImageClick = (imageUrl: string) => {
     console.log('Opening modal for:', imageUrl);

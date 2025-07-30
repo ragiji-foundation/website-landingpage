@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
         role: 'Parent',
         roleHi: 'अभिभावक',
         content: 'Ragiji Foundation has transformed my child\'s future through quality education.',
-        contentHi: 'रागी जी फाउंडेशन ने गुणवत्तापूर्ण शिक्षा के माध्यम से मेरे बच्चे का भविष्य बदल दिया है।',
+        contentHi: 'रागिजी फाउंडेशन ने गुणवत्तापूर्ण शिक्षा के माध्यम से मेरे बच्चे का भविष्य बदल दिया है।',
         avatar: '/images/testimonial1.jpg',
         isPublished: true,
         createdAt: new Date().toISOString()

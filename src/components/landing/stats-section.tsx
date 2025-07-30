@@ -24,10 +24,10 @@ const fallbackStats: Stat[] = [
 ];
 
 const statIcons: Record<string, React.ReactNode> = {
-  users: <IconUsers size={40} stroke={1.5} />,
-  award: <IconAward size={40} stroke={1.5} />,
-  community: <IconBuildingBank size={40} stroke={1.5} />,
-  impact: <IconHeartHandshake size={40} stroke={1.5} />,
+  users: <IconUsers size={24} stroke={1.5} />,
+  award: <IconAward size={24} stroke={1.5} />,
+  community: <IconBuildingBank size={24} stroke={1.5} />,
+  impact: <IconHeartHandshake size={24} stroke={1.5} />,
 };
 
 function AnimatedNumber({ value }: { value: string }) {
@@ -85,7 +85,7 @@ export default function StatsSection() {
 
   if (loading) {
     return (
-      <Container size="lg" py={80}>
+      <Container size="lg" py={{ base: 20, sm: 80 }} px={{ base: 0, sm: 'md' }}>
         <div className={classes.statsGrid}>
           {[...Array(3)].map((_, i) => (
             <div key={i} className={classes.statCard}>
@@ -100,12 +100,12 @@ export default function StatsSection() {
   }
 
   return (
-    <Container size="lg" py={80}>
+    <Container size="lg" py={{ base: 20, sm: 80 }} px={{ base: 0, sm: 'md' }}>
       <div className={classes.statsGrid}>
         {stats.map((stat, index) => {
           const label = language === 'hi' && stat.labelHi ? stat.labelHi : stat.label;
           const fontFamily = language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit';
-          const icon = stat.icon && statIcons[stat.icon] ? statIcons[stat.icon] : <IconAward size={40} stroke={1.5} />;
+          const icon = stat.icon && statIcons[stat.icon] ? statIcons[stat.icon] : <IconAward size={24} stroke={1.5} />;
           return (
             <div key={stat.id} className={classes.statCard} style={{ animationDelay: `${index * 0.1}s` }}>
               <div className={classes.iconWrapper}>{icon}</div>

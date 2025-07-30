@@ -1,12 +1,33 @@
 .header {
   height: 90px;
+  width: 100%;
   /* background-color: var(--mantine-color-body); */
   background-color: #fffdff;
   border-bottom: 1px solid var(--mantine-color-gray-3);
   z-index: 100;
 }
 
-/* Make header sticky only on desktop */
+/* Make header sticky o/* Enhance drawer content scrolling */
+.drawerContent {
+  max-height: 100vh;
+  overflow-y: auto;
+  padding: var(--spacing-4);
+  padding-bottom: var(--spacing-8);
+  -webkit-overflow-scrolling: touch;
+}
+
+.drawerHeader {
+  padding: var(--spacing-4);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  border-bottom: 1px solid var(--color-gray-200);
+  background-color: var(--color-background);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
 @media (min-width: 992px) {
   .header {
     position: sticky;
@@ -26,12 +47,20 @@
 @media (max-width: 768px) {
   .inner {
     padding: 5px var(--mantine-spacing-md);
+    min-height: 45px;
+    gap: 8px;
   }
 
   .header {
-    height: auto;
-    min-height: 60px;
-    /* reduced from 70px */
+    height: 50px;
+    min-height: 50px;
+    width: 100%;
+    /* reduced from 60px for better mobile experience */
+  }
+
+  .mobileGroup {
+    display: flex;
+    align-items: center;
   }
 }
 
@@ -135,12 +164,18 @@
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   /* Smooth scroll on iOS */
-  width: 50vw !important;
-  /* Force 50% width */
-  min-width: 280px !important;
+  width: 85vw !important;
+  /* Increase width for better mobile experience */
+  min-width: 320px !important;
   /* Minimum width for usability */
   max-width: 400px !important;
   /* Maximum width for larger screens */
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  background-color: var(--color-background);
+  z-index: 1000;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
 }
 
 .mobileNavigation {
@@ -188,9 +223,13 @@
 
 /* Enhance drawer content scrolling */
 .drawerContent {
-  max-height: calc(100vh - 60px);
+  height: calc(100vh - 120px);
+  max-height: calc(100vh - 120px);
   overflow-y: auto;
+  overflow-x: hidden;
   padding-bottom: var(--spacing-8);
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
 }
 
 .drawerHeader {
@@ -227,6 +266,9 @@
     top: 0;
     backdrop-filter: blur(10px);
     background-color: rgba(255, 255, 255, 0.9);
+    height: 50px;
+    min-height: 50px;
+    width: 100%;
   }
 
   .searchContainer {

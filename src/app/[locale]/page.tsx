@@ -77,16 +77,15 @@ export default function App({ params }: PageProps) {
               padding: 0,
               margin: 0,
               background: 'var(--gradient-primary)',
-              minHeight: isMobile ? '30vh' : '30vh',
-              maxHeight: isMobile ? '30vh' : '90vh',
-              height: isMobile ? '30vh' : 'auto',
+              minHeight: isMobile ? 'auto' : '30vh',
+              height: isMobile ? 'auto' : 'auto',
               display: 'flex',
               alignItems: 'center',
               position: 'relative',
               overflow: 'hidden',
             }}
           >
-            <Container size="xl">
+            <Container size="xl" px={isMobile ? 0 : 'md'}>
               <CardsCarousel />
             </Container>
           </Box>
@@ -96,13 +95,12 @@ export default function App({ params }: PageProps) {
         <AnimatedSection>
           <Box
             component="section"
-            py={{ base: 'xl', md: 80 }}
             className={sectionClasses.featuresSection}
             style={{
               position: 'relative',
             }}
           >
-            <Container size="xl" className={sectionClasses.enhancedContainer}>
+            <Container size="xl" className={sectionClasses.enhancedContainer} px={0}>
               <ErrorBoundary>
                 <FeaturesSection
                   heading={t('footer.organization.name')}
@@ -113,7 +111,7 @@ export default function App({ params }: PageProps) {
                     url: `/${language}/brochure`,
                     variant: "gradient",
                     gradient: { from: '#FF4B2B', to: '#FF416C' },
-                    size: "lg",
+                    size: isMobile ? "md" : "lg",
                     leftIcon: "📄",
                     className: classes.downloadButton
                   }}
@@ -123,11 +121,11 @@ export default function App({ params }: PageProps) {
                     paddingBottom: 0
                   }}
                   titleStyles={{
-                    fontSize: 'clamp(2rem, 4vw, 3rem)',
+                    fontSize: isMobile ? 'clamp(1.5rem, 6vw, 2rem)' : 'clamp(2rem, 4vw, 3rem)',
                     lineHeight: 1.3,
                     letterSpacing: '-0.01em',
                     textAlign: 'center',
-                    marginBottom: '3rem'
+                    marginBottom: isMobile ? '0.5rem' : '3rem'
                   }}
                 />
               </ErrorBoundary>
@@ -139,7 +137,6 @@ export default function App({ params }: PageProps) {
         <AnimatedSection>
           <Box
             component="section"
-            py={{ base: 60, md: 80 }}
             className={sectionClasses.statsSection}
             style={{
               position: 'relative',
@@ -158,7 +155,6 @@ export default function App({ params }: PageProps) {
         <AnimatedSection>
           <Box
             component="section"
-            py={{ base: 60, md: 80 }}
             className={sectionClasses.initiativesSection}
             style={{
               position: 'relative',
@@ -180,27 +176,26 @@ export default function App({ params }: PageProps) {
 
         {/* 4. Success Stories Section */}
         <AnimatedSection>
-          <Box
+          {/* <Box
             component="section"
             py={{ base: 60, md: 80 }}
             className={sectionClasses.successStoriesSection}
             style={{
               position: 'relative',
             }}
-          >
+          > */}
             <Container size="xl" className={sectionClasses.enhancedContainer}>
               <ErrorBoundary>
                 <SuccessStoriesSection />
               </ErrorBoundary>
             </Container>
-          </Box>
+          {/* </Box> */}
         </AnimatedSection>
 
         {/* 5. Our Gallery */}
         <AnimatedSection>
           <Box
             component="section"
-            py={{ base: 60, md: 80 }}
             className={sectionClasses.gallerySection}
             style={{
               position: 'relative',

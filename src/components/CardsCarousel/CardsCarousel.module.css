@@ -1,6 +1,13 @@
 :root {
-  --carousel-height: 30vh;
+  --carousel-height: 60vh;
   --carousel-indicator-bottom: 40px;
+}
+
+/* Mobile specific height */
+@media (max-width: 768px) {
+  :root {
+    --carousel-height: 50vh;
+  }
 }
 
 .wrapper {

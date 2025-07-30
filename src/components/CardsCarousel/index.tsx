@@ -25,7 +25,7 @@ const fallbackCarouselItems: CarouselItem[] = [
     id: '1',
     imageUrl: '/images/carousel-default.jpg',
     title: 'Welcome to Ragiji Foundation',
-    titleHi: 'रागी जी फाउंडेशन में आपका स्वागत है',
+    titleHi: 'रागिजी फाउंडेशन में आपका स्वागत है',
     type: 'image',
     active: true,
     order: 1

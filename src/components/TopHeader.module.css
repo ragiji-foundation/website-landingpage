@@ -5,6 +5,13 @@
   color: white;
 }
 
+.header {
+  background-color: var(--color-primary);
+  border-bottom: 1px solid var(--mantine-color-gray-2);
+  padding: 8px 0;
+  color: white;
+}
+
 .wrapper {
   min-height: 40px;
   display: flex;
@@ -93,31 +100,55 @@
 
 /* Mobile styles */
 @media (max-width: 768px) {
-  .wrapper {
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
-    /* reduced from 10px */
-    padding: 5px 0;
-    /* reduced from 10px */
+  .topHeader,
+  .header {
+    padding: 2px 0;
+    border-bottom: none;
+    height: 25px;
+    min-height: 25px;
+    max-height: 25px;
   }
 
-  .slogan {
-    display: none;
+  .container {
+    padding: 0;
+    margin: 0;
+  }
+
+  .wrapper {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    padding: 2px 8px;
+    min-height: 25px;
+    height: 25px;
+  }
+
+  .orgName {
+    font-size: 10px;
+    margin: 0;
+    padding: 0;
+  }
+
+  .socialLinks {
+    gap: 4px;
+    padding-left: 0;
+    border-left: none;
+  }
+
+  .socialIcon {
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    margin: 0;
   }
 
   .rightSection {
-    justify-content: center;
-    width: 100%;
+    display: none; /* Hide contact info on mobile */
   }
 
-  .contactText {
-    font-size: 12px;
-  }
-
-  .joinButton {
-    padding: 4px 8px;
-    font-size: 12px;
+  .contactItem {
+    display: none;
   }
 }
 

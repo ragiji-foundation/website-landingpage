@@ -3,6 +3,7 @@ import '@mantine/carousel/styles.css';
 import { Carousel } from '@mantine/carousel';
 import { Paper, Title, Center, Stack, Loader, Text, Box, Button } from '@mantine/core';
 import { useEffect, useState } from 'react';
+import { useMediaQuery } from '@mantine/hooks';
 
 import classes from './CardsCarousel.module.css';
 
@@ -19,6 +20,7 @@ interface CarouselItem {
 
 function Card({ imageUrl, videoUrl, title, type = 'image', link = '#' }: Omit<CarouselItem, 'id' | 'active' | 'order'>) {
   const defaultImage = '/placeholder-image.jpg';
+  const isMobile = useMediaQuery('(max-width: 768px)');
 
   return (
     <Paper
@@ -58,16 +60,28 @@ function Card({ imageUrl, videoUrl, title, type = 'image', link = '#' }: Omit<Ca
       ) : null}
 
       <div className={classes.contentWrapper}>
-        <Stack align="center" gap="xl" style={{ zIndex: 2 }}>
-          <Title className={classes.title} ta="center">
+        <Stack align="center" gap={isMobile ? "md" : "xl"} style={{ zIndex: 2 }}>
+          <Title 
+            className={classes.title} 
+            ta="center"
+            size={isMobile ? "h3" : "h1"}
+            style={{ 
+              fontSize: isMobile ? 'clamp(1.25rem, 4vw, 1.75rem)' : 'clamp(2rem, 5vw, 3.5rem)',
+              lineHeight: isMobile ? 1.2 : 1.3
+            }}
+          >
             {title}
           </Title>
           <Button
             variant="outline"
             color="white"
-            size="lg"
+            size={isMobile ? "sm" : "lg"}
             radius="xl"
             className={classes.ctaButton}
+            style={{
+              fontSize: isMobile ? '0.875rem' : '1rem',
+              padding: isMobile ? '8px 16px' : '12px 24px'
+            }}
           >
             Learn More
           </Button>
@@ -82,6 +96,7 @@ export function CardsCarousel() {
   const [data, setData] = useState<CarouselItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const isMobile = useMediaQuery('(max-width: 768px)');
 
   useEffect(() => {
     const fetchCarouselItems = async () => {
@@ -187,7 +202,7 @@ export function CardsCarousel() {
       withControls
       initialSlide={active}
       onSlideChange={setActive}
-      controlSize={44}
+      controlSize={isMobile ? 32 : 44}
       classNames={classes}
       className={classes.carousel}
       styles={{
@@ -212,21 +227,22 @@ export function CardsCarousel() {
           backdropFilter: 'blur(10px)',
           border: '1px solid rgba(255, 255, 255, 0.2)',
           color: 'white',
+          fontSize: isMobile ? '14px' : '16px',
           '&:hover': {
             background: 'rgba(255, 255, 255, 0.2)',
           },
         },
         indicators: {
-          bottom: 40,
+          bottom: isMobile ? 20 : 40,
           zIndex: 2,
         },
         indicator: {
-          width: 12,
-          height: 4,
+          width: isMobile ? 8 : 12,
+          height: isMobile ? 3 : 4,
           transition: 'width 250ms ease',
           backgroundColor: 'rgba(255, 255, 255, 0.5)',
           '&[dataActive]': {
-            width: 40,
+            width: isMobile ? 24 : 40,
             backgroundColor: 'white',
           },
         },

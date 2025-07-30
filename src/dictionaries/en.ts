@@ -65,7 +65,7 @@ export const enDictionary = {
     },
     registration: 'Registration Numbers:',
     registrationNumbers: '03/28/04/24586/22 • AAKART183J24BP02 • AAKART183J24BP01',
-    rights: '© 2024 Ragi Ji Foundation. All rights reserved.'
+    rights: '© 2025 Ragi Ji Foundation. All rights reserved.'
   },
   
   // Home Page

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Box, Title, Text, SimpleGrid, Button, Card, Image, Group } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import { useGalleryStore } from '@/store/useGalleryStore';
 import { useLanguage } from '@/context/LanguageContext';
 import Link from 'next/link';
@@ -18,6 +19,7 @@ export default function GallerySection() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const { language, t } = useLanguage();
+  const isMobile = useMediaQuery('(max-width: 576px)');
 
   useEffect(() => {
     const loadGallery = async () => {
@@ -45,12 +47,12 @@ export default function GallerySection() {
   const recentItems = Array.isArray(items) ? items.slice(0, 6) : [];
 
   return (
-    <Box className={classes.wrapper}>
+    <Box className={classes.wrapper} px={{ base: 0, sm: 'md' }} py={{ base: 'md', sm: 'xl' }}>
       <Title className={classes.title} order={2}>
         {t('home.gallery.heading') || 'Our Gallery'}
       </Title>
 
-      <Text className={classes.description} size="lg">
+      <Text className={classes.description} size="lg" px={{ base: 'xs', sm: 0 }}>
         {t('home.gallery.description') || 'Explore moments captured from our initiatives and events'}
       </Text>
 
@@ -63,42 +65,50 @@ export default function GallerySection() {
       ) : recentItems.length === 0 ? (
         <Text ta="center" mt="xl">{t('home.gallery.noItems') || 'No gallery items available yet'}</Text>
       ) : (
-        <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="lg" mt={40}>
-          {recentItems.map((item) => (
-            <Card key={item.id} padding="md" radius="md" withBorder className={classes.card}>
-              <Card.Section>
-                <Image
-                  src={item.imageUrl}
-                  height={200}
-                  alt={item.title}
-                  fallbackSrc="/images/fallbacks/gallery-image.svg"
-                />
-              </Card.Section>
-              <Group mt="md" mb="xs" justify="apart">
-                <Text fw={500} lineClamp={1}>{item.title}</Text>
-                <IconPhoto size={18} />
-              </Group>
-              <Group justify="left" gap="xs" mt="xs">
-                <IconCalendar size={16} />
-                <Text size="sm" color="dimmed">
-                  {new Date(item.date || item.createdAt || item.updatedAt || Date.now()).toLocaleDateString(language === 'hi' ? 'hi-IN' : 'en-US')}
-                </Text>
-              </Group>
-            </Card>
-          ))}
-        </SimpleGrid>
+        <>
+          <SimpleGrid 
+            cols={{ base: 1, sm: 2, md: 3 }} 
+            spacing={{ base: 'sm', sm: 'lg' }} 
+            mt={{ base: 20, sm: 40 }}
+            px={{ base: 'xs', sm: 0 }}
+          >
+            {recentItems.map((item) => (
+              <Card key={item.id} padding="md" radius="md" withBorder className={classes.card}>
+                <Card.Section>
+                  <Image
+                    src={item.imageUrl}
+                    height={200}
+                    alt={item.title}
+                    fallbackSrc="/images/fallbacks/gallery-image.svg"
+                  />
+                </Card.Section>
+                <Group mt="md" mb="xs" justify="apart">
+                  <Text fw={500} lineClamp={1} size="sm">{item.title}</Text>
+                  <IconPhoto size={18} />
+                </Group>
+                <Group justify="left" gap="xs" mt="xs">
+                  <IconCalendar size={16} />
+                  <Text size="sm" color="dimmed">
+                    {new Date(item.date || item.createdAt || item.updatedAt || Date.now()).toLocaleDateString(language === 'hi' ? 'hi-IN' : 'en-US')}
+                  </Text>
+                </Group>
+              </Card>
+            ))}
+          </SimpleGrid>
+          
+          <Group justify="center" mt={{ base: 20, sm: 40 }} px={{ base: 'xs', sm: 0 }}>
+            <Button 
+              component={Link}
+              href={`/${language}/gallery`}
+              size="sm"
+              variant="outline"
+              fullWidth={isMobile}
+            >
+              {t('home.gallery.viewAll') || 'View All Gallery Items'}
+            </Button>
+          </Group>
+        </>
       )}
-
-      <Group justify="center" mt={40}>
-        <Button 
-          component={Link}
-          href={`/${language}/gallery`}
-          size="md"
-          variant="outline"
-        >
-          {t('home.gallery.viewAll') || 'View All Gallery Items'}
-        </Button>
-      </Group>
     </Box>
   );
 }

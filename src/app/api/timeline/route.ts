@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
         title: 'Foundation Established',
         titleHi: 'फाउंडेशन की स्थापना',
         description: 'Ragiji Foundation was established with a vision to transform lives through education and community development.',
-        descriptionHi: 'रागी जी फाउंडेशन की स्थापना शिक्षा और सामुदायिक विकास के माध्यम से जीवन को बदलने के दृष्टिकोण के साथ हुई।',
+        descriptionHi: 'रागिजी फाउंडेशन की स्थापना शिक्षा और सामुदायिक विकास के माध्यम से जीवन को बदलने के दृष्टिकोण के साथ हुई।',
         icon: '/icons/foundation.svg',
         type: 'milestone',
         order: 1

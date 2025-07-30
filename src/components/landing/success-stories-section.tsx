@@ -99,8 +99,8 @@ export default function SuccessStoriesSection() {
 
   return (
     <Box className={classes.wrapper}>
-      <Container size="lg" py={{ base: 'md', sm: 'xl' }}>
-        <Box mb={{ base: 20, sm: 30 }}>
+      <Container size="lg" py={{ base: 'xs', sm: 'xl' }} px={{ base: 0, sm: 'md' }}>
+        <Box mb={{ base: 10, sm: 30 }}>
           <Title 
             className={classes.sectionTitle} 
             ta="center"
@@ -109,20 +109,6 @@ export default function SuccessStoriesSection() {
             {language === 'hi' ? 'सफलता की कहानियां' : 'Success Stories'}
           </Title>
         </Box>
-
-        <Group justify="flex-end" mb={{ base: 'md', sm: 'lg' }}>
-          <Button
-            component={Link}
-            href={`/${language}/success-stories`}
-            variant="outline"
-            rightSection={<IconArrowNarrowRight size={16} />}
-            className={classes.viewAllButton}
-            size="sm"
-            style={{ fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit' }}
-          >
-            {language === 'hi' ? 'सभी कहानियां देखें' : 'View All Stories'}
-          </Button>
-        </Group>
 
         <Box className={classes.scrollContainer} ref={scrollRef}>
           {latestStories.filter(story => !!story.slug).map((story) => {
@@ -187,6 +173,21 @@ export default function SuccessStoriesSection() {
             );
           })}
         </Box>
+
+        {/* View All Button at the bottom */}
+        <Group justify="center" mt={{ base: 'md', sm: 'xl' }}>
+          <Button
+            component={Link}
+            href={`/${language}/success-stories`}
+            variant="outline"
+            rightSection={<IconArrowNarrowRight size={16} />}
+            className={classes.viewAllButton}
+            size="sm"
+            style={{ fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit' }}
+          >
+            {language === 'hi' ? 'सभी कहानियां देखें' : 'View All Stories'}
+          </Button>
+        </Group>
       </Container>
     </Box>
   );

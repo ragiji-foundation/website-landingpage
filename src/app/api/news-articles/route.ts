@@ -96,7 +96,7 @@ export async function GET(request: NextRequest) {
         title: 'Foundation Launches New Education Initiative',
         titleHi: 'फाउंडेशन ने नई शिक्षा पहल शुरू की',
         source: 'Ragiji Foundation News',
-        sourceHi: 'रागी जी फाउंडेशन समाचार',
+        sourceHi: 'रागिजी फाउंडेशन समाचार',
         date: new Date().toISOString(),
         imageUrl: '/images/news1.jpg',
         sourceUrl: '#',

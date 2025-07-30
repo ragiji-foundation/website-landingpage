@@ -1,6 +1,6 @@
 'use client';
-import { Container, Group, Button, Text, ActionIcon, Modal, Stack } from '@mantine/core';
-import { IconMail, IconPhone, IconBrandYoutubeFilled, IconBrandFacebookFilled, IconBrandInstagramFilled, IconBrandX, icons } from '@tabler/icons-react';
+import { Container, Group, Text, ActionIcon, Modal } from '@mantine/core';
+import { IconMail, IconPhone, IconBrandYoutubeFilled, IconBrandFacebookFilled, IconBrandInstagramFilled, IconBrandX } from '@tabler/icons-react';
 import { useState } from 'react';
 import { JoinUsModal } from './JoinUsModal';
 import { useLanguage } from '@/context/LanguageContext';
@@ -24,16 +24,16 @@ export function TopHeader() {
   ];
 
   const socialLinks = [
-    { icon: <IconBrandYoutubeFilled size={20} color="#FF0000" />, href: 'https://youtube.com' },
-    { icon: <IconBrandFacebookFilled size={20} color="#1877F2" />, href: 'https://facebook.com' },
-    { icon: <IconBrandInstagramFilled size={20} color="#E4405F" />, href: 'https://instagram.com' },
-    { icon: <IconBrandX size={20} color="#000000" />, href: 'https://x.com' },
+    { icon: <IconBrandYoutubeFilled size={16} color="#FF0000" />, href: 'https://youtube.com' },
+    { icon: <IconBrandFacebookFilled size={16} color="#1877F2" />, href: 'https://facebook.com' },
+    { icon: <IconBrandInstagramFilled size={16} color="#E4405F" />, href: 'https://instagram.com' },
+    { icon: <IconBrandX size={16} color="#000000" />, href: 'https://x.com' },
   ];
 
   return (
     <div className={classes.header}>
-      <Container size="xl" px="xs" className={classes.container}>
-        <Group justify="space-between" wrap="nowrap" className={classes.wrapper}>
+      <Container size="xl" p={0} className={classes.container}>
+        <Group justify="space-between" wrap="nowrap" className={classes.wrapper} gap={0}>
           <Text size="sm" fw={700} className={classes.orgName}>
             {t('footer.organization.name')}
           </Text>

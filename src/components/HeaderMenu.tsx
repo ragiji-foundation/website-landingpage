@@ -18,7 +18,7 @@ import {
 import { JoinUsModal } from './JoinUsModal';
 import { useLanguage } from '@/context/LanguageContext';
 import SearchQuery from './SearchQuery';
-import { useDisclosure } from '@mantine/hooks';
+import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -66,6 +66,7 @@ export function HeaderMenu() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { language, setLanguage, t, dictionary } = useLanguage();
   const [isLoaded, setIsLoaded] = useState(false);
+  const isMobile = useMediaQuery('(max-width: 768px)');
   
   // Add router and pathname hooks for manual navigation
   const router = useRouter();
@@ -153,8 +154,8 @@ export function HeaderMenu() {
           <Image
             src="/logo1.png"
             alt="Ragi Ji Foundation"
-            width={180}
-            height={80}
+            width={isMobile ? 120 : 180}
+            height={isMobile ? 40 : 80}
             priority
             style={{ objectFit: 'contain' }}
           />
@@ -208,7 +209,7 @@ export function HeaderMenu() {
         <Burger
           opened={opened}
           onClick={toggle}
-          size="sm"
+          size={isMobile ? "xs" : "sm"}
           className={classes.mobileGroup}
         />
       </div>
@@ -252,13 +253,13 @@ export function HeaderMenu() {
             priority
             style={{ objectFit: 'contain' }}
           />
-          <div className={classes.drawerTitle}>
+          {/* <div className={classes.drawerTitle}>
             <h3 className={classes.foundationName}>{getTranslation('footer.organization.name', 'Ragi Ji Foundation')}</h3>
             <p className={classes.tagline}>{getTranslation('footer.slogan', 'Live For Others')}</p>
-          </div>
-          <ActionIcon onClick={close} variant="subtle" size="lg">
+          </div> */}
+          {/* <ActionIcon onClick={close} variant="subtle" size="lg">
             ×
-          </ActionIcon>
+          </ActionIcon> */}
         </div>
 
         <div className={classes.drawerContent}>

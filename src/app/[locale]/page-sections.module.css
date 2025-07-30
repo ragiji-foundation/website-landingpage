@@ -12,23 +12,7 @@
 
 /* Feature Section Enhancements */
 .featuresSection {
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 1) 0%, 
-    rgba(248, 249, 250, 1) 100%);
-  border-top: 1px solid var(--mantine-color-gray-2);
-}
-
-.featuresSection::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: 
-    radial-gradient(circle at 10% 20%, rgba(255, 75, 43, 0.02) 0%, transparent 50%),
-    radial-gradient(circle at 90% 80%, rgba(255, 65, 108, 0.02) 0%, transparent 50%);
-  pointer-events: none;
+  background: transparent;
 }
 
 /* Stats Section Enhancements */
@@ -115,13 +99,24 @@
   .initiativesSection,
   .successStoriesSection,
   .gallerySection {
-    padding-left: 1rem;
-    padding-right: 1rem;
+    padding: 1.5rem 0;
+    margin: 0;
   }
   
   .enhancedContainer {
-    padding-left: 0;
-    padding-right: 0;
+    padding: 0;
+    margin: 0;
+    max-width: 100%;
+  }
+
+  .sectionWrapper {
+    margin: 0;
+    padding: 0;
+  }
+
+  .statsSection {
+    padding: 2rem 0;
+    margin: 0;
   }
 }
 
@@ -131,12 +126,58 @@
   .initiativesSection,
   .successStoriesSection,
   .gallerySection {
-    padding-left: 2rem;
-    padding-right: 2rem;
+    padding: 3rem 1rem;
   }
 }
 
-/* High-resolution display optimizations */
+/* Mobile-first approach for very small screens */
+@media (max-width: 480px) {
+  .featuresSection,
+  .initiativesSection,
+  .successStoriesSection,
+  .gallerySection {
+    padding: 0;
+    margin: 0;
+  }
+
+  .enhancedContainer {
+    padding: 0;
+    margin: 0;
+    max-width: 100%;
+  }
+
+  .statsSection {
+    padding: 0.5rem 0;
+    margin: 0;
+  }
+}
+
+/* Enhanced mobile responsiveness for regular mobile screens */
+@media (max-width: 768px) {
+  .featuresSection,
+  .initiativesSection,
+  .successStoriesSection,
+  .gallerySection {
+    padding: 0;
+    margin: 0;
+  }
+  
+  .enhancedContainer {
+    padding: 0;
+    margin: 0;
+    max-width: 100%;
+  }
+
+  .sectionWrapper {
+    margin: 0;
+    padding: 0;
+  }
+
+  .statsSection {
+    padding: 0.5rem 0;
+    margin: 0;
+  }
+}/* High-resolution display optimizations */
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
   .statsSection::after {
     background-size: 20px 20px;
