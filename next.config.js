@@ -1,3 +1,5 @@
+const path = require('path');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Remove swcMinify as it's enabled by default in Next.js 12+
@@ -12,7 +14,7 @@ const nextConfig = {
         buildDependencies: {
           config: [__filename],
         },
-        cacheDirectory: '.next/cache/webpack',
+        cacheDirectory: path.resolve(__dirname, '.next/cache/webpack'),
         // Reduce serialization warnings
         compression: 'gzip',
         maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
