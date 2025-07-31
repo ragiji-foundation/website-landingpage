@@ -125,48 +125,66 @@ export default function SuccessStoriesSection() {
                 onClick={() => handleCardClick(story as Story)}
               >
                 <div className={classes.cardInner}>
-                  {story.imageUrl && (
-                    <div className={classes.imageWrapper}>
-                      <Card.Section className={classes.imageSection}>
-                        <Image
-                          src={story.imageUrl}
-                          alt={displayTitle}
-                          className={classes.image}
-                          height={200}
-                          width="100%"
-                          fit="cover"
+                  {/* Front of card */}
+                  <div className={classes.cardFront}>
+                    {story.imageUrl && (
+                      <div className={classes.imageWrapper}>
+                        <Card.Section className={classes.imageSection}>
+                          <Image
+                            src={story.imageUrl}
+                            alt={displayTitle}
+                            className={classes.image}
+                            height={200}
+                            width="100%"
+                            fit="cover"
+                          />
+                          <div className={classes.overlay} />
+                        </Card.Section>
+                      </div>
+                    )}
+
+                    <div className={classes.cardContent}>
+                      <div className={classes.contentWrapper}>
+                        <Title order={3} className={classes.title} style={{ fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit' }}>{displayTitle}</Title>
+                        <div
+                          className={classes.content}
+                          style={{ 
+                            fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit',
+                            display: typeof window !== 'undefined' && window.innerWidth <= 768 ? 'block' : 'none'
+                          }}
+                          dangerouslySetInnerHTML={{
+                            __html: truncateHTML(displayContent, typeof window !== 'undefined' && window.innerWidth <= 768 ? 80 : 120)
+                          }}
                         />
-                        <div className={classes.overlay} />
-                      </Card.Section>
-                    </div>
-                  )}
+                      </div>
 
-                  <div className={classes.cardContent}>
-                    <div className={classes.contentWrapper}>
-                      <Title order={3} className={classes.title} style={{ fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit' }}>{displayTitle}</Title>
-                      <div
-                        className={classes.content}
-                        style={{ fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit' }}
-                        dangerouslySetInnerHTML={{
-                          __html: truncateHTML(displayContent, typeof window !== 'undefined' && window.innerWidth <= 768 ? 80 : 120)
-                        }}
-                      />
+                      <div className={classes.footer}>
+                        <Text size="sm" c="dimmed">
+                          {formatDate(story.createdAt)}
+                        </Text>
+                        <Button
+                          variant="subtle"
+                          color="blue"
+                          size="sm"
+                          rightSection={<IconArrowRight size={14} />}
+                          style={{ fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit' }}
+                        >
+                          {language === 'hi' ? 'और पढ़ें' : 'Read More'}
+                        </Button>
+                      </div>
                     </div>
+                  </div>
 
-                    <div className={classes.footer}>
-                      <Text size="sm" c="dimmed">
-                        {formatDate(story.createdAt)}
-                      </Text>
-                      <Button
-                        variant="subtle"
-                        color="blue"
-                        size="sm"
-                        rightSection={<IconArrowRight size={14} />}
-                        style={{ fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit' }}
-                      >
-                        {language === 'hi' ? 'और पढ़ें' : 'Read More'}
-                      </Button>
-                    </div>
+                  {/* Back of card */}
+                  <div className={classes.cardBack}>
+                    <Title order={3} className={classes.title} style={{ fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit' }}>{displayTitle}</Title>
+                    <div
+                      className={classes.content}
+                      style={{ fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit' }}
+                      dangerouslySetInnerHTML={{
+                        __html: truncateHTML(displayContent, 200)
+                      }}
+                    />
                   </div>
                 </div>
               </Card>

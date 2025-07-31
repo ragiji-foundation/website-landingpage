@@ -34,25 +34,14 @@ export function TopHeader() {
     <div className={classes.header}>
       <Container size="xl" p={0} className={classes.container}>
         <Group justify="space-between" wrap="nowrap" className={classes.wrapper} gap={0}>
-          <Text size="sm" fw={700} className={classes.orgName}>
+          <Text 
+            size="sm" 
+            fw={700} 
+            className={classes.orgName}
+            data-tagline={t('footer.organization.tagline')}
+          >
             {t('footer.organization.name')}
           </Text>
-
-          <Group gap={8} wrap="nowrap" className={classes.socialLinks}>
-            {socialLinks.map((item, index) => (
-              <ActionIcon
-                key={index}
-                component="a"
-                href={item.href}
-                target="_blank"
-                variant="subtle"
-                className={classes.socialIcon}
-                size="sm"
-              >
-                {item.icon}
-              </ActionIcon>
-            ))}
-          </Group>
 
           <Group gap="xs" wrap="nowrap" className={classes.rightSection}>
             {contactInfo.map((item, index) => (
@@ -74,6 +63,22 @@ export function TopHeader() {
                 </Text>
               </Group>
             ))}
+            
+            <Group gap={6} wrap="nowrap" className={classes.socialLinks}>
+              {socialLinks.map((item, index) => (
+                <ActionIcon
+                  key={index}
+                  component="a"
+                  href={item.href}
+                  target="_blank"
+                  variant="subtle"
+                  className={classes.socialIcon}
+                  size="sm"
+                >
+                  {item.icon}
+                </ActionIcon>
+              ))}
+            </Group>
           </Group>
         </Group>
       </Container>

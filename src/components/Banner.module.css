@@ -30,54 +30,54 @@
 /* Mobile optimizations - reduce banner heights significantly */
 @media (max-width: 768px) {
   .banner {
-    min-height: 150px;
+    min-height: 100px;
   }
 
   .home {
-    min-height: 200px;
+    min-height: 140px;
   }
 
   .blog {
-    min-height: 180px;
+    min-height: 120px;
   }
 
   .about {
-    min-height: 150px;
+    min-height: 100px;
   }
 
   .initiatives {
-    min-height: 160px;
+    min-height: 110px;
   }
 
   .success-stories {
-    min-height: 180px;
+    min-height: 120px;
   }
 }
 
 /* Extra small mobile devices */
 @media (max-width: 480px) {
   .banner {
-    min-height: 120px;
+    min-height: 80px;
   }
 
   .home {
-    min-height: 160px;
+    min-height: 110px;
   }
 
   .blog {
-    min-height: 140px;
+    min-height: 80px;
   }
 
   .about {
-    min-height: 120px;
+    min-height: 80px;
   }
 
   .initiatives {
-    min-height: 140px;
+    min-height: 80px;
   }
 
   .success-stories {
-    min-height: 150px;
+    min-height: 80px;
   }
 }
 
@@ -91,15 +91,15 @@
 /* Mobile optimizations - reduce container padding */
 @media (max-width: 768px) {
   .container {
-    padding-top: var(--mantine-spacing-md);
-    padding-bottom: var(--mantine-spacing-md);
+    padding-top: var(--mantine-spacing-sm);
+    padding-bottom: var(--mantine-spacing-sm);
   }
 }
 
 @media (max-width: 480px) {
   .container {
-    padding-top: var(--mantine-spacing-sm);
-    padding-bottom: var(--mantine-spacing-sm);
+    padding-top: var(--mantine-spacing-xs);
+    padding-bottom: var(--mantine-spacing-xs);
   }
 }
 
@@ -114,17 +114,17 @@
 /* Mobile title optimizations */
 @media (max-width: 768px) {
   .title {
-    font-size: 2.2rem;
-    line-height: 1.2;
-    margin-bottom: var(--mantine-spacing-xs);
+    font-size: 1.8rem;
+    line-height: 1.1;
+    margin-bottom: 0.25rem;
   }
 }
 
 @media (max-width: 480px) {
   .title {
-    font-size: 1.8rem;
-    line-height: 1.3;
-    margin-bottom: 0.25rem;
+    font-size: 1.5rem;
+    line-height: 1.2;
+    margin-bottom: 0.125rem;
   }
 }
 
@@ -137,15 +137,15 @@
 @media (max-width: 768px) {
   .description {
     max-width: 100%;
-    font-size: 0.9rem;
-    line-height: 1.4;
+    font-size: 0.8rem;
+    line-height: 1.3;
   }
 }
 
 @media (max-width: 480px) {
   .description {
-    font-size: 0.85rem;
-    line-height: 1.3;
+    font-size: 0.75rem;
+    line-height: 1.2;
   }
 }
 

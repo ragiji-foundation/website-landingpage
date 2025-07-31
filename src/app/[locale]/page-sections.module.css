@@ -13,6 +13,7 @@
 /* Feature Section Enhancements */
 .featuresSection {
   background: transparent;
+  padding: 4rem 0;
 }
 
 /* Stats Section Enhancements */
@@ -86,6 +87,9 @@
 .enhancedContainer {
   position: relative;
   z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
 }
 
 /* Section transitions */
@@ -99,13 +103,13 @@
   .initiativesSection,
   .successStoriesSection,
   .gallerySection {
-    padding: 1.5rem 0;
+    padding: 2rem 0;
     margin: 0;
   }
   
   .enhancedContainer {
-    padding: 0;
-    margin: 0;
+    padding: 0 1rem;
+    margin: 0 auto;
     max-width: 100%;
   }
 
@@ -136,13 +140,13 @@
   .initiativesSection,
   .successStoriesSection,
   .gallerySection {
-    padding: 0;
+    padding: 1.5rem 0;
     margin: 0;
   }
 
   .enhancedContainer {
-    padding: 0;
-    margin: 0;
+    padding: 0 1rem;
+    margin: 0 auto;
     max-width: 100%;
   }
 

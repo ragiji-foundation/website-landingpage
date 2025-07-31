@@ -27,7 +27,7 @@ export function Initiatives({ heading, ctaButton }: InitiativesProps) {
   }
 
   return (
-    <Container size="xl" py="xl">
+    <Container size="xl" py="xl" style={{ maxWidth: '100vw', padding: '0 1rem' }}>
       <Title 
         order={2} 
         ta="center" 
@@ -43,76 +43,74 @@ export function Initiatives({ heading, ctaButton }: InitiativesProps) {
       >
         {heading}
       </Title>
-      <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="xl">
+      <SimpleGrid 
+        cols={5} 
+        spacing="xs"
+        style={{ 
+          width: '100%',
+          maxWidth: '100vw',
+          margin: '0 auto',
+        }}
+        styles={{
+          root: {
+            '@media (max-width: 768px)': {
+              gap: '0.5rem',
+            },
+            '@media (max-width: 480px)': {
+              gap: '0.25rem',
+            },
+          }
+        }}
+      >
         {items.map((initiative) => {
           const displayTitle = language === 'hi' && initiative.titleHi ? initiative.titleHi : initiative.title;
-          const displayDescription = language === 'hi' && initiative.descriptionHi ? initiative.descriptionHi : initiative.description;
           const fontFamily = language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit';
           return (
             <Card 
               key={initiative.id} 
-              shadow="sm" 
-              padding="lg" 
-              radius="lg"
-              withBorder
+              padding={0}
               style={{
                 transition: 'all 0.3s ease',
                 cursor: 'pointer',
                 height: '100%',
-                background: 'linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(249,250,251,1) 100%)',
-                border: '1px solid var(--mantine-color-gray-2)',
-              }}
-              styles={{
-                root: {
-                  '&:hover': {
-                    transform: 'translateY(-4px)',
-                    boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
-                    borderColor: 'var(--mantine-color-gray-3)',
-                  }
-                }
+                background: 'white',
+                border: 'none',
+                borderRadius: 0,
+                boxShadow: 'none',
+                textAlign: 'center',
+                width: '100%',
+                maxWidth: '100%',
               }}
             >
               <Card.Section>
                 <Image
                   src={initiative.imageUrl}
-                  height={200}
                   alt={displayTitle}
                   style={{
                     objectFit: 'cover',
                     transition: 'transform 0.3s ease',
+                    width: '100%',
+                    height: 'auto',
+                    aspectRatio: '1 / 1',
+                    display: 'block',
                   }}
                 />
               </Card.Section>
 
               <Text 
                 fw={600} 
-                size="lg" 
-                mt="md" 
-                mb="xs"
+                size="xs" 
+                mt="xs"
                 style={{ 
                   fontFamily,
                   color: 'var(--mantine-color-dark-7)',
-                  lineHeight: 1.3,
+                  lineHeight: 1.2,
+                  textAlign: 'center',
+                  fontSize: 'clamp(0.7rem, 2vw, 0.9rem)',
+                  padding: '0.25rem',
                 }}
               >
                 {displayTitle}
-              </Text>
-
-              <Text 
-                mt="xs" 
-                c="dimmed" 
-                size="sm" 
-                lineClamp={3} 
-                style={{ 
-                  fontFamily,
-                  lineHeight: 1.5,
-                  color: 'var(--mantine-color-gray-6)',
-                }}
-              >
-                {displayDescription ?
-                  new DOMParser().parseFromString(displayDescription, 'text/html')
-                    .body.textContent || displayDescription
-                  : ''}
               </Text>
             </Card>
           );

@@ -3,7 +3,8 @@ import React from 'react';
 import { Box, Container } from '@mantine/core';
 import { CardsCarousel } from '@/components/CardsCarousel';
 import SuccessStoriesSection from '@/components/landing/success-stories-section';
-import ElectronicMediaSection from '@/components/landing/electronic-media';
+import EnhancedElectronicMediaSection from '@/components/landing/enhanced-electronic-media';
+import NewsCoverageSection from '@/components/landing/news-coverage-section';
 import { useMediaQuery } from '@mantine/hooks';
 
 import { Initiatives } from '@/components/Initiatives';
@@ -100,7 +101,7 @@ export default function App({ params }: PageProps) {
               position: 'relative',
             }}
           >
-            <Container size="xl" className={sectionClasses.enhancedContainer} px={0}>
+            <Container size="xl" className={sectionClasses.enhancedContainer}>
               <ErrorBoundary>
                 <FeaturesSection
                   heading={t('footer.organization.name')}
@@ -114,18 +115,6 @@ export default function App({ params }: PageProps) {
                     size: isMobile ? "md" : "lg",
                     leftIcon: "📄",
                     className: classes.downloadButton
-                  }}
-                  sectionStyles={{
-                    backgroundColor: 'transparent',
-                    paddingTop: 0,
-                    paddingBottom: 0
-                  }}
-                  titleStyles={{
-                    fontSize: isMobile ? 'clamp(1.5rem, 6vw, 2rem)' : 'clamp(2rem, 4vw, 3rem)',
-                    lineHeight: 1.3,
-                    letterSpacing: '-0.01em',
-                    textAlign: 'center',
-                    marginBottom: isMobile ? '0.5rem' : '3rem'
                   }}
                 />
               </ErrorBoundary>
@@ -209,7 +198,30 @@ export default function App({ params }: PageProps) {
           </Box>
         </AnimatedSection>
 
-        {/* 6. Electronic Media Section */}
+        {/* 6. News Coverage Section */}
+        <AnimatedSection>
+          <Box
+            component="section"
+            style={{
+              width: '100vw',
+              maxWidth: '100vw',
+              marginLeft: 'calc(-50vw + 50%)',
+              marginRight: 'calc(-50vw + 50%)',
+              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 249, 250, 0.9) 100%)',
+              position: 'relative',
+              padding: '2rem 0',
+              borderTop: '1px solid var(--mantine-color-gray-2)',
+            }}
+          >
+            <Container size="xl">
+              <ErrorBoundary>
+                <NewsCoverageSection />
+              </ErrorBoundary>
+            </Container>
+          </Box>
+        </AnimatedSection>
+
+        {/* 7. Electronic Media Section */}
         <AnimatedSection>
           <Box
             component="section"
@@ -227,12 +239,14 @@ export default function App({ params }: PageProps) {
             }}
           >
             <Container size="xl">
-              <ElectronicMediaSection />
+              <ErrorBoundary>
+                <EnhancedElectronicMediaSection />
+              </ErrorBoundary>
             </Container>
           </Box>
         </AnimatedSection>
 
-        {/* 7. Testimonials */}
+        {/* 8. Testimonials */}
         <AnimatedSection>
           <Box
             component="section"

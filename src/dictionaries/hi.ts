@@ -33,6 +33,7 @@ export const hiDictionary = {
     slogan: 'दूसरों के लिए जीना',
     organization: {
       name: 'रागिजी फाउंडेशन',
+      tagline: 'दूसरों के लिए जीना',
       fullName: 'रामगिरीजी महाराज शिक्षा एवं समाज सेवा समिति',
       address: {
         line1: 'मकान नंबर-12 ग्राम महापुरा पोस्ट कोठड़,',

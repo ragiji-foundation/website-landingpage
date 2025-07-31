@@ -92,7 +92,7 @@ function FeaturesSection({ heading, ctaButton }: FeaturesSectionProps) {
     const description = language === 'hi' && feature.descriptionHi ? feature.descriptionHi : feature.description;
     const fontFamily = language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit';
 
-    // Desktop Layout
+    // Desktop Layout - Alternating left/right
     const DesktopLayout = () => (
       <div className={classes.desktopLayout}>
         {index % 2 === 0 ? (
@@ -104,6 +104,15 @@ function FeaturesSection({ heading, ctaButton }: FeaturesSectionProps) {
                 className={classes.description}
                 style={{ fontFamily }}
               />
+              <Button 
+                variant="light" 
+                size="sm" 
+                radius="md"
+                className={classes.learnMoreButton}
+                style={{ fontFamily, marginTop: '1rem' }}
+              >
+                {language === 'hi' ? 'और पढ़ें' : 'Learn More'}
+              </Button>
             </div>
             <div className={classes.mediaContainer}>
               {feature.mediaItem.type === 'video' ? (
@@ -171,50 +180,79 @@ function FeaturesSection({ heading, ctaButton }: FeaturesSectionProps) {
                 className={classes.description}
                 style={{ fontFamily }}
               />
+              <Button 
+                variant="light" 
+                size="sm" 
+                radius="md"
+                className={classes.learnMoreButton}
+                style={{ fontFamily, marginTop: '1rem' }}
+              >
+                {language === 'hi' ? 'और पढ़ें' : 'Learn More'}
+              </Button>
             </div>
           </>
         )}
       </div>
     );
 
-    // Mobile Layout
+    // Mobile Layout - Card-based
     const MobileLayout = () => (
       <div className={classes.mobileLayout}>
-        <div className={classes.mediaContainer}>
+        <div className={classes.mediaSection}>
           {feature.mediaItem.type === 'video' ? (
-            <AspectRatio ratio={16 / 9} pos="relative">
+            <AspectRatio ratio={16 / 9} className={classes.mobileMediaContainer}>
               <Image
                 src={feature.mediaItem.thumbnail || `/api/thumbnail?url=${feature.mediaItem.url}`}
                 alt={title}
                 radius="md"
                 fit="cover"
+                className={classes.mediaImage}
               />
-              <Overlay color="gray" opacity={0.2}>
+              <Overlay color="rgba(0, 0, 0, 0.3)" className={classes.videoOverlay}>
                 <Center h="100%">
                   <a href={feature.mediaItem.url} target="_blank" rel="noopener noreferrer">
-                    <div className={classes.playIcon}>
-                      <IconPlayerPlay size={48} />
+                    <div className={classes.playButton}>
+                      <IconPlayerPlay size={32} color="white" />
                     </div>
                   </a>
                 </Center>
               </Overlay>
             </AspectRatio>
           ) : (
-            <Image
-              src={feature.mediaItem.url}
-              alt={title}
-              radius="md"
-              fit="cover"
-            />
+            <AspectRatio ratio={16 / 9} className={classes.mobileMediaContainer}>
+              <Image
+                src={feature.mediaItem.url}
+                alt={title}
+                radius="md"
+                fit="cover"
+                className={classes.mediaImage}
+              />
+            </AspectRatio>
           )}
         </div>
-        <div className={classes.contentContainer}>
-          <Title order={3} className={classes.featureTitle} style={{ fontFamily }}>{title}</Title>
+        <div className={classes.textContent}>
+          <Title 
+            order={3} 
+            className={classes.featureTitle} 
+            style={{ fontFamily }}
+            size="h4"
+          >
+            {title}
+          </Title>
           <div
             dangerouslySetInnerHTML={{ __html: description }}
             className={classes.description}
             style={{ fontFamily }}
           />
+          <Button 
+            variant="light" 
+            size="sm" 
+            radius="md"
+            className={classes.learnMoreButton}
+            style={{ fontFamily }}
+          >
+            {language === 'hi' ? 'और पढ़ें' : 'Learn More'}
+          </Button>
         </div>
       </div>
     );
@@ -231,41 +269,49 @@ function FeaturesSection({ heading, ctaButton }: FeaturesSectionProps) {
     );
   };
 
-  if (loading) return <Text>Loading...</Text>;
-  if (!features.length) return <Text>No features available</Text>;
+  if (loading) return <Text ta="center" py="xl">Loading...</Text>;
+  if (!features.length) return <Text ta="center" py="xl">No features available</Text>;
 
   return (
-    <Box className={classes.container}>
+    <Box>
       <Title
         order={2}
         ta="center"
-        mb={20}
+        mb="xl"
         className={classes.sectionTitle}
         style={{
-          fontSize: 'clamp(2rem, 5vw, 4rem)',
-          fontWeight: 500,
+          fontSize: 'clamp(1.8rem, 4vw, 3.5rem)',
+          fontWeight: 600,
           background: 'linear-gradient(45deg, #FF4B2B, #FF416C)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           padding: '0.5rem 0',
           letterSpacing: '-0.02em',
-          lineHeight: 1.1,
+          lineHeight: 1.2,
           fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit',
         }}
       >
-        {language === 'hi' && features[0]?.category === 'feature' && features[0]?.titleHi ? features[0].titleHi : heading}
+        {heading}
       </Title>
-      {features.map((feature, index) => renderFeatureContent(feature, index))}
-      <Center mb={40}>
+      
+      <div className={classes.featuresContainer}>
+        {features.map((feature, index) => renderFeatureContent(feature, index))}
+      </div>
+      
+      <Center  pt="md">
         <Button
           component="a"
           href={ctaButton.url}
-          variant={ctaButton.variant}
-          gradient={ctaButton.gradient}
-          size={ctaButton.size}
+          variant={ctaButton.variant || 'gradient'}
+          gradient={ctaButton.gradient || { from: 'orange', to: 'red' }}
+          size={ctaButton.size || 'md'}
+          radius="md"
           className={ctaButton.className}
           leftSection={ctaButton.leftIcon}
-          style={{ fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit' }}
+          style={{ 
+            fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit',
+            fontWeight: 500
+          }}
         >
           {ctaButton.text}
         </Button>

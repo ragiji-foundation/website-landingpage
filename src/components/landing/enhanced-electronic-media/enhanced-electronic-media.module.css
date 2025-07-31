@@ -1,0 +1,299 @@
+.wrapper {
+  padding: clamp(2rem, 5vw, 4rem) 0;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.03) 0%, rgba(147, 51, 234, 0.08) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.wrapper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+              radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%);
+  z-index: 0;
+}
+
+.title {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  background: linear-gradient(135deg, #3b82f6, #9333ea);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  position: relative;
+  z-index: 1;
+}
+
+.subtitle {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  color: var(--mantine-color-gray-6);
+  position: relative;
+  z-index: 1;
+}
+
+.mediaCard {
+  border: 1px solid var(--mantine-color-gray-2);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 1;
+  text-decoration: none;
+  color: inherit;
+  overflow: hidden;
+}
+
+.mediaCard:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  border-color: var(--mantine-color-blue-4);
+  text-decoration: none;
+  color: inherit;
+}
+
+.thumbnailSection {
+  position: relative;
+  overflow: hidden;
+}
+
+.thumbnail {
+  transition: transform 0.3s ease;
+}
+
+.mediaCard:hover .thumbnail {
+  transform: scale(1.1);
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    45deg,
+    rgba(0, 0, 0, 0.1) 0%,
+    rgba(0, 0, 0, 0.05) 50%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
+  transition: opacity 0.3s ease;
+}
+
+.mediaCard:hover .overlay {
+  opacity: 0.5;
+}
+
+.playButton {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: all 0.3s ease;
+  z-index: 2;
+}
+
+.mediaCard:hover .playButton {
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+.durationBadge {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  z-index: 2;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+}
+
+.typeBadge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 2;
+  backdrop-filter: blur(4px);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.loadingCard {
+  height: 280px;
+  border: 1px solid var(--mantine-color-gray-2);
+  position: relative;
+  overflow: hidden;
+}
+
+.loadingThumbnail {
+  height: 200px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+.loadingContent {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.loadingLine {
+  height: 12px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+.loadingLine:nth-child(1) {
+  width: 85%;
+}
+
+.loadingLine:nth-child(2) {
+  width: 70%;
+}
+
+.loadingLine:nth-child(3) {
+  width: 95%;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Hover effects for different social media types */
+.mediaCard[data-type="youtube"]:hover {
+  border-color: #ff0000;
+  box-shadow: 0 12px 30px rgba(255, 0, 0, 0.15);
+}
+
+.mediaCard[data-type="facebook"]:hover {
+  border-color: #1877f2;
+  box-shadow: 0 12px 30px rgba(24, 119, 242, 0.15);
+}
+
+.mediaCard[data-type="instagram"]:hover {
+  border-color: #e4405f;
+  box-shadow: 0 12px 30px rgba(228, 64, 95, 0.15);
+}
+
+.mediaCard[data-type="twitter"]:hover {
+  border-color: #000000;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+  .wrapper {
+    padding: clamp(1.5rem, 4vw, 2rem) 0;
+  }
+  
+  .mediaCard {
+    margin-bottom: 0.5rem;
+  }
+  
+  .title {
+    margin-bottom: 1rem;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+  }
+  
+  .subtitle {
+    margin-bottom: 2rem;
+    font-size: clamp(0.9rem, 2vw, 1rem);
+  }
+
+  .playButton {
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+
+  .typeBadge {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+
+  .durationBadge {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .wrapper {
+    padding: 1rem 0;
+  }
+
+  .mediaCard {
+    margin-bottom: 0.5rem;
+  }
+
+  .thumbnailSection {
+    height: 140px;
+  }
+
+  .playButton {
+    transform: translate(-50%, -50%) scale(0.7);
+  }
+
+  .title {
+    font-size: clamp(1.25rem, 3vw, 1.75rem);
+  }
+  
+  .subtitle {
+    font-size: clamp(0.8rem, 2vw, 0.9rem);
+  }
+
+  .typeBadge {
+    font-size: 8px;
+    padding: 1px 3px;
+  }
+
+  .durationBadge {
+    font-size: 8px;
+    padding: 1px 3px;
+  }
+
+  .loadingCard {
+    height: 220px;
+  }
+
+  .loadingThumbnail {
+    height: 140px;
+  }
+}
+
+/* Horizontal scroll styles for mobile */
+.horizontalScroll {
+  display: flex;
+  overflow-x: auto;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+
+.horizontalScroll::-webkit-scrollbar {
+  display: none; /* WebKit */
+}
+
+.horizontalCard {
+  flex: 0 0 280px; /* Fixed width for horizontal cards */
+  max-width: 280px;
+  height: auto;
+}
+
+@media (max-width: 768px) {
+  .horizontalCard {
+    flex: 0 0 260px; /* Slightly smaller on mobile */
+    max-width: 260px;
+  }
+}

@@ -8,7 +8,7 @@
 .header {
   background-color: var(--color-primary);
   border-bottom: 1px solid var(--mantine-color-gray-2);
-  padding: 8px 0;
+  padding: 8px clamp(16px, 4vw, 32px);
   color: white;
 }
 
@@ -23,6 +23,7 @@
   background-color: var(--color-primary);
   max-width: var(--mantine-container-size-xl);
   margin: 0 auto;
+  padding: 0 clamp(8px, 2vw, 16px);
 }
 
 .rightSection {
@@ -102,38 +103,50 @@
 @media (max-width: 768px) {
   .topHeader,
   .header {
-    padding: 2px 0;
+    padding: 4px clamp(12px, 3vw, 24px);
     border-bottom: none;
-    height: 25px;
-    min-height: 25px;
-    max-height: 25px;
+    height: auto;
+    min-height: 40px;
+    max-height: none;
   }
 
   .container {
-    padding: 0;
+    padding: 0 clamp(8px, 2vw, 16px);
     margin: 0;
   }
 
   .wrapper {
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    gap: 4px;
-    padding: 2px 8px;
-    min-height: 25px;
-    height: 25px;
+    justify-content: center;
+    gap: 2px;
+    padding: 4px clamp(8px, 2vw, 16px);
+    min-height: 40px;
+    height: auto;
   }
 
   .orgName {
-    font-size: 10px;
+    font-size: 11px;
     margin: 0;
     padding: 0;
+    text-align: center;
+    order: 1;
+  }
+
+  .orgName:after {
+    content: " | " attr(data-tagline);
+    margin-left: 4px;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 400;
+    font-size: 10px;
   }
 
   .socialLinks {
-    gap: 4px;
-    padding-left: 0;
-    border-left: none;
+    display: flex; /* Show social links again */
+    gap: 6px;
+    padding-left: 8px;
+    border-left: 1px solid rgba(255, 255, 255, 0.3);
+    order: 3;
   }
 
   .socialIcon {
@@ -144,11 +157,27 @@
   }
 
   .rightSection {
-    display: none; /* Hide contact info on mobile */
+    display: flex;
+    gap: 8px;
+    flex-wrap: nowrap;
+    order: 2;
+    justify-content: center;
+    align-items: center;
   }
 
   .contactItem {
-    display: none;
+    display: flex; /* Show both email and phone */
+  }
+
+  .contactText {
+    font-size: 9px;
+    padding: 0;
+    margin: 0;
+  }
+
+  .contactIcon {
+    width: 12px;
+    height: 12px;
   }
 }
 
@@ -165,7 +194,7 @@
   }
 
   .wrapper {
-    padding: 8px 0;
+    padding: 8px clamp(16px, 2vw, 24px);
   }
 
   .rightSection {
@@ -174,11 +203,34 @@
 }
 
 @media (max-width: 480px) {
-  .contactText {
-    display: none;
+  .wrapper {
+    padding: 3px clamp(6px, 2vw, 12px);
+    gap: 2px;
+    min-height: 36px;
   }
 
-  .contactItem {
-    margin-right: 0;
+  .orgName {
+    font-size: 10px;
+  }
+
+  .orgName:after {
+    content: " | " attr(data-tagline);
+    margin-left: 3px;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 400;
+    font-size: 9px;
+  }
+
+  .contactText {
+    font-size: 8px;
+  }
+
+  .contactIcon {
+    width: 10px;
+    height: 10px;
+  }
+
+  .rightSection {
+    gap: 10px;
   }
 }

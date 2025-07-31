@@ -208,7 +208,6 @@
   position: relative;
   z-index: 2;
   width: 100%;
-  margin-bottom: 2rem;
   padding: 2rem;
   max-width: 800px;
   margin: 0 auto;
@@ -216,4 +215,264 @@
   align-items: center;
   justify-content: center;
   height: 100%;
+}
+
+/* New Revamped Carousel Styles */
+.carouselContainer {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  max-height: 80vh;
+  min-height: 400px;
+  overflow: hidden;
+  margin: 0 0 -2px 0;
+  padding: 0;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  touch-action: pan-y pinch-zoom;
+}
+
+.slidesContainer {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.5s ease-in-out;
+}
+
+.slide {
+  min-width: 100%;
+  height: 100%;
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* Navigation Buttons */
+.navButton {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  transition: all 0.3s ease;
+  opacity: 0.8;
+}
+
+.navButton:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  opacity: 1;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.navButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.prevButton {
+  left: 2rem;
+}
+
+.nextButton {
+  right: 2rem;
+}
+
+/* Auto-play Control */
+.playButton {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  color: white !important;
+  transition: all 0.3s ease;
+  opacity: 0.7;
+}
+
+.playButton:hover {
+  background: rgba(255, 255, 255, 0.3) !important;
+  opacity: 1;
+}
+
+/* Indicators */
+.indicators {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.indicator {
+  width: 8px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.4);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
+}
+
+.indicator:hover {
+  background: rgba(255, 255, 255, 0.7);
+  transform: scale(1.1);
+}
+
+.indicator:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.indicatorActive {
+  width: 8px;
+  background: rgba(255, 255, 255, 0.9) !important;
+  transform: scale(1.3);
+}
+
+/* Swipe Hint */
+.swipeHint {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(5px);
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+  animation: fadeInOut 3s ease-in-out infinite;
+}
+
+@keyframes fadeInOut {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+  .carouselContainer {
+    height: 32vh;
+    min-height: 180px;
+    max-height: 280px;
+    margin-bottom: -4px;
+  }
+
+  .slide {
+    min-width: 100%;
+    height: 100%;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .card {
+    width: 100%;
+    height: 100%;
+    min-height: 32vh;
+    max-height: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: transparent;
+    border: none;
+  }
+
+  .navButton {
+    display: none; /* Hide nav buttons on mobile, use swipe instead */
+  }
+
+  .playButton {
+    top: 1rem;
+    right: 1rem;
+    display: none; /* Hide auto-play control on mobile */
+  }
+
+  .indicators {
+    bottom: 0.25rem;
+    gap: 0.25rem;
+  }
+
+  .indicator {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+  }
+
+  .indicatorActive {
+    width: 5px;
+    background: rgba(255, 255, 255, 0.9) !important;
+    transform: scale(1.2);
+  }
+
+  .contentWrapper {
+    padding: 0.5rem 1rem;
+    justify-content: flex-end;
+    align-items: center;
+    text-align: center;
+    height: 100%;
+  }
+
+  .ctaButton {
+    font-size: 0.75rem !important;
+    padding: 6px 12px !important;
+    border-width: 1px !important;
+    min-height: 28px;
+    height: 28px;
+    line-height: 1;
+    font-weight: 500 !important;
+  }
+
+  .card:hover {
+    transform: none; /* Disable hover effects on mobile */
+  }
+}
+
+/* Extra small mobile devices */
+@media (max-width: 480px) {
+  .carouselContainer {
+    height: 35vh;
+    min-height: 160px;
+    max-height: 320px;
+    margin-bottom: -4px;
+  }
+
+  .card {
+    min-height: 35vh;
+    max-height: 320px;
+  }
+
+  .indicators {
+    bottom: 0.2rem;
+    gap: 0.15rem;
+  }
+
+  .indicator {
+    width: 4px;
+    height: 4px;
+  }
+
+  .indicatorActive {
+    width: 4px;
+  }
+
+  .contentWrapper {
+    padding: 0.25rem 0.75rem;
+  }
+
+  .ctaButton {
+    font-size: 0.7rem !important;
+    padding: 5px 10px !important;
+    min-height: 26px;
+    height: 26px;
+  }
 }

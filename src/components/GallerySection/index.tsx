@@ -1,154 +1,89 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Box, Container, Title, SimpleGrid, Card, Image, Text, Button, ActionIcon } from '@mantine/core';
 import Link from 'next/link';
 import { IconPhoto, IconArrowLeft, IconArrowRight, IconX } from '@tabler/icons-react';
-import { useGalleryStore } from '@/store/useGalleryStore';
-import { GallerySkeleton } from '../skeletons/GallerySkeleton';
-import classes from './GallerySection.module.css';
 import { useLanguage } from '@/context/LanguageContext';
+import { useGalleryStore } from '@/store/useGalleryStore';
+import classes from './GallerySection.module.css';
 
 export default function GallerySection() {
-  const { language } = useLanguage();
-  const { galleryItems: items = [], loading, fetchGalleryItems } = useGalleryStore();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   const [modalVisible, setModalVisible] = useState(false);
+  
+  // Use language context for translations
+  const { language } = useLanguage();
+  
+  // Use gallery store for data
+  const { galleryItems, loading, fetchGalleryItems } = useGalleryStore();
 
-  // Fetch gallery items
+  // Fetch gallery items on component mount
   useEffect(() => {
     fetchGalleryItems();
   }, [fetchGalleryItems]);
 
-  // Keyboard navigation and body scroll lock
-  useEffect(() => {
-    const handleClose = () => {
-      console.log('Closing modal');
-      setModalVisible(false);
-      setSelectedImage(null);
-    };
-
-    const handlePrevious = () => {
-      if (!items.length) return;
-      setCurrentImageIndex((prev) => {
-        const newIndex = prev > 0 ? prev - 1 : items.length - 1;
-        setSelectedImage(items[newIndex].imageUrl);
-        return newIndex;
-      });
-    };
-
-    const handleNext = () => {
-      if (!items.length) return;
-      setCurrentImageIndex((prev) => {
-        const newIndex = prev < items.length - 1 ? prev + 1 : 0;
-        setSelectedImage(items[newIndex].imageUrl);
-        return newIndex;
-      });
-    };
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (!modalVisible) return;
-      if (e.key === 'ArrowLeft') handlePrevious();
-      if (e.key === 'ArrowRight') handleNext();
-      if (e.key === 'Escape') handleClose();
-    };
-
-    // Lock body scroll when modal is open
-    if (modalVisible) {
-      document.body.style.overflow = 'hidden';
-      document.body.style.paddingRight = '15px'; // Prevent layout shift from scrollbar
-    } else {
-      document.body.style.overflow = '';
-      document.body.style.paddingRight = '';
-    }
-
-    window.addEventListener('keydown', handleKeyDown);
-    
-    // Cleanup function
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      // Ensure body scroll is restored when component unmounts
-      document.body.style.overflow = '';
-      document.body.style.paddingRight = '';
-    };
-  }, [modalVisible, items]);
+  // Display only first 8 items for the section
+  const displayItems = galleryItems.slice(0, 8);
 
   const handleImageClick = (imageUrl: string) => {
-    console.log('Opening modal for:', imageUrl);
-    if (!imageUrl) return; // Don't open modal if no image
-    const index = recentItems.findIndex(item => item.imageUrl === imageUrl);
+    const index = displayItems.findIndex(item => item.imageUrl === imageUrl);
     setCurrentImageIndex(index);
     setSelectedImage(imageUrl);
     setModalVisible(true);
   };
 
   const handleClose = () => {
-    console.log('Closing modal');
     setModalVisible(false);
     setSelectedImage(null);
   };
 
   const handlePrevious = () => {
-    if (!items.length) return;
     setCurrentImageIndex((prev) => {
-      const newIndex = prev > 0 ? prev - 1 : items.length - 1;
-      setSelectedImage(items[newIndex].imageUrl);
+      const newIndex = prev > 0 ? prev - 1 : displayItems.length - 1;
+      setSelectedImage(displayItems[newIndex].imageUrl);
       return newIndex;
     });
   };
 
   const handleNext = () => {
-    if (!items.length) return;
     setCurrentImageIndex((prev) => {
-      const newIndex = prev < items.length - 1 ? prev + 1 : 0;
-      setSelectedImage(items[newIndex].imageUrl);
+      const newIndex = prev < displayItems.length - 1 ? prev + 1 : 0;
+      setSelectedImage(displayItems[newIndex].imageUrl);
       return newIndex;
     });
   };
 
-  // Take only the latest 6 items or return empty array if items is undefined
-  const recentItems = items?.slice(0, 6) || [];
-
   return (
     <Box className={classes.wrapper}>
       <Container size="xl">
-        <div className={classes.header}>
-          <Title 
-            className={classes.title}
-            style={{ fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit' }}
-          >
-            {language === 'hi' ? 'हमारा गैलरी' : 'Our Gallery'}
-          </Title>
-          <Button
-            component={Link}
-            href={`/${language}/gallery`}
-            variant="light"
-            rightSection={<IconPhoto size={16} />}
-            style={{ fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit' }}
-          >
-            {language === 'hi' ? 'सभी फ़ोटो देखें' : 'View All Photos'}
-          </Button>
-        </div>
+        <Title 
+          className={classes.title}
+          ta="center"
+          mb="xl"
+        >
+          {language === 'hi' ? 'हमारा गैलरी' : 'Our Gallery'}
+        </Title>
 
         {loading ? (
-          <GallerySkeleton count={6} />
+          <Text ta="center">Loading...</Text>
         ) : (
           <>
-            <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="lg">
-              {recentItems.map((item) => (
+            <SimpleGrid cols={{ base: 3, xs: 3, sm: 3, md: 4, lg: 4 }} spacing={{ base: 'xs', sm: 'md', md: 'lg' }}>
+              {displayItems.map((item) => (
                 <Card
                   key={item.id}
                   shadow="sm"
-                  padding="md"
+                  padding="sm"
                   radius="md"
                   className={classes.card}
                 >
                   <Card.Section className={classes.imageSection}>
                     <Image
-                      src={item.imageUrl || '/placeholder.jpg'}
-                      alt={language === 'hi' && item.titleHi ? item.titleHi : item.title}
-                      height={220}
+                      src={item.imageUrl || '/images/placeholder.svg'}
+                      alt={item.title}
                       className={classes.image}
+                      height={120}
                     />
                     <div
                       className={classes.overlay}
@@ -156,7 +91,7 @@ export default function GallerySection() {
                       role="button"
                       tabIndex={0}
                     >
-                      <div className={classes.viewButton} style={{ fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit' }}>
+                      <div className={classes.viewButton}>
                         {language === 'hi' ? 'छवि देखें' : 'View Image'}
                       </div>
                     </div>
@@ -164,10 +99,10 @@ export default function GallerySection() {
 
                   <Text 
                     fw={500} 
-                    size="lg" 
-                    mt="md" 
+                    size="sm"
+                    mt="sm"
                     lineClamp={2}
-                    style={{ fontFamily: language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit' }}
+                    className={classes.cardTitle}
                   >
                     {language === 'hi' && item.titleHi ? item.titleHi : item.title}
                   </Text>
@@ -175,58 +110,71 @@ export default function GallerySection() {
               ))}
             </SimpleGrid>
 
-            {modalVisible && selectedImage && (
-              <div
-                className={classes.modalBackdrop}
-                onClick={handleClose}
-                role="presentation"
+            {/* Bottom Button */}
+            <Box mt="xl" ta="center">
+              <Button
+                component={Link}
+                href={`/${language}/gallery`}
+                variant="outline"
+                size="sm"
+                rightSection={<IconPhoto size={16} />}
               >
-                <div
-                  className={classes.modalContainer}
-                  onClick={e => e.stopPropagation()}
-                  role="dialog"
-                  aria-modal="true"
-                >
-                  <ActionIcon
-                    className={`${classes.navButton} ${classes.prevButton}`}
-                    onClick={handlePrevious}
-                    aria-label="Previous image"
-                  >
-                    <IconArrowLeft size={24} />
-                  </ActionIcon>
-
-                  <div className={classes.modalImageWrapper}>
-                    <Image
-                      src={selectedImage}
-                      alt={`Gallery image ${currentImageIndex + 1}`}
-                      className={classes.modalImage}
-                      fit="contain"
-                      loading="eager"
-                    />
-                  </div>
-
-                  <ActionIcon
-                    className={`${classes.navButton} ${classes.nextButton}`}
-                    onClick={handleNext}
-                    aria-label="Next image"
-                  >
-                    <IconArrowRight size={24} />
-                  </ActionIcon>
-
-                  <ActionIcon
-                    className={classes.closeButton}
-                    onClick={handleClose}
-                    aria-label="Close gallery"
-                    title="Close (Esc)"
-                  >
-                    <IconX size={24} stroke={2.5} />
-                  </ActionIcon>
-                </div>
-              </div>
-            )}
+                {language === 'hi' ? 'सभी फोटो देखें' : 'See All Images'}
+              </Button>
+            </Box>
           </>
         )}
       </Container>
+
+      {modalVisible && selectedImage && (
+        <div
+          className={classes.modalBackdrop}
+          onClick={handleClose}
+          role="presentation"
+        >
+          <div
+            className={classes.modalContainer}
+            onClick={e => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+          >
+            <ActionIcon
+              className={`${classes.navButton} ${classes.prevButton}`}
+              onClick={handlePrevious}
+              aria-label="Previous image"
+            >
+              <IconArrowLeft size={24} />
+            </ActionIcon>
+
+            <div className={classes.modalImageWrapper}>
+              <Image
+                src={selectedImage}
+                alt={`Gallery image ${currentImageIndex + 1}`}
+                className={classes.modalImage}
+                fit="contain"
+                loading="eager"
+              />
+            </div>
+
+            <ActionIcon
+              className={`${classes.navButton} ${classes.nextButton}`}
+              onClick={handleNext}
+              aria-label="Next image"
+            >
+              <IconArrowRight size={24} />
+            </ActionIcon>
+
+            <ActionIcon
+              className={classes.closeButton}
+              onClick={handleClose}
+              aria-label="Close gallery"
+              title="Close (Esc)"
+            >
+              <IconX size={24} stroke={2.5} />
+            </ActionIcon>
+          </div>
+        </div>
+      )}
     </Box>
   );
 }

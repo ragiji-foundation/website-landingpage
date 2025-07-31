@@ -12,7 +12,7 @@ interface GallerySkeletonProps {
  */
 export function GallerySkeleton({ count = 6 }: GallerySkeletonProps) {
   return (
-    <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="lg">
+    <SimpleGrid cols={{ base: 3, xs: 3, sm: 3, md: 4, lg: 4 }} spacing={{ base: 'xs', sm: 'md', md: 'lg' }}>
       {Array.from({ length: count }).map((_, index) => (
         <Card key={index} shadow="sm" padding="md" radius="md">
           <Card.Section>

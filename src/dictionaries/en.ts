@@ -24,6 +24,7 @@ export const enDictionary = {
     slogan: 'Live For Others',
     organization: {
       name: 'Ragi Ji Foundation',
+      tagline: 'Live for Others',
       fullName: 'RAMGIRIJI MAHARAJ SHIKSHA EVAM SAMAJ SEVA SAMITI',
       address: {
         line1: 'House No-12 Gram Mahapura Post Kothd,',
