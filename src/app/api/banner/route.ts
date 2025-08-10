@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
       throw new Error('Admin API URL not configured');
     }
 
-    const response = await axios.get(`${ADMIN_API_URL}/api/banners?locale=${locale}`, {
+    const response = await axios.get(`${ADMIN_API_URL}/api/banner?locale=${locale}`, {
       headers: {
         'Accept': 'application/json'
       },

@@ -107,8 +107,8 @@ export const useBannerStore = create<BannerState>()(
         try {
           // Use the proxy route instead of direct admin API call
           const url = locale 
-            ? `/api/banners?locale=${locale}`
-            : `/api/banners`;
+            ? `/api/banner?locale=${locale}`
+            : `/api/banner`;
           
           const response = await fetch(url, {
             method: 'GET',
