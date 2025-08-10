@@ -23,6 +23,10 @@ export default function CenterDetailPage() {
     }
   }, [centers, slug]);
 
+  // Log all data for debugging
+  console.log('centers:', centers);
+  console.log('selected center:', center);
+
   if (loading) return <div>Loading center...</div>;
   if (error) return <div>Error loading center: {error.message}</div>;
   if (!center) return <div>Center not found.</div>;

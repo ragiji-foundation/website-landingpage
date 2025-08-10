@@ -5,13 +5,23 @@ import { apiClient, safeApiCall } from '@/utils/api-client';
 export interface Initiative extends InitiativeBase {
   titleHi?: string;
   descriptionHi?: string;
+  slug?: string;
 }
 
 interface InitiativesState {
   items: Initiative[];
+  currentInitiative: Initiative | null;
   loading: boolean;
   error: Error | null;
   fetchInitiatives: (locale?: string) => Promise<void>;
+  getInitiativeBySlug: (slug: string) => Initiative | null;
+}
+
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
 }
 
 // Fallback data
@@ -29,8 +39,9 @@ const fallbackInitiatives: Initiative[] = [
   }
 ];
 
-export const useInitiativesStore = create<InitiativesState>((set) => ({
+export const useInitiativesStore = create<InitiativesState>((set, get) => ({
   items: [],
+  currentInitiative: null,
   loading: false,
   error: null,
   fetchInitiatives: async (locale = 'en') => {
@@ -42,12 +53,22 @@ export const useInitiativesStore = create<InitiativesState>((set) => ({
       'initiatives'
     );
     
+    // Add slugs to initiatives
+    const initiativesWithSlugs = initiatives.map(initiative => ({
+      ...initiative,
+      slug: slugify(initiative.title)
+    }));
+    
     set({ 
-      items: initiatives.sort((a: Initiative, b: Initiative) => a.order - b.order),
+      items: initiativesWithSlugs.sort((a: Initiative, b: Initiative) => a.order - b.order),
       loading: false,
       error: null
     });
   },
+  getInitiativeBySlug: (slug: string) => {
+    const { items } = get();
+    return items.find(item => item.slug === slug) || null;
+  }
 }));
 
 // Listen for locale changes

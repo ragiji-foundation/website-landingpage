@@ -19,11 +19,15 @@ export default function OurCentersPage() {
     fetchBanners();
     fetchCenters();
   }, [fetchBanners, fetchCenters]);
-  
+
   // Get localized centers with proper error handling
   const localizedCenters = centers && Array.isArray(centers) 
     ? getLocalizedCenters(locale) 
     : [];
+    
+  // Log all data for debugging
+  console.log('centers:', centers);
+  console.log('localizedCenters:', localizedCenters);
   
   // Get banner
   const banner = getBannerByType('centers');

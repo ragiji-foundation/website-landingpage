@@ -69,6 +69,8 @@ export function Initiatives({ heading, ctaButton }: InitiativesProps) {
             <Card 
               key={initiative.id} 
               padding={0}
+              component={Link}
+              href={`/${language}/our-initiatives/${initiative.slug}`}
               style={{
                 transition: 'all 0.3s ease',
                 cursor: 'pointer',
@@ -80,6 +82,7 @@ export function Initiatives({ heading, ctaButton }: InitiativesProps) {
                 textAlign: 'center',
                 width: '100%',
                 maxWidth: '100%',
+                textDecoration: 'none',
               }}
             >
               <Card.Section>

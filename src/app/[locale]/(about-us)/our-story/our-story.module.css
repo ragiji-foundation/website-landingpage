@@ -40,10 +40,6 @@
   align-items: center;
 }
 
-
-
-
-
 /* Diamond-shaped bullet */
 .timelineBullet {
   width: 36px;
@@ -78,7 +74,6 @@
   left: 90%;
 }
 
-
 /* Vertical connector from bullet to bullet */
 .timelineBullet::before {
   content: "";
@@ -90,7 +85,6 @@
   top: 100%;
   left: 250%;
 }
-
 
 /* Floating card */
 .timelineCard {
@@ -123,29 +117,58 @@
 /* Faded Large Year */
 .timelineYear {
   position: absolute;
-  bottom: 5px;
-  right: 15px;
+  bottom: 10px; /* was 5px */
+  right: 25px;  /* was 15px */
   font-size: 40px;
   font-weight: bold;
   color: #e5e7eb;
+  opacity: 0.5; /* add opacity for better readability */
+  pointer-events: none; /* ensure it doesn't block text */
+  z-index: 0; /* send behind content */
+}
+
+.section {
+  margin-bottom: 4rem;
 }
 
 .sectionTitle {
-  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #2563eb;
   margin-bottom: 2rem;
-  padding-bottom: 1rem;
+  font-size: 1.75rem;
 }
 
-.sectionTitle::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 80px;
-  height: 4px;
-  background: linear-gradient(90deg, var(--mantine-color-orange-6), var(--mantine-color-green-6));
-  border-radius: 2px;
+.titleIcon {
+  background-color: #eff6ff !important;
+  color: #2563eb !important;
+}
+
+.mediaWrapper {
+  position: relative;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.storyText, .modelText {
+  font-size: 1.125rem;
+  line-height: 1.75;
+  color: #374151;
+}
+
+.storyImage, .modelImage {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  aspect-ratio: 4/3;
+  transition: transform 0.3s ease;
+}
+
+.mediaWrapper:hover .storyImage,
+.mediaWrapper:hover .modelImage {
+  transform: scale(1.05);
 }
 
 .imageWrapper {
@@ -188,8 +211,49 @@
   border-top: 4px solid var(--mantine-color-green-6);
 }
 
+.storyCard {
+  width: 100%;
+  max-width: 1400px; /* was 800px, now wider for desktop */
+  margin: auto;
+}
+
+.storyText {
+  word-break: break-word;
+}
+
 @media (max-width: 768px) {
-  .storyContent {
-    margin-top: 1.5rem;
+  .storyCard {
+    max-width: 100%;
+    padding: 1rem !important;
+  }
+  .timelineCard {
+    width: 95% !important;
+    margin-left: 0 !important;
+    padding: 1rem !important;
+  }
+  .timelineContainer {
+    width: 100%;
+    padding: 0 0.5rem;
+  }
+  .timelineTitle {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+  }
+  .timelineYear {
+    font-size: 2rem;
+    right: 5px;
+  }
+  .timelineBullet {
+    width: 28px;
+    height: 28px;
+    font-size: 8px;
+  }
+  .timelineCardTitle {
+    font-size: 1rem;
+  }
+  .timelineCardContent {
+    font-size: 0.9rem;
+    flex-direction: column;
+    gap: 2px;
   }
 }

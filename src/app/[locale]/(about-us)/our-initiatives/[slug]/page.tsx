@@ -1,10 +1,9 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import {
   Container,
   Title,
-  Text,
   Image,
   Box,
   Skeleton,
@@ -12,66 +11,47 @@ import {
   Button,
   Paper,
 } from '@mantine/core';
+import { useInitiativesStore } from '@/store/useInitiativesStore';
 import { Banner } from '@/components/Banner';
 import { IconArrowLeft, IconInfoCircle } from '@tabler/icons-react';
 import classes from './initiative.module.css';
 
-// Initiative interface matching our Prisma schema
-interface Initiative {
-  id: number;
-  title: string;
-  description: string;
-  imageUrl?: string;
-  order: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
 export default function InitiativeDetailPage() {
   const router = useRouter();
-  const { slug } = useParams();
-  const [initiative, setInitiative] = useState<Initiative | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const params = useParams();
+  const locale = params.locale as string || 'en';
+  const slug = params.slug as string;
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const { 
+    loading, 
+    error: storeError, 
+    fetchInitiatives, 
+    getInitiativeBySlug 
+  } = useInitiativesStore();
 
   useEffect(() => {
-    const fetchInitiative = async () => {
-      try {
-        const API_URL = process.env.NEXT_PUBLIC_ADMIN_API_URL;
-        if (!API_URL) {
-          throw new Error('API URL is not configured');
-        }
+    fetchInitiatives(locale);
+  }, [fetchInitiatives, locale]);
 
-        // Fetch all initiatives then find by title/slug
-        const response = await fetch(`${API_URL}/api/initiatives`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch initiatives');
-        }
+  // Get the initiative and localize its content
+  const initiative = useMemo(() => getInitiativeBySlug(slug), [getInitiativeBySlug, slug]);
+  const localizedInitiative = useMemo(() => 
+    initiative ? {
+      ...initiative,
+      title: locale === 'hi' && initiative.titleHi ? initiative.titleHi : initiative.title,
+      description: locale === 'hi' && initiative.descriptionHi ? initiative.descriptionHi : initiative.description
+    } : null
+  , [initiative, locale]);
 
-        const initiatives = await response.json();
-
-        // Find the initiative by comparing the slugified title with our slug param
-        const found = initiatives.find(
-          (item: Initiative) => item.title.toLowerCase().replace(/\s+/g, '-') === slug
-        );
-
-        if (found) {
-          setInitiative(found);
-        } else {
-          setError('Initiative not found');
-        }
-      } catch (err) {
-        console.error('Error fetching initiative details:', err);
-        setError('Failed to load initiative details. Please try again later.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (slug) {
-      fetchInitiative();
+  useEffect(() => {
+    // Set error message if initiative is not found after loading
+    if (!loading && !storeError && !localizedInitiative) {
+      setErrorMessage(locale === 'hi' ? 'पहल नहीं मिली' : 'Initiative not found');
+    } else if (storeError) {
+      setErrorMessage(locale === 'hi' ? 'डेटा लोड करने में त्रुटि' : 'Error loading data');
     }
-  }, [slug]);
+  }, [loading, storeError, localizedInitiative, locale]);
 
   // Loading state
   if (loading) {
@@ -93,47 +73,50 @@ export default function InitiativeDetailPage() {
   }
 
   // Error state
-  if (error || !initiative) {
+  if (errorMessage || !localizedInitiative) {
     return (
       <main>
         <Banner
           type="initiatives"
-          title="Our Initiatives"
-          description="Making a difference through sustainable development"
+          title={locale === 'hi' ? 'हमारी पहल' : 'Our Initiatives'}
+          description={locale === 'hi' ? 'सतत विकास के माध्यम से बदलाव लाना' : 'Making a difference through sustainable development'}
         />
         <Container size="lg" py="xl">
           <Button
             variant="subtle"
             leftSection={<IconArrowLeft />}
             mb="xl"
-            onClick={() => router.push('/our-initiatives')}
+            onClick={() => router.push(`/${locale}/our-initiatives`)}
           >
-            Back to initiatives
+            {locale === 'hi' ? 'पहल पर वापस जाएं' : 'Back to initiatives'}
           </Button>
 
           <Alert
             icon={<IconInfoCircle />}
-            title={error || 'Initiative not found'}
+            title={errorMessage || (locale === 'hi' ? 'पहल नहीं मिली' : 'Initiative not found')}
             color="red"
           >
-            We couldn&lsquo;t find the initiative you're looking for. Please return to the initiatives page and try again.
+            {locale === 'hi' 
+              ? 'हम जिस पहल को आप खोज रहे हैं वह नहीं मिली। कृपया पहल पृष्ठ पर वापस जाएं और पुनः प्रयास करें।'
+              : 'We couldn&apos;t find the initiative you&apos;re looking for. Please return to the initiatives page and try again.'}
           </Alert>
         </Container>
       </main>
     );
   }
 
+  // Success state
   return (
     <main>
       <Banner
         type="initiatives"
-        title={initiative.title}
-        description="Making a difference through sustainable development"
-        backgroundImage={initiative.imageUrl || "/images/placeholders/initiative-banner.jpg"}
+        title={localizedInitiative.title}
+        description={locale === 'hi' ? 'सतत विकास के माध्यम से बदलाव लाना' : 'Making a difference through sustainable development'}
+        backgroundImage={localizedInitiative.imageUrl || "/images/placeholders/initiative-banner.jpg"}
         breadcrumbs={[
-          { label: 'Home', link: '/' },
-          { label: 'Our Initiatives', link: '/our-initiatives' },
-          { label: initiative.title }
+          { label: locale === 'hi' ? 'होम' : 'Home', link: `/${locale}` },
+          { label: locale === 'hi' ? 'हमारी पहल' : 'Our Initiatives', link: `/${locale}/our-initiatives` },
+          { label: localizedInitiative.title }
         ]}
       />
 
@@ -142,21 +125,21 @@ export default function InitiativeDetailPage() {
           variant="subtle"
           leftSection={<IconArrowLeft />}
           mb="xl"
-          onClick={() => router.push('/our-initiatives')}
+          onClick={() => router.push(`/${locale}/our-initiatives`)}
         >
-          Back to all initiatives
+          {locale === 'hi' ? 'सभी पहल पर वापस जाएं' : 'Back to all initiatives'}
         </Button>
 
         <Paper shadow="xs" p="xl" radius="md" withBorder>
           <Title order={1} className={classes.initiativeTitle}>
-            {initiative.title}
+            {localizedInitiative.title}
           </Title>
 
-          {initiative.imageUrl && (
+          {localizedInitiative.imageUrl && (
             <Box my="xl" className={classes.imageContainer}>
               <Image
-                src={initiative.imageUrl}
-                alt={initiative.title}
+                src={localizedInitiative.imageUrl}
+                alt={localizedInitiative.title}
                 radius="md"
                 fallbackSrc="/images/placeholders/initiative-placeholder.jpg"
               />
@@ -166,7 +149,7 @@ export default function InitiativeDetailPage() {
           {/* Rich text content - using dangerouslySetInnerHTML to render HTML */}
           <Box my="xl" className={classes.content}>
             <div
-              dangerouslySetInnerHTML={{ __html: initiative.description }}
+              dangerouslySetInnerHTML={{ __html: localizedInitiative.description }}
             />
           </Box>
         </Paper>

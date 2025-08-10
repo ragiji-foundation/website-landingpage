@@ -19,18 +19,61 @@ export interface OurStory {
   version: number;
 }
 
+export interface OurStoryModel {
+  id: string;
+  description: string;
+  descriptionHi?: string;
+  imageUrl?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface VisionMission {
+  id: string;
+  vision: string;
+  visionHi?: string;
+  mission: string;
+  missionHi?: string;
+  visionIcon?: string;
+  missionIcon?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface TimelineItem {
+  id: string;
+  year: string;
+  title: string;
+  titleHi?: string;
+  centers: number;
+  volunteers: number;
+  children: number;
+  order: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 interface OurStoryStore {
   story: OurStory | null;
+  model: OurStoryModel | null;
+  visionMission: VisionMission | null;
+  timeline: TimelineItem[];
   loading: boolean;
   error: Error | null;
   fetchStory: () => Promise<void>;
   getLocalizedStory: (locale: string) => OurStory | null;
+  getLocalizedModel: (locale: string) => OurStoryModel | null;
+  getLocalizedVisionMission: (locale: string) => VisionMission | null;
+  getLocalizedTimeline: (locale: string) => TimelineItem[];
 }
 
 export const useOurStoryStore = create<OurStoryStore>()(
   devtools(
     (set, get) => ({
       story: null,
+      model: null,
+      visionMission: null,
+      timeline: [],
       loading: false,
       error: null,
       
@@ -69,8 +112,29 @@ export const useOurStoryStore = create<OurStoryStore>()(
             throw new Error('Failed to fetch our story data');
           }
           
-          const data = await response.json();
-          set({ story: data, loading: false });
+          const apiData = await response.json();
+          // Parse and normalize media field
+          const story = apiData.story ? {
+            ...apiData.story,
+            media: (() => {
+              if (typeof apiData.story.media === 'string') {
+                try {
+                  const parsedMedia = JSON.parse(apiData.story.media);
+                  return Array.isArray(parsedMedia) && parsedMedia.length > 0 ? parsedMedia[0] : undefined;
+                } catch {
+                  return undefined;
+                }
+              }
+              return apiData.story.media;
+            })()
+          } : null;
+          set({
+            story,
+            model: apiData.model || null,
+            visionMission: apiData.visionMission || null,
+            timeline: Array.isArray(apiData.timeline) ? apiData.timeline : [],
+            loading: false
+          });
         } catch (error) {
           console.error('Error fetching our story data:', error);
           
@@ -101,6 +165,20 @@ export const useOurStoryStore = create<OurStoryStore>()(
         const { story } = get();
         if (!story) return null;
         return withLocalization(story, locale) as OurStory;
+      },
+      getLocalizedModel: (locale: string) => {
+        const { model } = get();
+        if (!model) return null;
+        return withLocalization(model, locale) as OurStoryModel;
+      },
+      getLocalizedVisionMission: (locale: string) => {
+        const { visionMission } = get();
+        if (!visionMission) return null;
+        return withLocalization(visionMission, locale) as VisionMission;
+      },
+      getLocalizedTimeline: (locale: string) => {
+        const { timeline } = get();
+        return withLocalization(timeline, locale) as TimelineItem[];
       }
     }),
     { name: 'our-story-store' }
