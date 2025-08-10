@@ -83,16 +83,16 @@ export default function OurCentersPage() {
                     {center.description}
                   </Text>
                   
-                  <Button 
-                    component={Link}
-                    href={`/${locale}/our-centers/${center.id}`}
-                    variant="light" 
-                    fullWidth 
-                    mt="md" 
-                    radius="md"
-                  >
-                    {locale === 'hi' ? 'और अधिक जानें' : 'Learn More'}
-                  </Button>
+                 <Button 
+  component={Link}
+  href={`/${locale}/our-centers/${center.slug}`}
+  variant="light" 
+  fullWidth 
+  mt="md" 
+  radius="md"
+>
+  {locale === 'hi' ? 'और अधिक जानें' : 'Learn More'}
+</Button>
                 </Card>
               </Grid.Col>
             ))}

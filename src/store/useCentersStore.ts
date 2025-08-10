@@ -15,6 +15,7 @@ export interface Center {
   descriptionHi?: string;
   imageUrl?: string;
   contactInfo?: string;
+  slug: string; // <-- Added slug property
 }
 
 interface CentersStore {
@@ -27,6 +28,13 @@ interface CentersStore {
   getLocalizedCenters: (locale: string) => Center[];
 }
 
+function slugify(name: string) {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-') // Replace non-alphanumeric with hyphens
+    .replace(/(^-|-$)/g, '');    // Remove leading/trailing hyphens
+}   
+
 export const useCentersStore = create<CentersStore>()(
   devtools(
     (set, get) => ({
@@ -34,26 +42,33 @@ export const useCentersStore = create<CentersStore>()(
       currentCenter: null,
       loading: false,
       error: null,
-      
-      fetchCenters: async () => {
-        try {
-          set({ loading: true, error: null });
-          const response = await fetch('/api/centers');
-          
-          if (!response.ok) {
-            throw new Error('Failed to fetch centers');
-          }
-          
-          const data = await response.json();
-          set({ centers: data, loading: false });
-        } catch (error) {
-          console.error('Error fetching centers:', error);
-          set({ 
-            error: error instanceof Error ? error : new Error(String(error)), 
-            loading: false 
-          });
-        }
-      },
+      /**
+       * Fetches all centers from the API and sets them in the store.
+       */ 
+    fetchCenters: async () => {
+  try {
+    set({ loading: true, error: null });
+    const response = await fetch('/api/centers');
+    if (!response.ok) {
+      throw new Error('Failed to fetch centers');
+    }
+    const result = await response.json();
+    // Attach slug to each center
+    const centersWithSlugs = Array.isArray(result.data)
+      ? result.data.map((center: Center) => ({
+          ...center,
+          slug: slugify(center.name),
+        }))
+      : [];
+    set({ centers: centersWithSlugs, loading: false });
+  } catch (error) {
+    console.error('Error fetching centers:', error);
+    set({ 
+      error: error instanceof Error ? error : new Error(String(error)), 
+      loading: false 
+    });
+  }
+},
       
       fetchCenterById: async (id: number, locale: string) => {
         try {
