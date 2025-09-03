@@ -85,7 +85,8 @@ export default function BlogPostPage() {
           throw new Error('API URL not configured');
         }
 
-        const response = await fetch(`${API_URL}/api/blogs/${slug}?locale=en`, {
+        const locale = params.locale as string || 'en';
+        const response = await fetch(`${API_URL}/api/blogs/${slug}?locale=${locale}`, {
           headers: {
             'Content-Type': 'application/json',
             'Cache-Control': 'no-cache',
@@ -94,7 +95,7 @@ export default function BlogPostPage() {
 
         if (!response.ok) {
           if (response.status === 404) {
-            throw new Error('Blog post not found');
+            throw new Error(locale === 'hi' ? 'ब्लॉग पोस्ट नहीं मिली' : 'Blog post not found');
           }
           throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`);
         }
@@ -103,10 +104,19 @@ export default function BlogPostPage() {
         console.log('Blog post data:', data);
 
         if (data.status !== 'published') {
-          throw new Error('Blog post is not published');
+          throw new Error(locale === 'hi' ? 'ब्लॉग पोस्ट प्रकाशित नहीं है' : 'Blog post is not published');
         }
 
-        setPost(data);
+        // Handle localized content
+        const localizedPost = {
+          ...data,
+          title: locale === 'hi' && data.titleHi ? data.titleHi : data.title,
+          content: locale === 'hi' && data.contentHi ? data.contentHi : data.content,
+          authorName: locale === 'hi' && data.authorNameHi ? data.authorNameHi : data.authorName,
+          metaDescription: locale === 'hi' && data.metaDescriptionHi ? data.metaDescriptionHi : data.metaDescription,
+        };
+
+        setPost(localizedPost);
       } catch (error) {
         console.error('Error fetching blog post:', error);
         if (error instanceof Error) {
@@ -120,7 +130,7 @@ export default function BlogPostPage() {
     };
 
     fetchBlogPost();
-  }, [slug, API_URL, fetchBanners]);
+  }, [slug, API_URL, fetchBanners, params.locale]);
 
   // Get blog banner
   const banner = getBannerByType('blog');
@@ -138,9 +148,9 @@ export default function BlogPostPage() {
           <Button
             variant="outline"
             leftSection={<IconArrowLeft size={16} />}
-            onClick={() => router.push('/blog')}
+            onClick={() => router.push(`/${params.locale}/blog`)}
           >
-            Back to Blog
+            {params.locale === 'hi' ? 'ब्लॉग पर वापस जाएं' : 'Back to Blog'}
           </Button>
         </Stack>
       </Center>
@@ -156,8 +166,8 @@ export default function BlogPostPage() {
           description={banner?.description || "Stories of impact, innovation, and inspiration"}
           backgroundImage={banner?.backgroundImage || "/banners/blog-banner.jpg"}
           breadcrumbs={[
-            { label: 'Home', link: '/' },
-            { label: 'Blog', link: '/blog' },
+            { label: params.locale === 'hi' ? 'होम' : 'Home', link: `/${params.locale}` },
+            { label: params.locale === 'hi' ? 'ब्लॉग' : 'Blog', link: `/${params.locale}/blog` },
             { label: post.title }
           ]}
         />

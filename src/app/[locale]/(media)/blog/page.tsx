@@ -47,8 +47,8 @@ function BlogCard({ post }: { post: BlogPost }) {
       padding="lg"
       radius="md"
       withBorder
-      onClick={() => router.push(`/blog/${post.slug}`)}
-      className="blog-card"
+      onClick={() => router.push(`/${post.locale}/blog/${post.slug}`)}
+    className="blog-card"
       style={{
         cursor: 'pointer',
         transition: 'transform 0.2s ease, box-shadow 0.2s ease',
