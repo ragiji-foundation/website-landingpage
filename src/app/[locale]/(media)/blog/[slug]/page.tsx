@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import {
   Container,
   Title,
@@ -8,7 +8,6 @@ import {
   Image,
   Skeleton,
   Group,
-  Avatar,
   Stack,
   Divider,
   Button,
@@ -62,10 +61,9 @@ function BlogSkeleton() {
   );
 }
 
-export default function BlogPostPage() {
-  const params = useParams();
+export default function BlogPostPage({ params }: { params: { slug: string; locale: string } }) {
   const router = useRouter();
-  const slug = params.slug as string;
+  const { slug, locale } = params;
   const [post, setPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -85,7 +83,6 @@ export default function BlogPostPage() {
           throw new Error('API URL not configured');
         }
 
-        const locale = params.locale as string || 'en';
         const response = await fetch(`${API_URL}/api/blogs/${slug}?locale=${locale}`, {
           headers: {
             'Content-Type': 'application/json',
@@ -130,7 +127,7 @@ export default function BlogPostPage() {
     };
 
     fetchBlogPost();
-  }, [slug, API_URL, fetchBanners, params.locale]);
+  }, [slug, API_URL, fetchBanners, locale]);
 
   // Get blog banner
   const banner = getBannerByType('blog');
@@ -148,9 +145,9 @@ export default function BlogPostPage() {
           <Button
             variant="outline"
             leftSection={<IconArrowLeft size={16} />}
-            onClick={() => router.push(`/${params.locale}/blog`)}
+            onClick={() => router.push(`/${locale}/blog`)}
           >
-            {params.locale === 'hi' ? 'ब्लॉग पर वापस जाएं' : 'Back to Blog'}
+            {locale === 'hi' ? 'ब्लॉग पर वापस जाएं' : 'Back to Blog'}
           </Button>
         </Stack>
       </Center>
@@ -166,8 +163,8 @@ export default function BlogPostPage() {
           description={banner?.description || "Stories of impact, innovation, and inspiration"}
           backgroundImage={banner?.backgroundImage || "/banners/blog-banner.jpg"}
           breadcrumbs={[
-            { label: params.locale === 'hi' ? 'होम' : 'Home', link: `/${params.locale}` },
-            { label: params.locale === 'hi' ? 'ब्लॉग' : 'Blog', link: `/${params.locale}/blog` },
+            { label: locale === 'hi' ? 'होम' : 'Home', link: `/${locale}` },
+            { label: locale === 'hi' ? 'ब्लॉग' : 'Blog', link: `/${locale}/blog` },
             { label: post.title }
           ]}
         />
@@ -176,10 +173,10 @@ export default function BlogPostPage() {
           <Button
             variant="subtle"
             leftSection={<IconArrowLeft size={16} />}
-            onClick={() => router.push('/blog')}
+            onClick={() => router.push(`/${locale}/blog`)}
             mb="xl"
           >
-            Back to Blog
+            {locale === 'hi' ? 'ब्लॉग पर वापस जाएं' : 'Back to Blog'}
           </Button>
 
           <Title order={1} mb="lg">{post.title}</Title>

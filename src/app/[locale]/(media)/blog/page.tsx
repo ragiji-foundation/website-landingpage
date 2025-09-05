@@ -32,7 +32,7 @@ interface BlogPost {
   }>;
 }
 
-function BlogCard({ post }: { post: BlogPost }) {
+function BlogCard({ post, locale }: { post: BlogPost; locale: string }) {
   const router = useRouter();
 
   // Use a default image since the schema doesn't include images
@@ -47,7 +47,7 @@ function BlogCard({ post }: { post: BlogPost }) {
       padding="lg"
       radius="md"
       withBorder
-      onClick={() => router.push(`/${post.locale}/blog/${post.slug}`)}
+      onClick={() => router.push(`/${locale}/blog/${post.slug}`)}
     className="blog-card"
       style={{
         cursor: 'pointer',
@@ -112,7 +112,7 @@ function BlogSkeleton() {
   );
 }
 
-function BlogList() {
+function BlogList({ locale }: { locale: string }) {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -133,7 +133,7 @@ function BlogList() {
           throw new Error('API URL not configured');
         }
 
-        const url = `${API_URL}/api/blogs?page=${currentPage}&limit=${postsPerPage}&locale=en`;
+        const url = `${API_URL}/api/blogs?page=${currentPage}&limit=${postsPerPage}&locale=${locale}`;
         console.log('Fetching blogs from:', url);
 
         const response = await fetch(url, {
@@ -174,7 +174,7 @@ function BlogList() {
     };
 
     fetchPosts();
-  }, [currentPage, API_URL]);
+  }, [currentPage, API_URL, locale]);
 
   if (error) {
     return (
@@ -195,7 +195,7 @@ function BlogList() {
           <Grid gutter="xl">
             {posts.map((post) => (
               <Grid.Col key={post.id || Math.random().toString()} span={{ base: 12, sm: 6, md: 4 }}>
-                <BlogCard post={post} />
+                <BlogCard post={post} locale={locale} />
               </Grid.Col>
             ))}
           </Grid>
@@ -221,7 +221,7 @@ function BlogList() {
   );
 }
 
-export default function BlogPage() {
+export default function BlogPage({ params }: { params: { locale: string } }) {
   const { fetchBanners, getBannerByType, loading: bannerLoading, error: bannerError } = useBannerStore();
   const [isLoading, setIsLoading] = useState(true);
 
@@ -245,11 +245,11 @@ export default function BlogPage() {
             description="Loading..."
             backgroundImage="/banners/blog-banner.jpg"
             breadcrumbs={[
-              { label: 'Home', link: '/' },
+              { label: 'Home', link: `/${params.locale}` },
               { label: 'Blog' }
             ]}
           />
-          <BlogList />
+          <BlogList locale={params.locale} />
         </main>
       </ErrorBoundary>
     );
@@ -267,12 +267,12 @@ export default function BlogPage() {
             description="Stories of impact, innovation, and inspiration from our community"
             backgroundImage="/banners/blog-banner.jpg"
             breadcrumbs={[
-              { label: 'Home', link: '/' },
+              { label: 'Home', link: `/${params.locale}` },
               { label: 'Blog' }
             ]}
 
           />
-          <BlogList />
+          <BlogList locale={params.locale} />
         </main>
       </ErrorBoundary>
     );
@@ -288,12 +288,12 @@ export default function BlogPage() {
           description={banner.description}
           backgroundImage={banner.backgroundImage || "/banners/blog-banner.jpg"}
           breadcrumbs={[
-            { label: 'Home', link: '/' },
+            { label: 'Home', link: `/${params.locale}` },
             { label: 'Blog' }
           ]}
 
         />
-        <BlogList />
+        <BlogList locale={params.locale} />
       </main>
     </ErrorBoundary>
   );
