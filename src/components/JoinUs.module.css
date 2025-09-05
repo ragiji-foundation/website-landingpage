@@ -139,6 +139,15 @@
   background: linear-gradient(135deg, #FF416C, #FF4B2B);
 }
 
+.joinBtn {
+  transition: all 0.3s ease;
+}
+
+.joinBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 75, 43, 0.3);
+}
+
 .optionsGrid {
   width: 100%;
   margin: 2rem 0;

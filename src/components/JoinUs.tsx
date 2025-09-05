@@ -45,6 +45,17 @@ export function JoinUs() {
 
           <Group gap="lg">
             <Button
+              onClick={() => setOpened(true)}
+              variant="gradient"
+              gradient={{ from: 'orange', to: 'red' }}
+              size="lg"
+              rightSection={<IconUsers size={18} />}
+              className={classes.joinBtn}
+            >
+              {t('joinus.banner.cta')}
+            </Button>
+            
+            <Button
               onClick={handleDownloadBrochure}
               variant="outline"
               size="lg"
