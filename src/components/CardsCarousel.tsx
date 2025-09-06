@@ -4,12 +4,14 @@ import { Paper, Title, Center, Stack, Loader, Text, Box, Button, ActionIcon, Gro
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useMediaQuery } from '@mantine/hooks';
 import { IconChevronLeft, IconChevronRight, IconPlayerPlay, IconPlayerPause } from '@tabler/icons-react';
+import { useLanguage } from '@/context/LanguageContext';
 
 import classes from './CardsCarousel.module.css';
 
 interface CarouselItem {
   id: number;
   title: string;
+  titleHi?: string;
   imageUrl: string | null;
   link: string | null;
   active: boolean;
@@ -18,10 +20,15 @@ interface CarouselItem {
   videoUrl?: string | null;
 }
 
-function Card({ imageUrl, videoUrl, title, type = 'image', link = '#' }: Omit<CarouselItem, 'id' | 'active' | 'order'>) {
+function Card({ imageUrl, videoUrl, title, titleHi, type = 'image', link = '#' }: Omit<CarouselItem, 'id' | 'active' | 'order'>) {
   const defaultImage = '/placeholder-image.jpg';
   const isMobile = useMediaQuery('(max-width: 768px)');
   const isSmallMobile = useMediaQuery('(max-width: 480px)');
+  const { language } = useLanguage();
+
+  // Determine which title to display based on language
+  const displayTitle = language === 'hi' && titleHi ? titleHi : title;
+  const fontFamily = language === 'hi' ? 'var(--mantine-font-family-hindi)' : 'inherit';
 
   // Get the correct height values to match CSS
   const getMinHeight = () => {
@@ -92,10 +99,11 @@ function Card({ imageUrl, videoUrl, title, type = 'image', link = '#' }: Omit<Ca
               lineHeight: isMobile ? 1.1 : 1.3,
               fontWeight: isMobile ? 500 : 700,
               textShadow: '0 2px 8px rgba(0, 0, 0, 0.7)',
-              margin: isMobile ? '0' : '0 0 1rem 0'
+              margin: isMobile ? '0' : '0 0 1rem 0',
+              fontFamily: fontFamily
             }}
           >
-            {title}
+            {displayTitle}
           </Title>
           <Button
             variant="outline"
@@ -319,6 +327,7 @@ export function CardsCarousel() {
               imageUrl={item.imageUrl}
               videoUrl={item.videoUrl}
               title={item.title}
+              titleHi={item.titleHi}
               link={item.link}
               type={item.type}
             />

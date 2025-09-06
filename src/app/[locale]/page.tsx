@@ -3,7 +3,7 @@ import React from 'react';
 import { Box, Container } from '@mantine/core';
 import { CardsCarousel } from '@/components/CardsCarousel';
 import SuccessStoriesSection from '@/components/landing/success-stories-section';
-import EnhancedElectronicMediaSection from '@/components/landing/enhanced-electronic-media';
+// import EnhancedElectronicMediaSection from '@/components/landing/enhanced-electronic-media';
 import NewsCoverageSection from '@/components/landing/news-coverage-section';
 import { useMediaQuery } from '@mantine/hooks';
 
