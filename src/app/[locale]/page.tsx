@@ -222,7 +222,7 @@ export default function App({ params }: PageProps) {
         </AnimatedSection>
 
         {/* 7. Electronic Media Section */}
-        <AnimatedSection>
+        {/* <AnimatedSection>
           <Box
             component="section"
             style={{
@@ -244,7 +244,7 @@ export default function App({ params }: PageProps) {
               </ErrorBoundary>
             </Container>
           </Box>
-        </AnimatedSection>
+        </AnimatedSection> */}
 
         {/* 8. Testimonials */}
         <AnimatedSection>
