@@ -1172,5 +1172,28 @@ export const enDictionary = {
     learnMore: 'Learn more',
     accept: 'Accept',
     decline: 'Decline',
+  },
+
+  // Awards Page
+  awards: {
+    title: 'Awards',
+    pageHeading: 'Our Recognition & Achievements',
+    description: 'Celebrating our achievements and milestones in making a difference.',
+    pageDescription: 'Honored for our commitment and dedication to social change and community empowerment.',
+    noAwards: 'No awards available yet.',
+    awardReceived: 'Award Received',
+    recognizedBy: 'Recognized By',
+    year: 'Year'
+  },
+
+  // Electronic Media Page  
+  electronicmedia: {
+    title: 'Electronic Media',
+    pageHeading: 'Our Videos and Presentations',
+    description: 'Watch and read how the media covers our work and mission.',
+    pageDescription: 'Watch and read how the media covers our work and mission.',
+    noMedia: 'No media content available yet.',
+    watchVideo: 'Watch Video',
+    viewPresentation: 'View Presentation'
   }
 };

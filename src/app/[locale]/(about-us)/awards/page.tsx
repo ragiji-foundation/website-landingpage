@@ -1,16 +1,17 @@
 'use client';
 import { Container, Grid, Card, Title, Text, Image, Stack } from '@mantine/core';
 import { Banner } from '@/components/Banner';
+import { LocalizedBanner } from '@/components/LocalizedBanner';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { useEffect } from 'react';
 import { useAwardStore } from '@/store/useAwardStore';
 import { useBannerStore } from '@/store/useBannerStore';
 import { useParams } from 'next/navigation';
-import { withLocalization, withLocalizedArray } from '@/utils/localization';
+import { withLocalizedArray } from '@/utils/localization';
 import { AwardsSkeleton } from '@/components/skeletons/AwardsSkeleton';
 import styles from './awards.module.css';
 import { notifications } from '@mantine/notifications';
-import { BannerType } from '@/types/banner';
+import { useDictionary } from '@/hooks/useDictionary';
 
 function AwardGrid() {
   const { awards, loading, error, fetchAwards } = useAwardStore();
@@ -75,35 +76,62 @@ export default function AwardsPage() {
   const params = useParams();
   const locale = params.locale as string || 'en';
 
+  // Get translations from dictionary
+  const { dictionary } = useDictionary();
+  const t = dictionary?.awards || {};
+  const common = dictionary?.common || {};
+
   useEffect(() => {
     fetchBanners();
   }, [fetchBanners]);
 
   const banner = getBannerByType('awards');
-  // Localize banner content
-  const localizedBanner = banner ? withLocalization(banner, locale) : null;
 
   if (bannerLoading) return <AwardsSkeleton />;
-  if (bannerError) return <div>Error loading page: {bannerError.message}</div>;
-  if (!banner) return <div>Banner not found</div>;
+  if (bannerError) {
+    return (
+      <Container py="xl">
+        <Text ta="center" c="red">
+          {common?.errorMessage || 'Error loading page. Please try again later.'}
+        </Text>
+      </Container>
+    );
+  }
 
   return (
     <ErrorBoundary>
       <main>
-        <Banner
-          type={localizedBanner?.type as BannerType}
-          title={localizedBanner?.title}
-          description={localizedBanner?.description ?? (locale === 'hi' ? 'हमारी उपलब्धियों और मील के पत्थरों का जश्न मनाना।' : 'Celebrating our achievements and milestones in making a difference.')}
-          backgroundImage={localizedBanner?.backgroundImage || '/banners/awards-banner.jpg'}
-          breadcrumbs={[
-            { label: 'Home', link: '/' },
-            { label: 'awards' }
-          ]}
-  
-        />
+        {banner ? (
+          <LocalizedBanner
+            banner={banner}
+            breadcrumbs={[
+              { label: common?.home || 'Home', link: `/${locale}` },
+              { label: t?.title || 'Awards' }
+            ]}
+          />
+        ) : (
+          <Banner
+            type="awards"
+            title={t?.title || 'Recognition & Awards'}
+            description={t?.description || 'Celebrating our achievements and milestones in making a difference.'}
+            backgroundImage="/banners/awards-banner.svg"
+            breadcrumbs={[
+              { label: common?.home || 'Home', link: `/${locale}` },
+              { label: t?.title || 'Awards' }
+            ]}
+          />
+        )}
 
         <Container size="xl" py="xl">
-          <AwardGrid />
+          <Stack gap="xl">
+            <Title order={2} ta="center">
+              {t?.pageHeading || 'Our Recognition & Achievements'}
+            </Title>
+            <Text size="lg" ta="center" maw={800} mx="auto" c="dimmed">
+              {t?.pageDescription || 'Honored for our commitment and dedication to social change and community empowerment.'}
+            </Text>
+            <AwardGrid />
+          </Stack>
         </Container>
       </main>
     </ErrorBoundary>

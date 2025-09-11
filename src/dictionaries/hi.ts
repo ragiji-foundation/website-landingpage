@@ -115,8 +115,6 @@ export const hiDictionary = {
     availableBanners: 'उपलब्ध बैनर:',
     noBannersAvailable: 'कोई बैनर उपलब्ध नहीं'
   },
-  },
-
   // About Us Pages
   aboutus: {
     banner: {
@@ -964,7 +962,6 @@ export const hiDictionary = {
       }
     }
   },
-
   // Privacy Policy Page
   privacy: {
     banner: {
@@ -1069,7 +1066,6 @@ export const hiDictionary = {
       mail: 'मेल द्वारा:'
     }
   },
-
   // Photo Library Page
   photolibrary: {
     banner: {
@@ -1137,7 +1133,6 @@ export const hiDictionary = {
       back: 'गैलरी पर वापस जाएं'
     }
   },
-
   // Expanded Gallery Page
   galleryPage: {
     banner: {
@@ -1176,11 +1171,32 @@ export const hiDictionary = {
       request: 'लाइसेंस का अनुरोध करें'
     }
   },
-
   cookies: {
     message: 'हम आपके ब्राउज़िंग अनुभव को बेहतर बनाने, व्यक्तिगत सामग्री प्रदान करने और हमारे ट्रैफ़िक का विश्लेषण करने के लिए कुकीज़ का उपयोग करते हैं। "स्वीकारें" पर क्लिक करके, आप हमारे कुकीज़ के उपयोग से सहमत होते हैं।',
     learnMore: 'अधिक जानें',
     accept: 'स्वीकारें',
     decline: 'अस्वीकारें'
+  },
+  // Awards Page
+  awards: {
+    title: 'पुरस्कार',
+    pageHeading: 'हमारी पहचान और उपलब्धियां',
+    description: 'सामाजिक बदलाव में अंतर लाने में हमारी उपलब्धियों और मील के पत्थर का जश्न मनाना।',
+    pageDescription: 'सामाजिक बदलाव और सामुदायिक सशक्तिकरण के प्रति हमारी प्रतिबद्धता और समर्पण के लिए सम्मानित।',
+    noAwards: 'अभी तक कोई पुरस्कार उपलब्ध नहीं।',
+    awardReceived: 'पुरस्कार प्राप्त',
+    recognizedBy: 'द्वारा मान्यता प्राप्त',
+    year: 'वर्ष'
+  },
+
+  // Electronic Media Page  
+  electronicmedia: {
+    title: 'इलेक्ट्रॉनिक मीडिया',
+    pageHeading: 'हमारी वीडियो और प्रस्तुतियां',
+    description: 'देखें और पढ़ें कि मीडिया हमारे कार्य और मिशन को कैसे प्रस्तुत करता है।',
+    pageDescription: 'देखें और पढ़ें कि मीडिया हमारे कार्य और मिशन को कैसे प्रस्तुत करता है।',
+    noMedia: 'अभी तक कोई मीडिया सामग्री उपलब्ध नहीं।',
+    watchVideo: 'वीडियो देखें',
+    viewPresentation: 'प्रस्तुति देखें'
   }
 };
