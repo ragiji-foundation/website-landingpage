@@ -11,8 +11,8 @@
 }
 
 .card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  backdrop-filter: blur(5px);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  backdrop-filter: blur(2px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   cursor: pointer;
   width: 100%;
@@ -23,11 +23,12 @@
   position: relative;
   background: transparent;
   border: none;
+  will-change: transform; /* Optimize for animations */
 }
 
 .card:hover {
-  transform: scale(1.02);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  transform: scale(1.01);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 .cardContent {
@@ -46,34 +47,32 @@
   line-height: 1.2;
   margin-bottom: 1rem;
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-  opacity: 0;
-  transform: translateY(20px);
-  animation: fadeUp 0.5s ease forwards;
+  opacity: 1; /* Remove animation for better performance */
+  transform: translateY(0);
   font-weight: 800;
 }
 
 .button {
-  opacity: 0;
-  transform: translateY(20px);
-  animation: fadeUp 0.5s ease 0.2s forwards;
-  transition: all 0.3s ease;
+  opacity: 1; /* Remove animation for better performance */
+  transform: translateY(0);
+  transition: all 0.2s ease;
   background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(5px);
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .button:hover {
   opacity: 1;
   background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
+  transform: translateY(-1px);
 }
 
 .ctaButton {
   background: rgba(255, 255, 255, 0.15);
   color: white;
   border: 2px solid white;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+  backdrop-filter: blur(4px);
   font-weight: 600;
   text-decoration: none;
   font-size: 1.25rem;
@@ -84,8 +83,7 @@
 .ctaButton:hover {
   background: white;
   color: black;
-  transform: translateY(-2px);
-  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
 }
 
 @keyframes fadeUp {
@@ -474,5 +472,100 @@
     padding: 5px 10px !important;
     min-height: 26px;
     height: 26px;
+  }
+}
+
+/* Skeleton Loading Styles */
+.skeletonCard {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+  backdrop-filter: blur(10px);
+}
+
+.skeletonContent {
+  text-align: center;
+  z-index: 2;
+}
+
+.skeletonTitle {
+  width: 300px;
+  height: 60px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.2) 25%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0.2) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+  margin: 0 auto 2rem auto;
+}
+
+.skeletonButton {
+  width: 150px;
+  height: 40px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.2) 25%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0.2) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 20px;
+  margin: 0 auto;
+  animation-delay: 0.2s;
+}
+
+.skeletonIndicators {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.5rem;
+  z-index: 10;
+}
+
+.skeletonIndicator {
+  width: 8px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  animation: pulse 1s infinite;
+}
+
+.skeletonIndicator:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.skeletonIndicator:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* Mobile skeleton adjustments */
+@media (max-width: 768px) {
+  .skeletonTitle {
+    width: 250px;
+    height: 40px;
+  }
+  
+  .skeletonButton {
+    width: 120px;
+    height: 32px;
   }
 }

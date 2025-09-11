@@ -12,7 +12,7 @@ import Link from 'next/link';
 import { IconQuote } from '@tabler/icons-react';
 import classes from './page.module.css';
 
-function FeaturedStory({ story, locale }: { story: SuccessStory; locale: string }) {
+function FeaturedStory({ story, locale, t }: { story: SuccessStory; locale: string; t: Record<string, string | undefined> }) {
   const title = locale === 'hi' && story.titleHi ? story.titleHi : story.title;
   const content = locale === 'hi' && story.contentHi ? story.contentHi : story.content;
   const personName = locale === 'hi' && story.personNameHi ? story.personNameHi : story.personName;
@@ -37,7 +37,7 @@ function FeaturedStory({ story, locale }: { story: SuccessStory; locale: string 
         </Grid.Col>
         <Grid.Col span={{ base: 12, md: 6 }}>
           <div className={classes.featuredContent}>
-            <Badge variant="filled" color="pink" mb="md">Featured Story</Badge>
+            <Badge variant="filled" color="pink" mb="md">{t?.featuredStory || 'Featured Story'}</Badge>
             <Title order={2} className={classes.featuredTitle}>{title}</Title>
             <Text size="lg" mt="md" className={classes.summary}>
               {summary}
@@ -49,7 +49,7 @@ function FeaturedStory({ story, locale }: { story: SuccessStory; locale: string 
               </div>
             </Group>
             <Link href={`/${locale}/success-stories/${story.slug}`} className={classes.readMore}>
-              Read Full Story →
+              {t?.readFullStory || 'Read Full Story →'}
             </Link>
           </div>
         </Grid.Col>
@@ -58,7 +58,7 @@ function FeaturedStory({ story, locale }: { story: SuccessStory; locale: string 
   );
 }
 
-function StoryCard({ story, locale }: { story: SuccessStory; locale: string }) {
+function StoryCard({ story, locale, t }: { story: SuccessStory; locale: string; t: Record<string, string | undefined> }) {
   const title = locale === 'hi' && story.titleHi ? story.titleHi : story.title;
   const content = locale === 'hi' && story.contentHi ? story.contentHi : story.content;
   const personName = locale === 'hi' && story.personNameHi ? story.personNameHi : story.personName;
@@ -92,7 +92,7 @@ function StoryCard({ story, locale }: { story: SuccessStory; locale: string }) {
             <Text size="sm" c="dimmed">{location}</Text>
           </div>
           <Link href={`/${locale}/success-stories/${story.slug}`} className={classes.readMore}>
-            Read More →
+            {t?.readMore || 'Read More →'}
           </Link>
         </Group>
       </Stack>
@@ -122,7 +122,7 @@ export default function SuccessStoriesPage() {
     if (loading) {
       return (
         <Container py="xl">
-          <Text ta="center">{common?.loading || 'Loading stories...'}</Text>
+          <Text ta="center">{t?.loadingStories || common?.loading || 'Loading stories...'}</Text>
         </Container>
       );
     }
@@ -157,7 +157,7 @@ export default function SuccessStoriesPage() {
             </Title>
             <SimpleGrid cols={1} spacing="xl">
               {featuredStories.map(story => (
-                <FeaturedStory key={story.id} story={story} locale={locale} />
+                <FeaturedStory key={story.id} story={story} locale={locale} t={t} />
               ))}
             </SimpleGrid>
           </div>
@@ -169,7 +169,7 @@ export default function SuccessStoriesPage() {
           </Title>
           <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="xl">
             {otherStories.map((story) => (
-              <StoryCard key={story.id} story={story} locale={locale} />
+              <StoryCard key={story.id} story={story} locale={locale} t={t} />
             ))}
           </SimpleGrid>
         </div>

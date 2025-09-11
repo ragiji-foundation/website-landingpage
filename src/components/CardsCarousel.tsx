@@ -1,6 +1,6 @@
 "use client";
 import '@mantine/carousel/styles.css';
-import { Paper, Title, Center, Stack, Loader, Text, Box, Button, ActionIcon, Group } from '@mantine/core';
+import { Paper, Title, Center, Stack, Text, Box, Button, ActionIcon, Group } from '@mantine/core';
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useMediaQuery } from '@mantine/hooks';
 import { IconChevronLeft, IconChevronRight, IconPlayerPlay, IconPlayerPause } from '@tabler/icons-react';
@@ -21,10 +21,11 @@ interface CarouselItem {
 }
 
 function Card({ imageUrl, videoUrl, title, titleHi, type = 'image', link = '#' }: Omit<CarouselItem, 'id' | 'active' | 'order'>) {
-  const defaultImage = '/placeholder-image.jpg';
+  const defaultImage = '/placeholder-banner.jpg';
   const isMobile = useMediaQuery('(max-width: 768px)');
   const isSmallMobile = useMediaQuery('(max-width: 480px)');
   const { language } = useLanguage();
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   // Determine which title to display based on language
   const displayTitle = language === 'hi' && titleHi ? titleHi : title;
@@ -43,6 +44,18 @@ function Card({ imageUrl, videoUrl, title, titleHi, type = 'image', link = '#' }
     return 'none';
   };
 
+  // Preload image
+  useEffect(() => {
+    if (type === 'image' && imageUrl) {
+      const img = new Image();
+      img.onload = () => setImageLoaded(true);
+      img.onerror = () => setImageLoaded(true); // Still show something on error
+      img.src = imageUrl;
+    } else {
+      setImageLoaded(true);
+    }
+  }, [imageUrl, type]);
+
   return (
     <Paper
       shadow="md"
@@ -54,7 +67,7 @@ function Card({ imageUrl, videoUrl, title, titleHi, type = 'image', link = '#' }
       {type === 'image' ? (
         <div
           style={{
-            backgroundImage: `linear-gradient(169deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.8) 100%), url(${imageUrl || defaultImage})`,
+            backgroundImage: `linear-gradient(169deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.8) 100%), url(${imageLoaded ? (imageUrl || defaultImage) : defaultImage})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
@@ -67,6 +80,7 @@ function Card({ imageUrl, videoUrl, title, titleHi, type = 'image', link = '#' }
             left: 0,
             right: 0,
             bottom: 0,
+            transition: imageLoaded ? 'none' : 'background-image 0.3s ease-in-out'
           }}
         />
       ) : type === 'video' && videoUrl ? (
@@ -78,6 +92,7 @@ function Card({ imageUrl, videoUrl, title, titleHi, type = 'image', link = '#' }
             loop
             muted
             playsInline
+            preload="metadata" // Only load metadata initially for faster loading
             style={{
               width: '100%',
               height: '100%',
@@ -139,6 +154,7 @@ export function CardsCarousel() {
   
   const isMobile = useMediaQuery('(max-width: 768px)');
   const autoPlayRef = useRef<NodeJS.Timeout | null>(null);
+  const { language } = useLanguage(); // Move this to component level
   
   // Minimum swipe distance (in px)
   const minSwipeDistance = 50;
@@ -232,6 +248,7 @@ export function CardsCarousel() {
     const fetchCarouselItems = async () => {
       try {
         setError(null);
+        // Fetch carousel data without locale query param since you use [locale] routes
         const response = await fetch('/api/carousel', {
           method: 'GET',
           headers: {
@@ -260,6 +277,16 @@ export function CardsCarousel() {
           }));
 
         setData(activeItems);
+        
+        // Preload first two images for faster display
+        if (activeItems.length > 0) {
+          activeItems.slice(0, 2).forEach(item => {
+            if (item.type === 'image' && item.imageUrl) {
+              const img = new Image();
+              img.src = item.imageUrl;
+            }
+          });
+        }
       } catch (error) {
         console.error('Error fetching carousel items:', error);
         setError(error instanceof Error ? error.message : 'Failed to load carousel items');
@@ -269,7 +296,7 @@ export function CardsCarousel() {
     };
 
     fetchCarouselItems();
-  }, []);
+  }, []); // Remove language dependency since data contains both languages
 
   // Auto-play effect
   useEffect(() => {
@@ -279,15 +306,25 @@ export function CardsCarousel() {
 
   if (loading) {
     return (
-      <Center style={{ height: '90vh' }}>
-        <Loader size="xl" />
-      </Center>
+      <div className={classes.carouselContainer} style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+        <div className={classes.skeletonCard}>
+          <div className={classes.skeletonContent}>
+            <div className={classes.skeletonTitle}></div>
+            <div className={classes.skeletonButton}></div>
+          </div>
+        </div>
+        <div className={classes.skeletonIndicators}>
+          <div className={classes.skeletonIndicator}></div>
+          <div className={classes.skeletonIndicator}></div>
+          <div className={classes.skeletonIndicator}></div>
+        </div>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <Center style={{ height: '80vh' }}>
+      <Center style={{ height: isMobile ? '35vh' : '50vh', minHeight: '300px' }}>
         <Stack align="center" gap="md">
           <Text c="red" size="xl" fw={700}>Error</Text>
           <Text>{error}</Text>
@@ -298,7 +335,7 @@ export function CardsCarousel() {
 
   if (data.length === 0) {
     return (
-      <Center style={{ height: '90vh' }}>
+      <Center style={{ height: isMobile ? '35vh' : '50vh', minHeight: '300px' }}>
         <Title order={2}>No gallery items found</Title>
       </Center>
     );

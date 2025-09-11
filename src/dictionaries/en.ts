@@ -90,6 +90,7 @@ export const enDictionary = {
   
   // Common Elements
   common: {
+    home: 'Home',
     readMore: 'Read More',
     viewAll: 'View All',
     loadMore: 'Load More',
@@ -100,7 +101,10 @@ export const enDictionary = {
     search: 'Search',
     loading: 'Loading...',
     error: 'Error',
-    success: 'Success'
+    success: 'Success',
+    errorMessage: 'Error loading content. Please try again later.',
+    availableBanners: 'Available banners:',
+    noBannersAvailable: 'No banners available'
   },
   
   // About Us Pages
@@ -357,6 +361,16 @@ export const enDictionary = {
       title: 'Success Stories',
       description: 'Real stories of transformation and hope'
     },
+    title: 'Success Stories',
+    pageHeading: 'Stories of Impact and Transformation',
+    pageDescription: 'Discover how our initiatives are changing lives and creating lasting impact in communities across Madhya Pradesh.',
+    featuredStories: 'Featured Stories',
+    featuredStory: 'Featured Story',
+    moreStories: 'More Success Stories',
+    readMore: 'Read More →',
+    readFullStory: 'Read Full Story →',
+    noStories: 'No success stories available yet.',
+    loadingStories: 'Loading stories...',
     featured: {
       heading: 'Featured Stories',
       description: 'Inspiring journeys of individuals whose lives have been transformed through our initiatives.'
@@ -368,7 +382,6 @@ export const enDictionary = {
       environment: 'Environmental Change',
       community: 'Community Development'
     },
-    readMore: 'Read Full Story',
     shareStory: {
       heading: 'Share Your Story',
       description: 'If you\'ve been part of our journey or benefited from our programs, we\'d love to hear from you.',
@@ -768,6 +781,11 @@ export const enDictionary = {
   
   // Careers Page
   careers: {
+    careers: 'Careers',
+    joinOurTeam: 'Join Our Team',
+    careersDescription: 'Join our passionate team and make a difference in the lives of children. Explore our current openings below to find your opportunity to contribute to our mission.',
+    noJobs: 'No job openings available at this time. Please check back later.',
+    viewDetails: 'View Details',
     banner: {
       title: 'Join Our Team',
       description: 'Build a meaningful career making a positive impact'
