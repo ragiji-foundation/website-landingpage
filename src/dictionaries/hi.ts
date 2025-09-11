@@ -645,7 +645,8 @@ export const hiDictionary = {
   joinus: {
     banner: {
       title: 'हमारे मिशन से जुड़ें',
-      description: 'आप जो बदलाव देखना चाहते हैं उसका हिस्सा बनें'
+      description: 'आप जो बदलाव देखना चाहते हैं उसका हिस्सा बनें',
+      cta: 'अभी जुड़ें'
     },
     ways: {
       heading: 'जुड़ने के तरीके',

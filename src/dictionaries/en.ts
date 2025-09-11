@@ -636,7 +636,8 @@ export const enDictionary = {
   joinus: {
     banner: {
       title: 'Join Our Mission',
-      description: 'Be a part of the change you want to see'
+      description: 'Be a part of the change you want to see',
+      cta: 'Join Us Now'
     },
     ways: {
       heading: 'Ways to Get Involved',
