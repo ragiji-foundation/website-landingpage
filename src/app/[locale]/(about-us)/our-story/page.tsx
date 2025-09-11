@@ -1,11 +1,10 @@
 'use client';
 
-import { Container, Title, Text, Image, Box, Stack, Group, Card, Divider, Grid, ThemeIcon } from '@mantine/core';
+import { Container, Title, Text, Image, Stack, Group, Card, Divider, Grid, ThemeIcon } from '@mantine/core';
 import { IconBook, IconBulb, IconTargetArrow, IconTimeline } from '@tabler/icons-react';
 import { Banner } from '@/components/Banner';
 import { useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { withLocalization } from '@/utils/localization';
 import { useBannerStore } from '@/store/useBannerStore';
 import { useOurStoryStore } from '@/store/useOurStoryStore';
 import { LocalizedBanner } from '@/components/LocalizedBanner';
@@ -16,7 +15,6 @@ export default function OurStoryPage() {
   const locale = params.locale as string || 'en';
   const { fetchBanners, getBannerByType } = useBannerStore();
   const { 
-    story, 
     loading: storyLoading, 
     error: storyError, 
     fetchStory,
@@ -31,26 +29,30 @@ export default function OurStoryPage() {
     fetchStory();
   }, [fetchBanners, fetchStory]);
 
-
-
   const localizedStory = getLocalizedStory(locale);
   const localizedModel = getLocalizedModel(locale);
   const localizedVisionMission = getLocalizedVisionMission(locale);
   const localizedTimeline = getLocalizedTimeline(locale);
 
-  // Log all data for debugging (move after variable initialization)
-  console.log('story:', story);
-  console.log('localizedStory:', localizedStory);
-  console.log('model:', localizedModel);
-  console.log('visionMission:', localizedVisionMission);
-  console.log('timeline:', localizedTimeline);
-
   const banner = getBannerByType('our-story');
   const loading = storyLoading;
   const error = storyError;
 
-  if (loading) return <div>Loading story...</div>;
-  if (error) return <div>Error loading data: {error.message}</div>;
+  if (loading) {
+    return (
+      <Container py="xl">
+        <Text ta="center">Loading story...</Text>
+      </Container>
+    );
+  }
+  
+  if (error) {
+    return (
+      <Container py="xl">
+        <Text ta="center" c="red">Error loading data: {error.message}</Text>
+      </Container>
+    );
+  }
 
   // Fix: Ensure timeline is always an array with proper typing
   const timelineArray: Array<{

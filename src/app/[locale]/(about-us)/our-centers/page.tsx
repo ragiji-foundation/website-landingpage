@@ -25,15 +25,24 @@ export default function OurCentersPage() {
     ? getLocalizedCenters(locale) 
     : [];
     
-  // Log all data for debugging
-  console.log('centers:', centers);
-  console.log('localizedCenters:', localizedCenters);
-  
   // Get banner
   const banner = getBannerByType('centers');
   
-  if (loading) return <div>Loading centers...</div>;
-  if (error) return <div>Error loading centers: {error.message}</div>;
+  if (loading) {
+    return (
+      <Container py="xl">
+        <Text ta="center">Loading centers...</Text>
+      </Container>
+    );
+  }
+  
+  if (error) {
+    return (
+      <Container py="xl">
+        <Text ta="center" c="red">Error loading centers: {error.message}</Text>
+      </Container>
+    );
+  }
   
   return (
     <main>
@@ -87,16 +96,16 @@ export default function OurCentersPage() {
                     {center.description}
                   </Text>
                   
-                 <Button 
-  component={Link}
-  href={`/${locale}/our-centers/${center.slug}`}
-  variant="light" 
-  fullWidth 
-  mt="md" 
-  radius="md"
->
-  {locale === 'hi' ? 'और अधिक जानें' : 'Learn More'}
-</Button>
+                  <Button 
+                    component={Link}
+                    href={`/${locale}/our-centers/${center.slug}`}
+                    variant="light" 
+                    fullWidth 
+                    mt="md" 
+                    radius="md"
+                  >
+                    {locale === 'hi' ? 'और अधिक जानें' : 'Learn More'}
+                  </Button>
                 </Card>
               </Grid.Col>
             ))}

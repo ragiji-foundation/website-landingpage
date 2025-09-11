@@ -116,25 +116,39 @@ export default function SuccessStoriesPage() {
     fetchStories();
   }, [fetchBanners, fetchStories]);
   
-  const banner = getBannerByType('success-stories');    const renderContent = () => {
-      if (loading) {
-        return <Text ta="center">{common?.loading || 'Loading stories...'}</Text>;
-      }
-      
-      if (error) {
-        return (
+  const banner = getBannerByType('success-stories');
+  
+  const renderContent = () => {
+    if (loading) {
+      return (
+        <Container py="xl">
+          <Text ta="center">{common?.loading || 'Loading stories...'}</Text>
+        </Container>
+      );
+    }
+    
+    if (error) {
+      return (
+        <Container py="xl">
           <Text ta="center" c="red">
             {common?.errorMessage || 'Error loading content. Please try again later.'}
           </Text>
-        );
-      }
-      
-      if (!stories.length) {
-        return <Text ta="center">{t?.noStories || 'No success stories available yet.'}</Text>;
-      }
+        </Container>
+      );
+    }
+    
+    if (!stories.length) {
+      return (
+        <Container py="xl">
+          <Text ta="center">{t?.noStories || 'No success stories available yet.'}</Text>
+        </Container>
+      );
+    }
 
-      const featuredStories = stories.filter(story => story.featured);
-      const otherStories = stories.filter(story => !story.featured);      return (
+    const featuredStories = stories.filter(story => story.featured);
+    const otherStories = stories.filter(story => !story.featured);
+
+    return (
       <Stack gap={50}>
         {featuredStories.length > 0 && (
           <div>
@@ -163,6 +177,16 @@ export default function SuccessStoriesPage() {
     );
   };
   
+  // Show loading state for the entire page
+  if (loading) {
+    return renderContent();
+  }
+
+  // Show error state for the entire page  
+  if (error) {
+    return renderContent();
+  }
+
   return (
     <main>
       {banner ? (
