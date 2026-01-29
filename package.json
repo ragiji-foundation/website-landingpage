@@ -35,7 +35,7 @@
     "html-react-parser": "^5.2.2",
     "isomorphic-dompurify": "^1.13.0",
     "minio": "^8.0.5",
-    "next": "15.0.4",
+    "next": "15.0.7",
     "postcss": "^8.4.49",
     "postcss-preset-mantine": "^1.17.0",
     "postcss-simple-vars": "^7.0.1",
